@@ -1,0 +1,10 @@
+﻿<Window x:Class="P4PSpeechDB.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <Grid HorizontalAlignment="Left" Height="206" Margin="114,30,0,0" VerticalAlignment="Top" Width="330"/>
+        <Button Content="Connect to MySql" HorizontalAlignment="Left" Margin="196,254,0,0" VerticalAlignment="Top" Width="138" Height="36" Click="ButtonConnect_Click"/>
+
+    </Grid>
+</Window>

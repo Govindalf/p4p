@@ -24,3 +24,16 @@ C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.Prope
 C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csproj.GenerateResource.Cache
 C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.exe
 C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.pdb
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\P4PSpeechDB.exe.config
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\P4PSpeechDB.exe
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\P4PSpeechDB.pdb
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csprojResolveAssemblyReference.cache
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\MainWindow.baml
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\MainWindow.g.cs
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\App.g.cs
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB_MarkupCompile.cache
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.g.resources
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.Properties.Resources.resources
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csproj.GenerateResource.Cache
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.exe
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.pdb

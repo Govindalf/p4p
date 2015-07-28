@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
 using Path = System.IO.Path;
+using System.IO;
 
 namespace P4PSpeechDB
 {
@@ -69,6 +70,40 @@ namespace P4PSpeechDB
         {
             loadDataGrid();
 
+            myConn.Open();
+            FileInfo[] paths = new DirectoryInfo("C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles").GetFiles("*.*", SearchOption.AllDirectories);
+
+            //Adds all files in folders to the db
+            foreach (FileInfo path in paths)
+            {
+                string ext = Path.GetExtension(path.Name).Replace(".", "");
+                string fileName = Path.GetFileNameWithoutExtension(path.FullName);
+                string pathNameVar = ext + "Path";
+
+                try
+                {
+
+                    //Create tables if they dont already exist
+                    MySqlCommand comm = myConn.CreateCommand();
+                    comm.CommandText = "create table if not exists " + ext + "(ID varchar(150) primary key, " + pathNameVar + " varchar(500))";
+                    comm.ExecuteNonQuery();
+
+                    //Add file paths to the above table
+                    comm = myConn.CreateCommand();
+                    comm.CommandText = "INSERT INTO " + ext + "(ID," + pathNameVar + ") VALUES(@ID, @pathNameVar)";
+                    comm.Parameters.AddWithValue("@ID", fileName);
+                    comm.Parameters.AddWithValue("@pathNameVar", path.FullName);
+                    comm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+
+                }
+
+            }
+            myConn.Close();
+
         }
 
         private void ButtonBrowse_Click(object sender, RoutedEventArgs e)
@@ -90,13 +125,14 @@ namespace P4PSpeechDB
                 string filename = dlg.FileName;
                 string ext = Path.GetExtension(dlg.FileName);
                 string pathNameVar = ext.Substring(1) + "Path";
-                
+
                 //add if myConn is not null
                 myConn.Open();
 
 
                 string caseSwitch = ext;
-                switch(caseSwitch){
+                switch (caseSwitch)
+                {
                     case ".hlb":
                         Console.WriteLine(ext);
                         executeInsert(filename, ext, dlg);
@@ -124,8 +160,8 @@ namespace P4PSpeechDB
                     case ".wav":
                         Console.WriteLine(ext);
                         executeInsert(filename, ext, dlg);
-                        break; 
-                    default:                        
+                        break;
+                    default:
                         //Create new MySql table
                         try
                         {
@@ -142,11 +178,11 @@ namespace P4PSpeechDB
                         executeInsert(filename, ext, dlg);
                         break;
 
-                    
+
                 }
                 myConn.Close();
                 loadDataGrid();
-                
+
             }
 
         }
@@ -165,29 +201,33 @@ namespace P4PSpeechDB
                 //comm.Parameters.AddWithValue("@ID", splitBySlash.Last());
                 comm.Parameters.AddWithValue("@pathNameVar", filename);
                 comm.ExecuteNonQuery();
-            } catch(Exception ex){
+            }
+            catch (Exception ex)
+            {
                 MessageBox.Show(ex.Message);
 
             }
         }
 
-        private void loadDataGrid() { 
-            try 
+        private void loadDataGrid()
+        {
+            try
             {
                 myConn.Open();
                 //Get number of tables in database, for all tables, do the following
                 DataSet ds = new DataSet();
-                foreach (string name in Tablenames){
+                foreach (string name in Tablenames)
+                {
                     //System.Console.WriteLine(name);
-                    MySqlCommand cmd = new MySqlCommand("Select ID, " + name + "Path from "+ name, myConn);
+                    MySqlCommand cmd = new MySqlCommand("Select ID, " + name + "Path from " + name, myConn);
                     MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
-                    
+
                     adp.Fill(ds, "LoadDataBinding");
 
                     dataGridFiles.DataContext = ds;
 
                 }
-                
+
             }
             catch (MySqlException ex)
             {

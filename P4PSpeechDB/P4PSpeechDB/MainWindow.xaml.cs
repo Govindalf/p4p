@@ -24,6 +24,7 @@ namespace P4PSpeechDB
     /// </summary>
     public partial class MainWindow : Window
     {
+        string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         MySqlConnection myConn;
         List<String> Tablenames = new List<String>();
         public MainWindow()
@@ -71,7 +72,7 @@ namespace P4PSpeechDB
             loadDataGrid();
 
             myConn.Open();
-            FileInfo[] paths = new DirectoryInfo("C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles").GetFiles("*.*", SearchOption.AllDirectories);
+            FileInfo[] paths = new DirectoryInfo(databaseRoot).GetFiles("*.*", SearchOption.AllDirectories);
 
             //Adds all files in folders to the db
             foreach (FileInfo path in paths)
@@ -106,6 +107,13 @@ namespace P4PSpeechDB
 
         }
 
+        private void moveFile(string path, string path2)
+        {
+
+            // Move the file.
+            File.Copy(path, path2, false); //false = dont overwrite
+        }
+
         private void ButtonBrowse_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -125,6 +133,9 @@ namespace P4PSpeechDB
                 string filename = dlg.FileName;
                 string ext = Path.GetExtension(dlg.FileName);
                 string pathNameVar = ext.Substring(1) + "Path";
+
+                //Stores file in appropriate place in file system
+                moveFile(filename, databaseRoot  /* WHATEVER THE NEW LOCATION IS ASK CATH */);
 
                 //add if myConn is not null
                 myConn.Open();

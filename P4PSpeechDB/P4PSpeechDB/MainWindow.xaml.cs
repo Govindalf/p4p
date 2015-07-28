@@ -135,7 +135,7 @@ namespace P4PSpeechDB
                 string pathNameVar = ext.Substring(1) + "Path";
 
                 //Stores file in appropriate place in file system
-                moveFile(filename, databaseRoot  /* WHATEVER THE NEW LOCATION IS ASK CATH */);
+                moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
 
                 //add if myConn is not null
                 myConn.Open();

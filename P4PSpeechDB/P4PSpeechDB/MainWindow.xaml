@@ -6,10 +6,10 @@
         <Grid HorizontalAlignment="Left" Height="206" Margin="114,30,0,0" VerticalAlignment="Top" Width="330"/>
         <Button Content="Connect to MySql" HorizontalAlignment="Left" Margin="282,254,0,0" VerticalAlignment="Top" Width="138" Height="36" Click="ButtonLoad_Click" RenderTransformOrigin="1.338,0.589"/>
         <Button Content="Browse" HorizontalAlignment="Left" Margin="97,254,0,0" VerticalAlignment="Top" Width="135" Height="36" Click="ButtonBrowse_Click"/>
-        <DataGrid HorizontalAlignment="Left" VerticalAlignment="Top" Height="206" Width="330" Margin="114,30,0,0" Name="dataGridFiles" ItemsSource="{Binding Path=LoadDataBinding}">
+        <DataGrid AutoGenerateColumns ="False" HorizontalAlignment="Left" VerticalAlignment="Top" Height="206" Width="330" Margin="114,30,0,0" Name="dataGridFiles" ItemsSource="{Binding Path=LoadDataBinding}">
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Path=ID}" Header="FileID" Width="120" IsReadOnly="True" />
-                <DataGridTextColumn Binding="{Binding Path=hlbPath}" Header="FilePath" Width="210" IsReadOnly="True" />
+                <DataGridTextColumn Binding="{Binding Path=filePath}" Header="FilePath" Width="210" IsReadOnly="True" />
             </DataGrid.Columns>
         </DataGrid>
 

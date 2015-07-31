@@ -51,12 +51,7 @@ namespace P4PSpeechDB
                 System.Console.Write(Tablenames.Count);
                 myConn.Close();
 
-                //MySqlDataAdapter myDataAdapter = new MySqlDataAdapter();
-                //myDataAdapter.SelectCommand = new MySqlCommand("select * database.edata;", myConn);
-                //MySqlCommandBuilder cb = new MySqlCommandBuilder(myDataAdapter);
-                //myConn.Open();
-                //MessageBox.Show("Connected");
-                //myConn.Close();
+
 
             }
             catch (Exception ex)
@@ -79,7 +74,7 @@ namespace P4PSpeechDB
             {
                 string ext = Path.GetExtension(path.Name).Replace(".", "");
                 string fileName = Path.GetFileNameWithoutExtension(path.FullName);
-                string pathNameVar = ext + "Path";
+                string pathNameVar = "filePath";
 
                 try
                 {
@@ -132,10 +127,10 @@ namespace P4PSpeechDB
                 // Open document 
                 string filename = dlg.FileName;
                 string ext = Path.GetExtension(dlg.FileName);
-                string pathNameVar = ext.Substring(1) + "Path";
+                string pathNameVar = "filePath";
 
                 //Stores file in appropriate place in file system
-                moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
+                //moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
 
                 //add if myConn is not null
                 myConn.Open();
@@ -185,7 +180,6 @@ namespace P4PSpeechDB
                             MessageBox.Show(ex.Message);
 
                         }
-                        Console.WriteLine(ext);
                         executeInsert(filename, ext, dlg);
                         break;
 
@@ -200,7 +194,7 @@ namespace P4PSpeechDB
 
         private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg)
         {
-            string pathNameVar = ext.Substring(1) + "Path";
+            string pathNameVar = "filePath";
 
             try
             {
@@ -230,11 +224,10 @@ namespace P4PSpeechDB
                 foreach (string name in Tablenames)
                 {
                     //System.Console.WriteLine(name);
-                    MySqlCommand cmd = new MySqlCommand("Select ID, " + name + "Path from " + name, myConn);
+                    MySqlCommand cmd = new MySqlCommand("Select ID, filePath from " + name, myConn);
                     MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
 
                     adp.Fill(ds, "LoadDataBinding");
-
                     dataGridFiles.DataContext = ds;
 
                 }

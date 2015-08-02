@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace P4PSpeechDB
 {
-    class DBConnection
+    public class DBConnection
     {
         const string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         const string server = "localhost";
@@ -68,6 +68,14 @@ namespace P4PSpeechDB
                 MessageBox.Show(ex.Message);
                 return false;
             }
+        }
+
+        /* Execute the query given in the input. */
+        public void executeQuery(string query)
+        {
+            MySqlCommand comm = conn.CreateCommand();
+            comm.CommandText = query;
+            comm.ExecuteNonQuery();
         }
     }
 }

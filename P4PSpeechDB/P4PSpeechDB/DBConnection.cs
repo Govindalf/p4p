@@ -23,8 +23,15 @@ namespace P4PSpeechDB
 
         public DBConnection()
         {
-            connectionString = "SERVER=" + server + ";" + "PORT" + port + "DATABASE=" + database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
-            conn = new MySqlConnection(connectionString);
+            try
+            {
+                connectionString = "DATASOURCE = " + server + "; PORT= " + port + "; USERNAME = " + uid + "; PASSWORD = " + password + "; DATABASE = " + database + ";";
+                conn = new MySqlConnection(connectionString);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e);
+            }
         }
 
         public bool openConn()
@@ -60,7 +67,7 @@ namespace P4PSpeechDB
         {
             try
             {
-                conn.Close();
+                this.conn.Close();
                 return true;
             }
             catch (MySqlException ex)
@@ -70,12 +77,9 @@ namespace P4PSpeechDB
             }
         }
 
-        /* Execute the query given in the input. */
-        public void executeQuery(string query)
+        public MySqlCommand getCommand()
         {
-            MySqlCommand comm = conn.CreateCommand();
-            comm.CommandText = query;
-            comm.ExecuteNonQuery();
+            return this.conn.CreateCommand();
         }
     }
 }

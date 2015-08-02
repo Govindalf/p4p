@@ -214,3 +214,6 @@ FakesAssemblies/
 **/*.Server/GeneratedArtifacts
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
+P4PSpeechDB/P4PSpeechDB/obj/Debug/P4PSpeechDB.csproj.GenerateResource.Cache
+P4PSpeechDB/P4PSpeechDB/obj/Debug/P4PSpeechDB.exe
+P4PSpeechDB/P4PSpeechDB/obj/Debug/P4PSpeechDB.exe

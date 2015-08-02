@@ -26,16 +26,18 @@ namespace P4PSpeechDB
     {
         string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         MySqlConnection myConn;
+        DBConnection conn;
         List<String> Tablenames = new List<String>();
         public MainWindow()
         {
+
+            conn = new DBConnection();
             try
             {
                 string myConnection = "datasource = localhost; port = 3306; username = root; password = Cirilla_2015; database = p4pdatabase";
                 myConn = new MySqlConnection(myConnection);
-
-                // Get number of tables in database
                 myConn.Open();
+                // Get number of tables in database
                 using (myConn)
                 {
                     string query = "show tables from p4pdatabase";
@@ -66,39 +68,41 @@ namespace P4PSpeechDB
         {
             loadDataGrid();
 
-            myConn.Open();
-            FileInfo[] paths = new DirectoryInfo(databaseRoot).GetFiles("*.*", SearchOption.AllDirectories);
-
-            //Adds all files in folders to the db
-            foreach (FileInfo path in paths)
+            if (conn.openConn() == true)
             {
-                string ext = Path.GetExtension(path.Name).Replace(".", "");
-                string fileName = Path.GetFileNameWithoutExtension(path.FullName);
-                string pathNameVar = "filePath";
+                FileInfo[] paths = new DirectoryInfo(databaseRoot).GetFiles("*.*", SearchOption.AllDirectories);
 
-                try
+                //Adds all files in folders to the db
+                foreach (FileInfo path in paths)
                 {
+                    string ext = Path.GetExtension(path.Name).Replace(".", "");
+                    string fileName = Path.GetFileNameWithoutExtension(path.FullName);
+                    string pathNameVar = "filePath";
 
-                    //Create tables if they dont already exist
-                    MySqlCommand comm = myConn.CreateCommand();
-                    comm.CommandText = "create table if not exists " + ext + "(ID varchar(150) primary key, " + pathNameVar + " varchar(500))";
-                    comm.ExecuteNonQuery();
+                    try
+                    {
 
-                    //Add file paths to the above table
-                    comm = myConn.CreateCommand();
-                    comm.CommandText = "INSERT INTO " + ext + "(ID," + pathNameVar + ") VALUES(@ID, @pathNameVar)";
-                    comm.Parameters.AddWithValue("@ID", fileName);
-                    comm.Parameters.AddWithValue("@pathNameVar", path.FullName);
-                    comm.ExecuteNonQuery();
+                        //Create tables if they dont already exist
+                        MySqlCommand comm = conn.getCommand();
+                        comm.CommandText = "create table if not exists " + ext + "(ID varchar(150) primary key, " + pathNameVar + " varchar(500))";
+                        comm.ExecuteNonQuery();
+
+                        //Add file paths to the above table
+                        comm = conn.getCommand();
+                        comm.CommandText = "INSERT INTO " + ext + "(ID," + pathNameVar + ") VALUES(@ID, @pathNameVar)";
+                        comm.Parameters.AddWithValue("@ID", fileName);
+                        comm.Parameters.AddWithValue("@pathNameVar", path.FullName);
+                        comm.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+
+                    }
+
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-
-                }
-
+                conn.closeConn();
             }
-            myConn.Close();
 
         }
 
@@ -133,59 +137,61 @@ namespace P4PSpeechDB
                 //moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
 
                 //add if myConn is not null
-                myConn.Open();
-
-
-                string caseSwitch = ext;
-                switch (caseSwitch)
+                if (conn.openConn() == true)
                 {
-                    case ".hlb":
-                        Console.WriteLine(ext);
-                        executeInsert(filename, ext, dlg);
-                        break;
-                    case ".lab":
-                        Console.WriteLine(ext);
-                        executeInsert(filename, ext, dlg);
-                        break;
-                    case ".sf0":
-                        Console.WriteLine(ext);
-                        executeInsert(filename, ext, dlg);
-                        break;
-                    case ".sfb":
-                        Console.WriteLine(ext);
-                        executeInsert(filename, ext, dlg);
-                        break;
-                    case ".tpl":
-                        Console.WriteLine(ext);
-                        executeInsert(filename, ext, dlg);
-                        break;
-                    case ".trg":
-                        Console.WriteLine(ext);
-                        executeInsert(filename, ext, dlg);
-                        break;
-                    case ".wav":
-                        Console.WriteLine(ext);
-                        executeInsert(filename, ext, dlg);
-                        break;
-                    default:
-                        //Create new MySql table
-                        try
-                        {
-                            MySqlCommand comm = myConn.CreateCommand();
-                            comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, " + pathNameVar + " varchar(500))";
-                            comm.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-
-                        }
-                        executeInsert(filename, ext, dlg);
-                        break;
 
 
+                    string caseSwitch = ext;
+                    switch (caseSwitch)
+                    {
+                        case ".hlb":
+                            Console.WriteLine(ext);
+                            executeInsert(filename, ext, dlg);
+                            break;
+                        case ".lab":
+                            Console.WriteLine(ext);
+                            executeInsert(filename, ext, dlg);
+                            break;
+                        case ".sf0":
+                            Console.WriteLine(ext);
+                            executeInsert(filename, ext, dlg);
+                            break;
+                        case ".sfb":
+                            Console.WriteLine(ext);
+                            executeInsert(filename, ext, dlg);
+                            break;
+                        case ".tpl":
+                            Console.WriteLine(ext);
+                            executeInsert(filename, ext, dlg);
+                            break;
+                        case ".trg":
+                            Console.WriteLine(ext);
+                            executeInsert(filename, ext, dlg);
+                            break;
+                        case ".wav":
+                            Console.WriteLine(ext);
+                            executeInsert(filename, ext, dlg);
+                            break;
+                        default:
+                            //Create new MySql table
+                            try
+                            {
+                                MySqlCommand comm = conn.getCommand();
+                                comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, " + pathNameVar + " varchar(500))";
+                                comm.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+
+                            }
+                            executeInsert(filename, ext, dlg);
+                            break;
+
+
+                    }
+                    conn.closeConn();
                 }
-                myConn.Close();
                 loadDataGrid();
 
             }
@@ -198,7 +204,7 @@ namespace P4PSpeechDB
 
             try
             {
-                MySqlCommand comm = myConn.CreateCommand();
+                MySqlCommand comm = conn.getCommand();
                 comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID," + pathNameVar + ") VALUES(@ID, @pathNameVar)";
                 string[] splitBySlash = filename.Split('/');
                 System.Console.Write(dlg.SafeFileName);
@@ -216,30 +222,33 @@ namespace P4PSpeechDB
 
         private void loadDataGrid()
         {
-            try
+            if (conn.openConn() == true)
             {
-                myConn.Open();
-                //Get number of tables in database, for all tables, do the following
-                DataSet ds = new DataSet();
-                foreach (string name in Tablenames)
+                try
                 {
-                    //System.Console.WriteLine(name);
-                    MySqlCommand cmd = new MySqlCommand("Select ID, filePath from " + name, myConn);
-                    MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
 
-                    adp.Fill(ds, "LoadDataBinding");
-                    dataGridFiles.DataContext = ds;
+                    //Get number of tables in database, for all tables, do the following
+                    DataSet ds = new DataSet();
+                    foreach (string name in Tablenames)
+                    {
+                        //System.Console.WriteLine(name);
+                        MySqlCommand cmd = new MySqlCommand("Select ID, filePath from " + name, myConn);
+                        MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
+
+                        adp.Fill(ds, "LoadDataBinding");
+                        dataGridFiles.DataContext = ds;
+
+                    }
 
                 }
-
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                myConn.Close();
+                catch (MySqlException ex)
+                {
+                    MessageBox.Show(ex.ToString());
+                }
+                finally
+                {
+                    conn.closeConn();
+                }
             }
         }
     }

@@ -175,8 +175,8 @@ namespace P4PSpeechDB
                             //Create new MySql table
                             try
                             {
-                                MySqlCommand comm = myConn.CreateCommand();
-                                comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, " + pathNameVar + " varchar(100), ProjectName varchar(500))";
+                                MySqlCommand comm = conn.getCommand();
+                                comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, " + pathNameVar + " varchar(100), ProjectName varchar(100))";
                                 comm.ExecuteNonQuery();
                             }
                             catch (Exception ex)
@@ -203,22 +203,28 @@ namespace P4PSpeechDB
             try
             {
 
-                MySqlCommand comm = myConn.CreateCommand();
+                MySqlCommand comm = conn.getCommand();
                 string folderName = FolderMsgPrompt.Prompt("Create new folder", "Folder options", inputType: FolderMsgPrompt.InputType.Text);
 
                 comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID," + pathNameVar + ", ProjectName) VALUES(@ID, @pathNameVar, @ProjectName)";
                 comm.Parameters.AddWithValue("@ID", Path.GetFileNameWithoutExtension(dlg.SafeFileName));
                 comm.Parameters.AddWithValue("@pathNameVar", filename);
                 comm.Parameters.AddWithValue("@ProjectName", folderName);
-
                 comm.ExecuteNonQuery();
-
+                
+                if(folderName != null){
+                    comm.CommandText = "INSERT IGNORE INTO projects(PID) VALUES(@PID)";
+                    comm.Parameters.AddWithValue("@PID", folderName);
+                    comm.ExecuteNonQuery();
+                    
+                }
+                
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-
             }
+
         }
 
         private void loadDataGrid()
@@ -232,6 +238,10 @@ namespace P4PSpeechDB
                     DataSet ds = new DataSet();
                     foreach (string name in Tablenames)
                     {
+                        //Exclude the projects table
+                        if(name.Equals("projects")){
+                            continue;
+                        }
                         //System.Console.WriteLine(name);
                         MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, myConn);
                         MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
@@ -246,11 +256,8 @@ namespace P4PSpeechDB
                 {
                     MessageBox.Show(ex.ToString());
                 }
-                finally
-                {
-                    conn.closeConn();
-                }
             }
+            conn.closeConn();
         }
 
     }

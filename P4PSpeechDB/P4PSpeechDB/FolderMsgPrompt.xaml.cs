@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +12,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using MySql.Data.MySqlClient;
+
 
 namespace P4PSpeechDB
 {
@@ -26,11 +29,14 @@ namespace P4PSpeechDB
             Password
         }
 
-        private InputType _inputType = InputType.Text;
+        private string folderNameCB;
+        DBConnection conn;
 
         public FolderMsgPrompt(string question, string title, string defaultValue = "", InputType inputType = InputType.Text)
         {
             InitializeComponent();
+            conn = new DBConnection();
+            fillCombo();
             this.Loaded += new RoutedEventHandler(PromptDialog_Loaded);
             txtCreateFolder.Text = question;
             Title = title;
@@ -38,12 +44,58 @@ namespace P4PSpeechDB
             txtFolderName.Visibility = Visibility.Visible;
         }
 
+        // fill in the values of each project name in the combobox
+        private void fillCombo() 
+        {
+            string query = "SELECT * FROM p4pdatabase.projects";
+            MySqlDataReader myReader;
+            MySqlCommand cmd = new MySqlCommand(query, conn.getConn());
+            try
+            {
+                if (conn.openConn() == true)
+                {
+                    myReader = cmd.ExecuteReader();
+                    while (myReader.Read())
+                    {
+                        string projectName = myReader.GetString("PID");
+                        cbChooseFolder.Items.Add(projectName);
+                        folderNameCB = (string) cbChooseFolder.SelectedValue;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            } 
+            finally 
+            {
+                conn.closeConn();
+            }
+        }
+
         public static string Prompt(string question, string title, string defaultValue = "", InputType inputType = InputType.Text)
         {
             FolderMsgPrompt inst = new FolderMsgPrompt(question, title, defaultValue, inputType);
             inst.ShowDialog();
+
             if (inst.DialogResult == true)
-                return inst.txtFolderName.Text;
+            {
+                // if the user choose to create a new folder
+                if (inst.txtFolderName.Text != defaultValue && inst.cbChooseFolder.SelectedValue == null)
+                {
+                    return inst.txtFolderName.Text;
+                }
+                // if the user choose to use an existing folder
+                else if (inst.cbChooseFolder.SelectedValue != null)
+                {
+                    return (string) inst.cbChooseFolder.SelectedValue;
+                }
+                // if the user didn't choose any, should throw exception
+                else
+                {
+                    return defaultValue;
+                }
+            }
             //System.Console.WriteLine();
             return null;
         }

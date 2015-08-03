@@ -10,7 +10,9 @@ namespace P4PSpeechDB
 {
     public class DBConnection
     {
-        const string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
+        //const string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
+        const string databaseRoot = "C:\\Users\\Rodel\\Documents\\SE700A\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
+
         const string server = "localhost";
         const string database = "p4pdatabase";
         const string uid = "root";
@@ -80,6 +82,11 @@ namespace P4PSpeechDB
         public MySqlCommand getCommand()
         {
             return this.conn.CreateCommand();
+        }
+
+        public MySqlConnection getConn()
+        {
+            return this.conn;
         }
     }
 }

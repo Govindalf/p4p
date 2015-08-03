@@ -172,7 +172,7 @@ namespace P4PSpeechDB
                         try
                         {
                             MySqlCommand comm = myConn.CreateCommand();
-                            comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, " + pathNameVar + " varchar(500))";
+                            comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, " + pathNameVar + " varchar(100), ProjectName varchar(500))";
                             comm.ExecuteNonQuery();
                         }
                         catch (Exception ex)
@@ -187,7 +187,6 @@ namespace P4PSpeechDB
                 }
                 myConn.Close();
                 loadDataGrid();
-
             }
 
         }
@@ -199,13 +198,15 @@ namespace P4PSpeechDB
             try
             {
                 MySqlCommand comm = myConn.CreateCommand();
-                comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID," + pathNameVar + ") VALUES(@ID, @pathNameVar)";
-                string[] splitBySlash = filename.Split('/');
-                System.Console.Write(dlg.SafeFileName);
+                string folderName = FolderMsgPrompt.Prompt("Create new folder", "Folder options", inputType: FolderMsgPrompt.InputType.Text);
+
+                comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID," + pathNameVar + ", ProjectName) VALUES(@ID, @pathNameVar, @ProjectName)";
                 comm.Parameters.AddWithValue("@ID", Path.GetFileNameWithoutExtension(dlg.SafeFileName));
-                //comm.Parameters.AddWithValue("@ID", splitBySlash.Last());
                 comm.Parameters.AddWithValue("@pathNameVar", filename);
+                comm.Parameters.AddWithValue("@ProjectName", folderName);
+
                 comm.ExecuteNonQuery();
+
             }
             catch (Exception ex)
             {
@@ -224,7 +225,7 @@ namespace P4PSpeechDB
                 foreach (string name in Tablenames)
                 {
                     //System.Console.WriteLine(name);
-                    MySqlCommand cmd = new MySqlCommand("Select ID, filePath from " + name, myConn);
+                    MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, myConn);
                     MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
 
                     adp.Fill(ds, "LoadDataBinding");
@@ -242,5 +243,6 @@ namespace P4PSpeechDB
                 myConn.Close();
             }
         }
+
     }
 }

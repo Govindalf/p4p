@@ -37,3 +37,5 @@ C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.P
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csproj.GenerateResource.Cache
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.exe
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.pdb
+C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\FolderMsgPrompt.baml
+C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\FolderMsgPrompt.g.cs

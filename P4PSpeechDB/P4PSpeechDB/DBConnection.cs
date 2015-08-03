@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace P4PSpeechDB
 {
-    class DBConnection
+    public class DBConnection
     {
         const string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         const string server = "localhost";
@@ -23,8 +23,15 @@ namespace P4PSpeechDB
 
         public DBConnection()
         {
-            connectionString = "SERVER=" + server + ";" + "PORT" + port + "DATABASE=" + database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
-            conn = new MySqlConnection(connectionString);
+            try
+            {
+                connectionString = "DATASOURCE = " + server + "; PORT= " + port + "; USERNAME = " + uid + "; PASSWORD = " + password + "; DATABASE = " + database + ";";
+                conn = new MySqlConnection(connectionString);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e);
+            }
         }
 
         public bool openConn()
@@ -60,7 +67,7 @@ namespace P4PSpeechDB
         {
             try
             {
-                conn.Close();
+                this.conn.Close();
                 return true;
             }
             catch (MySqlException ex)
@@ -68,6 +75,11 @@ namespace P4PSpeechDB
                 MessageBox.Show(ex.Message);
                 return false;
             }
+        }
+
+        public MySqlCommand getCommand()
+        {
+            return this.conn.CreateCommand();
         }
     }
 }

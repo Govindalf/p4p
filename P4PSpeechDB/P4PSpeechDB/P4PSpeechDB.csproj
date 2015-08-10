@@ -76,6 +76,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DBConnection.cs" />
+    <Compile Include="DBFile.cs" />
     <Compile Include="FolderMsgPrompt.xaml.cs">
       <DependentUpon>FolderMsgPrompt.xaml</DependentUpon>
     </Compile>

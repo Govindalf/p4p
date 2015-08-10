@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Collections.ObjectModel;
 using MySql.Data.MySqlClient;
 using Path = System.IO.Path;
 using System.IO;
@@ -25,7 +26,6 @@ namespace P4PSpeechDB
     public partial class MainWindow : Window
     {
         string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
-        MySqlConnection myConn;
         DBConnection conn;
         List<String> Tablenames = new List<String>();
         public MainWindow()
@@ -34,14 +34,14 @@ namespace P4PSpeechDB
             conn = new DBConnection();
             try
             {
-                string myConnection = "datasource = localhost; port = 3306; username = root; password = Cirilla_2015; database = p4pdatabase";
-                myConn = new MySqlConnection(myConnection);
-                myConn.Open();
+                //string myConnection = "datasource = localhost; port = 3306; username = root; password = Cirilla_2015; database = p4pdatabase";
+                //myConn = new MySqlConnection(myConnection);
+                conn.openConn();
                 // Get number of tables in database
-                using (myConn)
+                using (conn.getConn())
                 {
                     string query = "show tables from p4pdatabase";
-                    MySqlCommand command = new MySqlCommand(query, myConn);
+                    MySqlCommand command = new MySqlCommand(query, conn.getConn());
                     using (MySqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -51,7 +51,7 @@ namespace P4PSpeechDB
                     }
                 }
                 System.Console.Write(Tablenames.Count);
-                myConn.Close();
+                conn.closeConn();
 
 
 
@@ -231,6 +231,9 @@ namespace P4PSpeechDB
         {
             if (conn.openConn() == true)
             {
+                ObservableCollection<DBFile> dbFile = new ObservableCollection<DBFile>();
+                MySqlDataReader myReader;
+
                 try
                 {
 
@@ -243,13 +246,28 @@ namespace P4PSpeechDB
                             continue;
                         }
                         //System.Console.WriteLine(name);
-                        MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, myConn);
-                        MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
+                        MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
+                        //MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
 
-                        adp.Fill(ds, "LoadDataBinding");
-                        dataGridFiles.DataContext = ds;
+                        myReader = cmd.ExecuteReader();
+                        while (myReader.Read())
+                        {
+                            string projectName = "default";
+                            if(myReader.GetValue(2).ToString() != ""){
+                                projectName = myReader.GetValue(2).ToString();
+                            }
+
+                            dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
+                        }
+                        myReader.Close();
+
+                        //adp.Fill(ds, "LoadDataBinding");
+                        //dataGridFiles.DataContext = ds;
 
                     }
+                    ListCollectionView collection = new ListCollectionView(dbFile);
+                    collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
+                    dataGridFiles.ItemsSource = collection;
 
                 }
                 catch (MySqlException ex)

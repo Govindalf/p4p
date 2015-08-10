@@ -11,19 +11,19 @@ namespace P4PSpeechDB
 {
     public class DBConnection
     {
-        const string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
-        //const string databaseRoot = "C:\\Users\\Rodel\\Documents\\SE700A\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
+        //const string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
+        const string databaseRoot = "C:\\Users\\Rodel\\Documents\\SE700A\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
 
-        //const string server = "localhost";
-        //const string database = "p4pdatabase";
-        //const string uid = "root";
-        //const string password = "Cirilla_2015";
-        //const string port = "3306";
-        const string server = "tcp:gbtd4xmf5m.database.windows.net,1433";
+        const string server = "localhost";
         const string database = "p4pdatabase";
-        const string uid = "p4pdatabase@gbtd4xmf5m";
+        const string uid = "root";
         const string password = "Cirilla_2015";
         const string port = "3306";
+        //const string server = "tcp:gbtd4xmf5m.database.windows.net,1433";
+        //const string database = "p4pdatabase";
+        //const string uid = "p4pdatabase@gbtd4xmf5m";
+        //const string password = "Cirilla_2015";
+        //const string port = "3306";
         string connectionString;
 
         SqlConnectionStringBuilder csBuilder;
@@ -35,16 +35,18 @@ namespace P4PSpeechDB
         {
             try
             {
-                csBuilder = new SqlConnectionStringBuilder();
-                csBuilder.DataSource = "tcp:gbtd4xmf5m.database.windows.net,1433";
-                csBuilder.InitialCatalog = "p4pdatabase";
-                csBuilder.Encrypt = true;
-                csBuilder.TrustServerCertificate = false;
-                csBuilder.UserID = "p4pdatabase@gbtd4xmf5m";
-                csBuilder.Password = "Cirilla_2015";
+                //csBuilder = new SqlConnectionStringBuilder();
+                //csBuilder.DataSource = "tcp:gbtd4xmf5m.database.windows.net,1433";
+                //csBuilder.InitialCatalog = "p4pdatabase";
+                //csBuilder.Encrypt = true;
+                //csBuilder.TrustServerCertificate = false;
+                //csBuilder.UserID = "p4pdatabase@gbtd4xmf5m";
+                //csBuilder.Password = "Cirilla_2015";
 
-                //connectionString = "DATASOURCE = " + server + "; PORT= " + port + "; USERNAME = " + uid + "; PASSWORD = " + password + "; DATABASE = " + database + ";";
-                conn = new MySqlConnection(csBuilder.ToString());
+                connectionString = "DATASOURCE = " + server + "; PORT= " + port + "; USERNAME = " + uid + "; PASSWORD = " + password + "; DATABASE = " + database + ";";
+                //conn = new MySqlConnection(csBuilder.ToString());
+                conn = new MySqlConnection(connectionString);
+
             }
             catch (Exception e)
             {

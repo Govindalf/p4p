@@ -35,6 +35,11 @@
                 <DataGridTextColumn Binding="{Binding Path=filePath}" Header="FilePath" Width="210" IsReadOnly="True" />
                 <DataGridTextColumn Binding="{Binding Path=ProjectName}" Header="Project" Width="210" IsReadOnly="True" />
             </DataGrid.Columns>
+            <DataGrid.RowStyle>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <EventSetter Event="MouseDoubleClick" Handler="resultDataGrid_MouseDoubleClick"/>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.GroupStyle>
                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                 <GroupStyle.Panel>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -28,6 +29,7 @@ namespace P4PSpeechDB
         string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         DBConnection conn;
         List<String> Tablenames = new List<String>();
+
         public MainWindow()
         {
 
@@ -277,6 +279,31 @@ namespace P4PSpeechDB
             }
             conn.closeConn();
         }
+
+        private void resultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender != null)
+            {
+                DataGridRow dgr = sender as DataGridRow;
+                var item = dgr.DataContext as DBFile;
+
+                if (item != null)
+                {
+                    var fileP = item.filePath;
+                    string path = fileP.ToString();
+                    openOrPlayFile(path);
+                   
+                }
+
+            }
+        }
+
+        private void openOrPlayFile(string path)
+        {
+            //filter
+            Process.Start("notepad++.exe", path);
+        }
+
 
     }
 }

@@ -74,7 +74,7 @@ namespace P4PSpeechDB
             {
                 FileInfo[] paths = new DirectoryInfo(databaseRoot).GetFiles("*.*", SearchOption.AllDirectories);
 
-                //Adds all files in folders to the db
+                //Adds all files selected into folders to the db
                 foreach (FileInfo path in paths)
                 {
                     string ext = Path.GetExtension(path.Name).Replace(".", "");
@@ -118,6 +118,7 @@ namespace P4PSpeechDB
         private void ButtonBrowse_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.Multiselect = true;
 
             // Set filter for file extension and default file extension 
             //dlg.DefaultExt = ".png";
@@ -126,79 +127,54 @@ namespace P4PSpeechDB
 
             // Display OpenFileDialog by calling ShowDialog method 
             Nullable<bool> result = dlg.ShowDialog();
+            string folderName = getFolderName();
 
-            // Get the selected file name and display in a TextBox 
-            if (result.HasValue == true && result.Value == true)
+            //Adds all files selected into the the db. If multiple files added, project destination is the same.
+            foreach (String file in dlg.FileNames) 
             {
-                // Open document 
-                string filename = dlg.FileName;
-                string ext = Path.GetExtension(dlg.FileName);
-                string pathNameVar = "filePath";
-
-                //Stores file in appropriate place in file system
-                //moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
-
-                //add if myConn is not null
-                if (conn.openConn() == true)
+                // Get the selected file name and display in a TextBox 
+                if (result.HasValue == true && result.Value == true)
                 {
+                    // Open document 
+                    string filename = file;
+                    string ext = Path.GetExtension(file);
+                    string pathNameVar = "filePath";
 
-                    string caseSwitch = ext;
-                    switch (caseSwitch)
+                    //Stores file in appropriate place in file system
+                    //moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
+
+                    //add if myConn is not null
+                    if (conn.openConn() == true)
                     {
-                        case ".hlb":
-                        Console.WriteLine(ext);
-                        executeInsert(filename, ext, dlg);
-                        break;
-                        case ".lab":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        case ".sf0":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        case ".sfb":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        case ".tpl":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        case ".trg":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        case ".wav":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        default:
-                            //Create new MySql table
-                            try
-                            {
-                                MySqlCommand comm = conn.getCommand();
-                                comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, " + pathNameVar + " varchar(100), ProjectName varchar(100))";
-                                comm.ExecuteNonQuery();
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.Message);
+                        try
+                        {
+                            MySqlCommand comm = conn.getCommand();
+                            comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, " + pathNameVar + " varchar(100), ProjectName varchar(100))";
+                            comm.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
 
-                            }
-                            executeInsert(filename, ext, dlg);
-                            break;
+                        }
 
+                        executeInsert(filename, ext, dlg, folderName);
 
+                        conn.closeConn();
                     }
-                    conn.closeConn();
                 }
-                loadDataGrid();
             }
+            loadDataGrid();
 
         }
 
-        private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg)
+        private string getFolderName()
+        { 
+            return FolderMsgPrompt.Prompt("Create new folder", "Folder options", inputType: FolderMsgPrompt.InputType.Text);
+
+        }
+
+        private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, string folderName)
         {
             string pathNameVar = "filePath";
 
@@ -206,8 +182,6 @@ namespace P4PSpeechDB
             {
 
                 MySqlCommand comm = conn.getCommand();
-                string folderName = FolderMsgPrompt.Prompt("Create new folder", "Folder options", inputType: FolderMsgPrompt.InputType.Text);
-
                 comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID," + pathNameVar + ", ProjectName) VALUES(@ID, @pathNameVar, @ProjectName)";
                 comm.Parameters.AddWithValue("@ID", Path.GetFileNameWithoutExtension(dlg.SafeFileName));
                 comm.Parameters.AddWithValue("@pathNameVar", filename);

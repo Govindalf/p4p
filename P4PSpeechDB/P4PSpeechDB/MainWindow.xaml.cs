@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Collections.ObjectModel;
 using MySql.Data.MySqlClient;
 using Path = System.IO.Path;
 using System.IO;
@@ -25,23 +27,23 @@ namespace P4PSpeechDB
     public partial class MainWindow : Window
     {
         string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
-        MySqlConnection myConn;
         DBConnection conn;
         List<String> Tablenames = new List<String>();
+
         public MainWindow()
         {
 
             conn = new DBConnection();
             try
             {
-                string myConnection = "datasource = localhost; port = 3306; username = root; password = Cirilla_2015; database = p4pdatabase";
-                myConn = new MySqlConnection(myConnection);
-                myConn.Open();
+                //string myConnection = "datasource = localhost; port = 3306; username = root; password = Cirilla_2015; database = p4pdatabase";
+                //myConn = new MySqlConnection(myConnection);
+                conn.openConn();
                 // Get number of tables in database
-                using (myConn)
+                using (conn.getConn())
                 {
                     string query = "show tables from p4pdatabase";
-                    MySqlCommand command = new MySqlCommand(query, myConn);
+                    MySqlCommand command = new MySqlCommand(query, conn.getConn());
                     using (MySqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -51,7 +53,7 @@ namespace P4PSpeechDB
                     }
                 }
                 System.Console.Write(Tablenames.Count);
-                myConn.Close();
+                conn.closeConn();
 
 
 
@@ -72,7 +74,7 @@ namespace P4PSpeechDB
             {
                 FileInfo[] paths = new DirectoryInfo(databaseRoot).GetFiles("*.*", SearchOption.AllDirectories);
 
-                //Adds all files in folders to the db
+                //Adds all files selected into folders to the db
                 foreach (FileInfo path in paths)
                 {
                     string ext = Path.GetExtension(path.Name).Replace(".", "");
@@ -116,6 +118,7 @@ namespace P4PSpeechDB
         private void ButtonBrowse_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.Multiselect = true;
 
             // Set filter for file extension and default file extension 
             //dlg.DefaultExt = ".png";
@@ -124,79 +127,54 @@ namespace P4PSpeechDB
 
             // Display OpenFileDialog by calling ShowDialog method 
             Nullable<bool> result = dlg.ShowDialog();
+            string folderName = getFolderName();
 
-            // Get the selected file name and display in a TextBox 
-            if (result.HasValue == true && result.Value == true)
+            //Adds all files selected into the the db. If multiple files added, project destination is the same.
+            foreach (String file in dlg.FileNames) 
             {
-                // Open document 
-                string filename = dlg.FileName;
-                string ext = Path.GetExtension(dlg.FileName);
-                string pathNameVar = "filePath";
-
-                //Stores file in appropriate place in file system
-                //moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
-
-                //add if myConn is not null
-                if (conn.openConn() == true)
+                // Get the selected file name and display in a TextBox 
+                if (result.HasValue == true && result.Value == true)
                 {
+                    // Open document 
+                    string filename = file;
+                    string ext = Path.GetExtension(file);
+                    string pathNameVar = "filePath";
 
-                    string caseSwitch = ext;
-                    switch (caseSwitch)
+                    //Stores file in appropriate place in file system
+                    //moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
+
+                    //add if myConn is not null
+                    if (conn.openConn() == true)
                     {
-                        case ".hlb":
-                        Console.WriteLine(ext);
-                        executeInsert(filename, ext, dlg);
-                        break;
-                        case ".lab":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        case ".sf0":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        case ".sfb":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        case ".tpl":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        case ".trg":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        case ".wav":
-                            Console.WriteLine(ext);
-                            executeInsert(filename, ext, dlg);
-                            break;
-                        default:
-                            //Create new MySql table
-                            try
-                            {
-                                MySqlCommand comm = conn.getCommand();
-                                comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, " + pathNameVar + " varchar(100), ProjectName varchar(100))";
-                                comm.ExecuteNonQuery();
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.Message);
+                        try
+                        {
+                            MySqlCommand comm = conn.getCommand();
+                            comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, " + pathNameVar + " varchar(100), ProjectName varchar(100))";
+                            comm.ExecuteNonQuery();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
 
-                            }
-                            executeInsert(filename, ext, dlg);
-                            break;
+                        }
 
+                        executeInsert(filename, ext, dlg, folderName);
 
+                        conn.closeConn();
                     }
-                    conn.closeConn();
                 }
-                loadDataGrid();
             }
+            loadDataGrid();
 
         }
 
-        private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg)
+        private string getFolderName()
+        { 
+            return FolderMsgPrompt.Prompt("Create new folder", "Folder options", inputType: FolderMsgPrompt.InputType.Text);
+
+        }
+
+        private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, string folderName)
         {
             string pathNameVar = "filePath";
 
@@ -204,8 +182,6 @@ namespace P4PSpeechDB
             {
 
                 MySqlCommand comm = conn.getCommand();
-                string folderName = FolderMsgPrompt.Prompt("Create new folder", "Folder options", inputType: FolderMsgPrompt.InputType.Text);
-
                 comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID," + pathNameVar + ", ProjectName) VALUES(@ID, @pathNameVar, @ProjectName)";
                 comm.Parameters.AddWithValue("@ID", Path.GetFileNameWithoutExtension(dlg.SafeFileName));
                 comm.Parameters.AddWithValue("@pathNameVar", filename);
@@ -231,6 +207,9 @@ namespace P4PSpeechDB
         {
             if (conn.openConn() == true)
             {
+                ObservableCollection<DBFile> dbFile = new ObservableCollection<DBFile>();
+                MySqlDataReader myReader;
+
                 try
                 {
 
@@ -243,13 +222,28 @@ namespace P4PSpeechDB
                             continue;
                         }
                         //System.Console.WriteLine(name);
-                        MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, myConn);
-                        MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
+                        MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
+                        //MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
 
-                        adp.Fill(ds, "LoadDataBinding");
-                        dataGridFiles.DataContext = ds;
+                        myReader = cmd.ExecuteReader();
+                        while (myReader.Read())
+                        {
+                            string projectName = "default";
+                            if(myReader.GetValue(2).ToString() != ""){
+                                projectName = myReader.GetValue(2).ToString();
+                            }
+
+                            dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
+                        }
+                        myReader.Close();
+
+                        //adp.Fill(ds, "LoadDataBinding");
+                        //dataGridFiles.DataContext = ds;
 
                     }
+                    ListCollectionView collection = new ListCollectionView(dbFile);
+                    collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
+                    dataGridFiles.ItemsSource = collection;
 
                 }
                 catch (MySqlException ex)
@@ -259,6 +253,31 @@ namespace P4PSpeechDB
             }
             conn.closeConn();
         }
+
+        private void resultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender != null)
+            {
+                DataGridRow dgr = sender as DataGridRow;
+                var item = dgr.DataContext as DBFile;
+
+                if (item != null)
+                {
+                    var fileP = item.filePath;
+                    string path = fileP.ToString();
+                    openOrPlayFile(path);
+                   
+                }
+
+            }
+        }
+
+        private void openOrPlayFile(string path)
+        {
+            //filter
+            Process.Start("notepad++.exe", path);
+        }
+
 
     }
 }

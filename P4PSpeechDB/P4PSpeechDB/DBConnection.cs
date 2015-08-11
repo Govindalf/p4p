@@ -11,10 +11,11 @@ namespace P4PSpeechDB
 {
     public class DBConnection
     {
-        const string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
-        //const string databaseRoot = "C:\\Users\\Rodel\\Documents\\SE700A\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
+        //const string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
+        const string databaseRoot = "C:\\Users\\Rodel\\Documents\\SE700A\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
 
         MySqlConnectionStringBuilder csBuilder;
+
         MySqlConnection conn;
 
         public DBConnection()
@@ -33,6 +34,7 @@ namespace P4PSpeechDB
                 csBuilder.Port = 3306;
                 csBuilder.CharacterSet = "utf8";
                 conn = new MySqlConnection(csBuilder.ToString());
+
             }
             catch (Exception e)
             {

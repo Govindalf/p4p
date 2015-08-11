@@ -61,6 +61,7 @@ namespace P4PSpeechDB
                         cbChooseFolder.Items.Add(projectName);
                         folderNameCB = (string) cbChooseFolder.SelectedValue;
                     }
+                    myReader.Close();
                 }
             }
             catch (Exception ex)

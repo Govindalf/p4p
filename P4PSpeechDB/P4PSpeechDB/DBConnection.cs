@@ -11,8 +11,6 @@ namespace P4PSpeechDB
 {
     public class DBConnection
     {
-        //const string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
-        const string databaseRoot = "C:\\Users\\Rodel\\Documents\\SE700A\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
 
         MySqlConnectionStringBuilder csBuilder;
 

@@ -42,7 +42,7 @@ namespace P4PSpeechDB
                 // Get number of tables in database
                 using (conn.getConn())
                 {
-                    string query = "show tables from p4pdatabase";
+                    string query = "show tables from SpeechDB";
                     MySqlCommand command = new MySqlCommand(query, conn.getConn());
                     using (MySqlDataReader reader = command.ExecuteReader())
                     {

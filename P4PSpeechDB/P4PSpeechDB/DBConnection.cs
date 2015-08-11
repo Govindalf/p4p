@@ -14,36 +14,24 @@ namespace P4PSpeechDB
         const string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         //const string databaseRoot = "C:\\Users\\Rodel\\Documents\\SE700A\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
 
-        //const string server = "localhost";
-        //const string database = "p4pdatabase";
-        //const string uid = "root";
-        //const string password = "Cirilla_2015";
-        //const string port = "3306";
-        const string server = "tcp:gbtd4xmf5m.database.windows.net,1433";
-        const string database = "p4pdatabase";
-        const string uid = "p4pdatabase@gbtd4xmf5m";
-        const string password = "Cirilla_2015";
-        const string port = "3306";
-        string connectionString;
-
-        SqlConnectionStringBuilder csBuilder;
-
-
+        MySqlConnectionStringBuilder csBuilder;
         MySqlConnection conn;
 
         public DBConnection()
         {
+
             try
             {
-                csBuilder = new SqlConnectionStringBuilder();
-                csBuilder.DataSource = "tcp:gbtd4xmf5m.database.windows.net,1433";
-                csBuilder.InitialCatalog = "p4pdatabase";
-                csBuilder.Encrypt = true;
-                csBuilder.TrustServerCertificate = false;
-                csBuilder.UserID = "p4pdatabase@gbtd4xmf5m";
-                csBuilder.Password = "Cirilla_2015";
 
-                //connectionString = "DATASOURCE = " + server + "; PORT= " + port + "; USERNAME = " + uid + "; PASSWORD = " + password + "; DATABASE = " + database + ";";
+                //Conection string for aws
+                //string SQLConnectionString = "Data Source=speech-db.cf7gfoeoefop.ap-southeast-2.rds.amazonaws.com;Database=SpeechDB;User Id=p4p;password=Cirilla_2015;port=3306;charset=utf8";
+                csBuilder = new MySqlConnectionStringBuilder();
+                csBuilder.Server = "speech-db.cf7gfoeoefop.ap-southeast-2.rds.amazonaws.com";
+                csBuilder.Database = "SpeechDB";
+                csBuilder.UserID = "p4p";
+                csBuilder.Password = "Cirilla_2015";
+                csBuilder.Port = 3306;
+                csBuilder.CharacterSet = "utf8";
                 conn = new MySqlConnection(csBuilder.ToString());
             }
             catch (Exception e)

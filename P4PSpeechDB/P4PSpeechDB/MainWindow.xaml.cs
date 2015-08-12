@@ -26,9 +26,9 @@ namespace P4PSpeechDB
     /// </summary>
     public partial class MainWindow : Window
     {
-        string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
-        DBConnection conn;
-        List<String> Tablenames = new List<String>();
+        private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
+        private DBConnection conn;
+        private List<String> Tablenames = new List<String>();
 
         public MainWindow()
         {
@@ -36,10 +36,9 @@ namespace P4PSpeechDB
             conn = new DBConnection();
             try
             {
-                //string myConnection = "datasource = localhost; port = 3306; username = root; password = Cirilla_2015; database = p4pdatabase";
-                //myConn = new MySqlConnection(myConnection);
                 conn.openConn();
-                // Get number of tables in database
+
+                // store all of the tables in the mysql database into a list
                 using (conn.getConn())
                 {
                     string query = "show tables from p4pdatabase";
@@ -52,11 +51,7 @@ namespace P4PSpeechDB
                         }
                     }
                 }
-                System.Console.Write(Tablenames.Count);
                 conn.closeConn();
-
-
-
             }
             catch (Exception ex)
             {
@@ -66,6 +61,7 @@ namespace P4PSpeechDB
             loadDataGrid();
         }
 
+        // depreciated
         private void ButtonLoad_Click(object sender, RoutedEventArgs e)
         {
             loadDataGrid();
@@ -117,6 +113,7 @@ namespace P4PSpeechDB
 
         private void ButtonBrowse_Click(object sender, RoutedEventArgs e)
         {
+            // Open file system to select file(s)
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.Multiselect = true;
 
@@ -125,11 +122,10 @@ namespace P4PSpeechDB
             //dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
 
 
-            // Display OpenFileDialog by calling ShowDialog method 
-            Nullable<bool> result = dlg.ShowDialog();
-            string folderName = getFolderName();
+            Nullable<bool> result = dlg.ShowDialog();  // Display OpenFileDialog by calling ShowDialog method 
+            string folderName = getFolderName(); // only prompt for folder once always
 
-            //Adds all files selected into the the db. If multiple files added, project destination is the same.
+            // Add all files selected into the the db. If multiple files added, project destination is the same.
             foreach (String file in dlg.FileNames) 
             {
                 // Get the selected file name and display in a TextBox 
@@ -143,7 +139,7 @@ namespace P4PSpeechDB
                     //Stores file in appropriate place in file system
                     //moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
 
-                    //add if myConn is not null
+                    // Connect to the mysql db if possible
                     if (conn.openConn() == true)
                     {
                         try
@@ -157,7 +153,6 @@ namespace P4PSpeechDB
                             MessageBox.Show(ex.Message);
 
                         }
-
                         executeInsert(filename, ext, dlg, folderName);
 
                         conn.closeConn();
@@ -274,7 +269,7 @@ namespace P4PSpeechDB
 
         private void openOrPlayFile(string path)
         {
-            //filter
+            // Filter audio, images etc. to open appropriate program
             Process.Start("notepad++.exe", path);
         }
 

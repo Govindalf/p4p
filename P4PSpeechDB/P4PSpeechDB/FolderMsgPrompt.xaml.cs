@@ -47,7 +47,7 @@ namespace P4PSpeechDB
         // fill in the values of each project name in the combobox
         private void fillCombo() 
         {
-            string query = "SELECT * FROM p4pdatabase.projects";
+            string query = "SELECT * FROM SpeechDB.projects";
             MySqlDataReader myReader;
             MySqlCommand cmd = new MySqlCommand(query, conn.getConn());
             try

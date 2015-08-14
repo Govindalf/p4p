@@ -229,6 +229,9 @@ namespace P4PSpeechDB
                             }
 
                             dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
+                            ListCollectionView collection = new ListCollectionView(dbFile);
+                            collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
+                            dataGridFiles.ItemsSource = collection;
                         }
                         myReader.Close();
 
@@ -236,9 +239,6 @@ namespace P4PSpeechDB
                         //dataGridFiles.DataContext = ds;
 
                     }
-                    ListCollectionView collection = new ListCollectionView(dbFile);
-                    collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
-                    dataGridFiles.ItemsSource = collection;
 
                 }
                 catch (MySqlException ex)

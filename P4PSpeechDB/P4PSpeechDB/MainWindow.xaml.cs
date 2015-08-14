@@ -82,14 +82,15 @@ namespace P4PSpeechDB
 
                         //Create tables if they dont already exist
                         MySqlCommand comm = conn.getCommand();
-                        comm.CommandText = "create table if not exists " + ext + "(ID varchar(150) primary key, " + pathNameVar + " varchar(500))";
+                        comm.CommandText = "create table if not exists " + ext + "(ID varchar(150) primary key, " + pathNameVar + " varchar(500), ProjectName varchar(100))";
                         comm.ExecuteNonQuery();
 
                         //Add file paths to the above table
                         comm = conn.getCommand();
-                        comm.CommandText = "INSERT INTO " + ext + "(ID," + pathNameVar + ") VALUES(@ID, @pathNameVar)";
+                        comm.CommandText = "INSERT INTO " + ext + "(ID," + pathNameVar + ") VALUES(@ID, @pathNameVar, @projectName)";
                         comm.Parameters.AddWithValue("@ID", fileName);
                         comm.Parameters.AddWithValue("@pathNameVar", path.FullName);
+                        comm.Parameters.AddWithValue("@projectName", "DefaultProject");
                         comm.ExecuteNonQuery();
                     }
                     catch (Exception ex)

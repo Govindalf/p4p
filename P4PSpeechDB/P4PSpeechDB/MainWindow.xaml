@@ -27,7 +27,7 @@
         <Grid HorizontalAlignment="Left" Height="206" Margin="114,30,0,0" VerticalAlignment="Top" Width="330">
 
         </Grid>
-        <Button Content="MAGIC ADD ALL BUTTON DONT PRESS" HorizontalAlignment="Left" Margin="177,366,0,0" VerticalAlignment="Top" Width="330" Height="18" Click="ButtonLoad_Click" RenderTransformOrigin="1.338,0.589"/>
+        <Button Content="MAGIC ADD ALL BUTTON DONT PRESS" HorizontalAlignment="Left" Margin="260,366,0,0" VerticalAlignment="Top" Width="247" Height="18" Click="ButtonLoad_Click" RenderTransformOrigin="1.338,0.589"/>
         <Button Content="Add File" HorizontalAlignment="Left" Margin="23,348,0,0" VerticalAlignment="Top" Width="135" Height="36" Click="ButtonBrowse_Click"/>
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="10,100,10,0" Name="dataGridFiles" ItemsSource="{Binding Path=LoadDataBinding}">
             <DataGrid.Columns>

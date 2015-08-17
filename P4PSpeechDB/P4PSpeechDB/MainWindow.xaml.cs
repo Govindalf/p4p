@@ -277,6 +277,7 @@ namespace P4PSpeechDB
                 {
                     string tableName = item.tableName.ToString();
                     string fileName = item.ID.ToString();
+                    string filePath = "";
                     if (conn.openConn() == true)
                     {
 
@@ -296,7 +297,8 @@ namespace P4PSpeechDB
 
 
                                 Directory.CreateDirectory("..\\..\\..\\..\\testOutput");
-                                fs = new FileStream("..\\..\\..\\..\\testOutput\\" + fileName, FileMode.OpenOrCreate, FileAccess.Write);
+                                fs = new FileStream("..\\..\\..\\..\\testOutput\\" + fileName + ".wav", FileMode.OpenOrCreate, FileAccess.Write);
+                                filePath = fs.Name;
                                 BinaryWriter bw = new BinaryWriter(fs);
 
                                 // Reset the starting byte for the new BLOB.
@@ -325,6 +327,8 @@ namespace P4PSpeechDB
                                 fs.Close();
 
                             }
+
+                            openOrPlayFile(filePath);
                         }
                         catch (MySqlException ex)
                         {
@@ -333,7 +337,7 @@ namespace P4PSpeechDB
                         conn.closeConn();
                     }
 
-                    //openOrPlayFile(path);
+                   
 
                 }
 
@@ -343,7 +347,12 @@ namespace P4PSpeechDB
         private void openOrPlayFile(string path)
         {
             // Filter audio, images etc. to open appropriate program
-            Process.Start("notepad++.exe", path);
+            //Process.Start("notepad++.exe", path);
+            MessageBox.Show(path);
+            mediaElement.Source = new Uri(path, UriKind.RelativeOrAbsolute);
+            mediaElement.LoadedBehavior = MediaState.Manual;
+            //mediaElement.UnloadedBehavior = MediaState.Stop;
+            mediaElement.Play();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -387,6 +396,11 @@ namespace P4PSpeechDB
                 }
                 conn.closeConn();
             }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            mediaElement.Stop();
         }
 
 

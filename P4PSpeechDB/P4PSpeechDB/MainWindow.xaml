@@ -52,10 +52,12 @@
         <Button Content="LESS DANGEROUS BUT STILL MAGIC ADD ALL BUTTON" HorizontalAlignment="Left" Margin="177,314,0,0" VerticalAlignment="Top" Width="330" Click="Button_Click"/>
         <StackPanel HorizontalAlignment="Left" Height="332" Margin="530,38,0,0" VerticalAlignment="Top" Width="168" Background="LightSlateGray">
             <Button Content="Generate Template File" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
-            <Button Content="Vocal Trac Synthesis" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
+            <Button Content="Vocal Tract Synthesis" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
             <Button Content="Go to WebMaus" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
+            <Button Content="Stop Audio" Margin="18,0" Click="Button_Click_1"/>
 
         </StackPanel>
+        <MediaElement Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="575,254,0,0"/>
 
     </Grid>
 </Window>

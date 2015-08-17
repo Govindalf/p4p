@@ -260,12 +260,18 @@ namespace P4PSpeechDB
             conn.closeConn();
         }
 
+        //On datagrid row click, opens the file
         private void resultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
                 var item = dgr.DataContext as DatagridRow;
+                MySqlDataReader reader;
+
+                int bufferSize = 16777215; //mediumblob buffer size
+                byte[] rawData = new byte[bufferSize];
+                FileStream fs;
 
                 if (item != null)
                 {
@@ -273,16 +279,60 @@ namespace P4PSpeechDB
                     string fileName = item.ID.ToString();
                     if (conn.openConn() == true)
                     {
-                        MySqlCommand cmd = new MySqlCommand();
-                        cmd.Connection = conn.getConn();
-                        cmd.CommandText = "Select ID, File, ProjectName  from @tName where ID = @fName";
-                        cmd.Parameters.AddWithValue("@tName", tableName);
-                        cmd.Parameters.AddWithValue("@fName", fileName);
 
+                        try
+                        {
+                            MySqlCommand cmd = new MySqlCommand();
+                            cmd.Connection = conn.getConn();
+                            cmd.CommandText = "SELECT File FROM " + tableName + " where ID = '" + fileName + "'";
+                            //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
+                            //cmd.Parameters.AddWithValue("@fName", fileName);
+                            reader = cmd.ExecuteReader();
+                            if (!reader.HasRows)
+                                throw new Exception("There are no blobs to save");
+
+                            while (reader.Read())
+                            {
+
+
+                                Directory.CreateDirectory("..\\..\\..\\..\\testOutput");
+                                fs = new FileStream("..\\..\\..\\..\\testOutput\\" + fileName, FileMode.OpenOrCreate, FileAccess.Write);
+                                BinaryWriter bw = new BinaryWriter(fs);
+
+                                // Reset the starting byte for the new BLOB.
+                                long startIndex = 0;
+
+                                // Read the bytes into outbyte[] and retain the number of bytes returned.
+                                long retval = reader.GetBytes(0, startIndex, rawData, 0, bufferSize);
+
+                                // Continue reading and writing while there are bytes beyond the size of the buffer.
+                                while (retval == bufferSize)
+                                {
+                                    bw.Write(rawData);
+                                    bw.Flush();
+
+                                    // Reposition the start index to the end of the last buffer and fill the buffer.
+                                    startIndex += bufferSize;
+                                    retval = reader.GetBytes(1, startIndex, rawData, 0, bufferSize);
+                                }
+
+                                // Write the remaining buffer.
+                                bw.Write(rawData, 0, (int)retval);
+                                bw.Flush();
+
+                                // Close the output file.
+                                bw.Close();
+                                fs.Close();
+
+                            }
+                        }
+                        catch (MySqlException ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
                         conn.closeConn();
                     }
 
-                    MessageBox.Show("YE IT WORK");
                     //openOrPlayFile(path);
 
                 }
@@ -303,17 +353,17 @@ namespace P4PSpeechDB
                 FileInfo[] files = new DirectoryInfo(testDBRoot).GetFiles("*.*", SearchOption.AllDirectories);
                 byte[] rawData;
                 //Adds all files selected into folders to the db
-                foreach (FileInfo file in files)
+
+                try
                 {
-
-                    string fileName = Path.GetFileNameWithoutExtension(file.FullName);
-
-                    string ext = Path.GetExtension(file.Name).Replace(".", "");
-                    rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
-
-
-                    try
+                    foreach (FileInfo file in files)
                     {
+
+                        string fileName = Path.GetFileNameWithoutExtension(file.FullName);
+
+                        string ext = Path.GetExtension(file.Name).Replace(".", "");
+                        rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
+
 
                         //Create tables if they dont already exist
                         MySqlCommand comm = conn.getCommand();
@@ -327,13 +377,13 @@ namespace P4PSpeechDB
                         comm.Parameters.AddWithValue("@fileAsBlob", rawData);
                         comm.Parameters.AddWithValue("@projectName", "DefaultProject");
                         comm.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
+
 
                     }
-
+                }
+                catch (MySqlException ex)
+                {
+                    MessageBox.Show(ex.ToString());
                 }
                 conn.closeConn();
             }

@@ -207,7 +207,7 @@ namespace P4PSpeechDB
         {
             if (conn.openConn() == true)
             {
-                ObservableCollection<DBFile> dbFile = new ObservableCollection<DBFile>();
+                ObservableCollection<DatagridRow> row = new ObservableCollection<DatagridRow>();
                 MySqlDataReader myReader;
 
                 try
@@ -239,8 +239,9 @@ namespace P4PSpeechDB
 
                             //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
 
-                            dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = name, ProjectName = projectName });
-                            ListCollectionView collection = new ListCollectionView(dbFile);
+                            row.Add(new DatagridRow { ID = myReader.GetString("ID"), ProjectName = projectName, tableName = name });
+                            ListCollectionView collection = new ListCollectionView(row);
+
                             collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
                             dataGridFiles.ItemsSource = collection;
                         }
@@ -264,13 +265,25 @@ namespace P4PSpeechDB
             if (sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as DBFile;
+                var item = dgr.DataContext as DatagridRow;
 
                 if (item != null)
                 {
-                    var fileP = item.filePath;
-                    string path = fileP.ToString();
-                    openOrPlayFile(path);
+                    string tableName = item.tableName.ToString();
+                    string fileName = item.ID.ToString();
+                    if (conn.openConn() == true)
+                    {
+                        MySqlCommand cmd = new MySqlCommand();
+                        cmd.Connection = conn.getConn();
+                        cmd.CommandText = "Select ID, File, ProjectName  from @tName where ID = @fName";
+                        cmd.Parameters.AddWithValue("@tName", tableName);
+                        cmd.Parameters.AddWithValue("@fName", fileName);
+
+                        conn.closeConn();
+                    }
+
+                    MessageBox.Show("YE IT WORK");
+                    //openOrPlayFile(path);
 
                 }
 

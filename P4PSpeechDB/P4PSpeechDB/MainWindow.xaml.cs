@@ -27,13 +27,15 @@ namespace P4PSpeechDB
     public partial class MainWindow : Window
     {
         private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
-        //private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
-        private string testDBRoot = "C:\\Users\\Rodel\\Documents\\p4p\\P4Ptestfiles";
+        private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
         private DBConnection conn;
         private List<String> Tablenames = new List<String>();
 
         public MainWindow()
         {
+
+
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnApplicationExit);
 
             conn = new DBConnection();
             try
@@ -297,7 +299,7 @@ namespace P4PSpeechDB
 
 
                                 Directory.CreateDirectory("..\\..\\..\\..\\testOutput");
-                                fs = new FileStream("..\\..\\..\\..\\testOutput\\" + fileName + ".wav", FileMode.OpenOrCreate, FileAccess.Write);
+                                fs = new FileStream("..\\..\\..\\..\\testOutput\\" + fileName + "." + tableName, FileMode.OpenOrCreate, FileAccess.Write);
                                 filePath = fs.Name;
                                 BinaryWriter bw = new BinaryWriter(fs);
 
@@ -328,7 +330,7 @@ namespace P4PSpeechDB
 
                             }
 
-                            openOrPlayFile(filePath);
+                            openOrPlayFile(filePath, tableName);
                         }
                         catch (MySqlException ex)
                         {
@@ -337,22 +339,27 @@ namespace P4PSpeechDB
                         conn.closeConn();
                     }
 
-                   
-
                 }
 
             }
         }
 
-        private void openOrPlayFile(string path)
+        private void openOrPlayFile(string path, string fileType)
         {
+
             // Filter audio, images etc. to open appropriate program
-            //Process.Start("notepad++.exe", path);
-            MessageBox.Show(path);
-            mediaElement.Source = new Uri(path, UriKind.RelativeOrAbsolute);
-            mediaElement.LoadedBehavior = MediaState.Manual;
-            //mediaElement.UnloadedBehavior = MediaState.Stop;
-            mediaElement.Play();
+            if (fileType.Equals("wav") || fileType.Equals("WAV"))
+            {
+                mediaElement.Source = new Uri(path, UriKind.RelativeOrAbsolute);
+                mediaElement.LoadedBehavior = MediaState.Manual;
+                //mediaElement.UnloadedBehavior = MediaState.Stop;
+                mediaElement.Play();
+            }
+            else
+            {
+                Process.Start("notepad++.exe", path);
+            }
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -376,12 +383,12 @@ namespace P4PSpeechDB
 
                         //Create tables if they dont already exist
                         MySqlCommand comm = conn.getCommand();
-                        comm.CommandText = "create table if not exists test" + ext + "(ID varchar(150) primary key, File mediumblob, ProjectName varchar(100))";
+                        comm.CommandText = "create table if not exists " + ext + "(ID varchar(150) primary key, File mediumblob, ProjectName varchar(100))";
                         comm.ExecuteNonQuery();
 
                         //Add file paths to the above table
                         comm = conn.getCommand();
-                        comm.CommandText = "INSERT INTO test" + ext + " (ID, File, ProjectName) VALUES (@ID, @fileAsBlob, @projectName)";
+                        comm.CommandText = "INSERT INTO " + ext + " (ID, File, ProjectName) VALUES (@ID, @fileAsBlob, @projectName)";
                         comm.Parameters.AddWithValue("@ID", fileName);
                         comm.Parameters.AddWithValue("@fileAsBlob", rawData);
                         comm.Parameters.AddWithValue("@projectName", "DefaultProject");
@@ -403,6 +410,43 @@ namespace P4PSpeechDB
             mediaElement.Stop();
         }
 
+        //On exit, removes the temp dir
+        private void OnApplicationExit(object sender, EventArgs e)
+        {
+            //DeleteDirectory(@"..\\..\\..\\..\\testOutput", true);
+        }
+
+        //Method to delete the temp dir
+        public static void DeleteDirectory(string path)
+        {
+            DeleteDirectory(path, false);
+        }
+
+        public static void DeleteDirectory(string path, bool recursive)
+        {
+
+            // Get all files of the folder
+            var files = Directory.GetFiles(path);
+            foreach (var f in files)
+            {
+                // Get the attributes of the file
+                var attr = File.GetAttributes(f);
+
+                // Is this file marked as 'read-only'?
+                if ((attr & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+                {
+                    // Yes... Remove the 'read-only' attribute, then
+                    File.SetAttributes(f, attr ^ FileAttributes.ReadOnly);
+                }
+
+                // Delete the file
+                File.Delete(f);
+            }
+
+            // When we get here, all the files of the folder were
+            // already deleted, so we just delete the empty folder
+            Directory.Delete(path);
+        }
 
     }
 }

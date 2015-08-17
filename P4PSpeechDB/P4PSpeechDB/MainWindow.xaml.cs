@@ -27,6 +27,7 @@ namespace P4PSpeechDB
     public partial class MainWindow : Window
     {
         private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
+        private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
         private DBConnection conn;
         private List<String> Tablenames = new List<String>();
 
@@ -127,7 +128,7 @@ namespace P4PSpeechDB
             string folderName = getFolderName(); // only prompt for folder once always
 
             // Add all files selected into the the db. If multiple files added, project destination is the same.
-            foreach (String file in dlg.FileNames) 
+            foreach (String file in dlg.FileNames)
             {
                 // Get the selected file name and display in a TextBox 
                 if (result.HasValue == true && result.Value == true)
@@ -165,7 +166,7 @@ namespace P4PSpeechDB
         }
 
         private string getFolderName()
-        { 
+        {
             return FolderMsgPrompt.Prompt("Create new folder", "Folder options", inputType: FolderMsgPrompt.InputType.Text);
 
         }
@@ -183,14 +184,15 @@ namespace P4PSpeechDB
                 comm.Parameters.AddWithValue("@pathNameVar", filename);
                 comm.Parameters.AddWithValue("@ProjectName", folderName);
                 comm.ExecuteNonQuery();
-                
-                if(folderName != null){
+
+                if (folderName != null)
+                {
                     comm.CommandText = "INSERT IGNORE INTO projects(PID) VALUES(@PID)";
                     comm.Parameters.AddWithValue("@PID", folderName);
                     comm.ExecuteNonQuery();
-                    
+
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -214,22 +216,28 @@ namespace P4PSpeechDB
                     foreach (string name in Tablenames)
                     {
                         //Exclude the projects table
-                        if(name.Equals("projects")){
+                        if (name.Equals("projects"))
+                        {
                             continue;
                         }
                         //System.Console.WriteLine(name);
-                        MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
+                        //MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
+
+                        MySqlCommand cmd = new MySqlCommand("Select ID, File, ProjectName  from " + name, conn.getConn());
                         //MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
 
                         myReader = cmd.ExecuteReader();
                         while (myReader.Read())
                         {
                             string projectName = "default";
-                            if(myReader.GetValue(2).ToString() != ""){
+                            if (myReader.GetValue(2).ToString() != "")
+                            {
                                 projectName = myReader.GetValue(2).ToString();
                             }
 
-                            dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
+                            //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
+
+                            dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = "TEST", ProjectName = projectName });
                             ListCollectionView collection = new ListCollectionView(dbFile);
                             collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
                             dataGridFiles.ItemsSource = collection;
@@ -262,7 +270,7 @@ namespace P4PSpeechDB
                     var fileP = item.filePath;
                     string path = fileP.ToString();
                     openOrPlayFile(path);
-                   
+
                 }
 
             }
@@ -272,6 +280,49 @@ namespace P4PSpeechDB
         {
             // Filter audio, images etc. to open appropriate program
             Process.Start("notepad++.exe", path);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (conn.openConn() == true)
+            {
+                FileInfo[] files = new DirectoryInfo(testDBRoot).GetFiles("*.*", SearchOption.AllDirectories);
+                byte[] rawData;
+                //Adds all files selected into folders to the db
+                foreach (FileInfo file in files)
+                {
+
+                    string fileName = Path.GetFileNameWithoutExtension(file.FullName);
+
+                    string ext = Path.GetExtension(file.Name).Replace(".", "");
+                    rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
+
+
+                    try
+                    {
+
+                        //Create tables if they dont already exist
+                        MySqlCommand comm = conn.getCommand();
+                        comm.CommandText = "create table if not exists test" + ext + "(ID varchar(150) primary key, File mediumblob, ProjectName varchar(100))";
+                        comm.ExecuteNonQuery();
+
+                        //Add file paths to the above table
+                        comm = conn.getCommand();
+                        comm.CommandText = "INSERT INTO test" + ext + " (ID, File, ProjectName) VALUES (@ID, @fileAsBlob, @projectName)";
+                        comm.Parameters.AddWithValue("@ID", fileName);
+                        comm.Parameters.AddWithValue("@fileAsBlob", rawData);
+                        comm.Parameters.AddWithValue("@projectName", "DefaultProject");
+                        comm.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+
+                    }
+
+                }
+                conn.closeConn();
+            }
         }
 
 

@@ -227,16 +227,16 @@ namespace P4PSpeechDB
                         //System.Console.WriteLine(name);
                         //MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
 
-                        MySqlCommand cmd = new MySqlCommand("Select ID, File, ProjectName  from " + name, conn.getConn());
+                        MySqlCommand cmd = new MySqlCommand("Select ID, ProjectName  from " + name, conn.getConn());
                         //MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
 
                         myReader = cmd.ExecuteReader();
                         while (myReader.Read())
                         {
                             string projectName = "default";
-                            if (myReader.GetValue(2).ToString() != "")
+                            if (myReader.GetValue(1).ToString() != "")
                             {
-                                projectName = myReader.GetValue(2).ToString();
+                                projectName = myReader.GetValue(1).ToString();
                             }
 
                             //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });

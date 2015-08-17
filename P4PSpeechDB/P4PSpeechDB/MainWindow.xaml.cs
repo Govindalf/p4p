@@ -227,7 +227,7 @@ namespace P4PSpeechDB
                         //System.Console.WriteLine(name);
                         //MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
 
-                        MySqlCommand cmd = new MySqlCommand("Select ID, ProjectName  from " + name, conn.getConn());
+                        MySqlCommand cmd = new MySqlCommand("Select ID, ProjectName, Speaker  from " + name, conn.getConn());
                         //MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
 
                         myReader = cmd.ExecuteReader();
@@ -241,7 +241,7 @@ namespace P4PSpeechDB
 
                             //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
 
-                            row.Add(new DatagridRow { ID = myReader.GetString("ID"), ProjectName = projectName, tableName = name });
+                            row.Add(new DatagridRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name });
                             ListCollectionView collection = new ListCollectionView(row);
 
                             collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
@@ -379,18 +379,19 @@ namespace P4PSpeechDB
 
                         string ext = Path.GetExtension(file.Name).Replace(".", "");
                         rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
-
+                        string speaker = fileName.Substring(0, 4);
 
                         //Create tables if they dont already exist
                         MySqlCommand comm = conn.getCommand();
-                        comm.CommandText = "create table if not exists " + ext + "(ID varchar(150) primary key, File mediumblob, ProjectName varchar(100))";
+                        comm.CommandText = "create table if not exists " + ext + "(ID varchar(150) primary key, File mediumblob, Speaker varchar(20), ProjectName varchar(100))";
                         comm.ExecuteNonQuery();
 
                         //Add file paths to the above table
                         comm = conn.getCommand();
-                        comm.CommandText = "INSERT INTO " + ext + " (ID, File, ProjectName) VALUES (@ID, @fileAsBlob, @projectName)";
+                        comm.CommandText = "INSERT INTO " + ext + " (ID, File, Speaker, ProjectName) VALUES (@ID, @fileAsBlob, @speaker, @projectName)";
                         comm.Parameters.AddWithValue("@ID", fileName);
                         comm.Parameters.AddWithValue("@fileAsBlob", rawData);
+                        comm.Parameters.AddWithValue("@speaker", speaker);
                         comm.Parameters.AddWithValue("@projectName", "DefaultProject");
                         comm.ExecuteNonQuery();
 

@@ -12,5 +12,6 @@ namespace P4PSpeechDB
         public string filePath { get; set; }
         public string ProjectName { get; set; }
         public string tableName { get; set; }
+        public string Speaker { get; set; }
     }
 }

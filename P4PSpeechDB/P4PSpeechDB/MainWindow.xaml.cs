@@ -27,7 +27,8 @@ namespace P4PSpeechDB
     public partial class MainWindow : Window
     {
         private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
-        private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
+        //private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
+        private string testDBRoot = "C:\\Users\\Rodel\\Documents\\p4p\\P4Ptestfiles";
         private DBConnection conn;
         private List<String> Tablenames = new List<String>();
 
@@ -126,6 +127,7 @@ namespace P4PSpeechDB
 
             Nullable<bool> result = dlg.ShowDialog();  // Display OpenFileDialog by calling ShowDialog method 
             string folderName = getFolderName(); // only prompt for folder once always
+            byte[] rawData;
 
             // Add all files selected into the the db. If multiple files added, project destination is the same.
             foreach (String file in dlg.FileNames)
@@ -133,10 +135,10 @@ namespace P4PSpeechDB
                 // Get the selected file name and display in a TextBox 
                 if (result.HasValue == true && result.Value == true)
                 {
+                    rawData = File.ReadAllBytes(file);
                     // Open document 
                     string filename = file;
                     string ext = Path.GetExtension(file);
-                    string pathNameVar = "filePath";
 
                     //Stores file in appropriate place in file system
                     //moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
@@ -147,7 +149,7 @@ namespace P4PSpeechDB
                         try
                         {
                             MySqlCommand comm = conn.getCommand();
-                            comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, " + pathNameVar + " varchar(100), ProjectName varchar(100))";
+                            comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, File mediumblob, ProjectName varchar(100))";
                             comm.ExecuteNonQuery();
                         }
                         catch (Exception ex)
@@ -155,7 +157,7 @@ namespace P4PSpeechDB
                             MessageBox.Show(ex.Message);
 
                         }
-                        executeInsert(filename, ext, dlg, folderName);
+                        executeInsert(filename, ext, dlg, folderName, rawData);
 
                         conn.closeConn();
                     }
@@ -171,17 +173,17 @@ namespace P4PSpeechDB
 
         }
 
-        private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, string folderName)
+        private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, string folderName, byte[] rawData)
         {
-            string pathNameVar = "filePath";
+            string pathNameVar = "File";
 
             try
             {
 
                 MySqlCommand comm = conn.getCommand();
-                comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID," + pathNameVar + ", ProjectName) VALUES(@ID, @pathNameVar, @ProjectName)";
+                comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID," + pathNameVar + ", ProjectName) VALUES(@ID, @FileAsBlob, @ProjectName)";
                 comm.Parameters.AddWithValue("@ID", Path.GetFileNameWithoutExtension(dlg.SafeFileName));
-                comm.Parameters.AddWithValue("@pathNameVar", filename);
+                comm.Parameters.AddWithValue("@FileAsBlob", rawData);
                 comm.Parameters.AddWithValue("@ProjectName", folderName);
                 comm.ExecuteNonQuery();
 
@@ -237,13 +239,12 @@ namespace P4PSpeechDB
 
                             //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
 
-                            dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = "TEST", ProjectName = projectName });
+                            dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = name, ProjectName = projectName });
                             ListCollectionView collection = new ListCollectionView(dbFile);
                             collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
                             dataGridFiles.ItemsSource = collection;
                         }
                         myReader.Close();
-
                         //adp.Fill(ds, "LoadDataBinding");
                         //dataGridFiles.DataContext = ds;
 

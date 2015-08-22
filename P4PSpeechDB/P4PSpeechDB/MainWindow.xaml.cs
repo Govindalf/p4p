@@ -33,8 +33,6 @@ namespace P4PSpeechDB
 
         public MainWindow()
         {
-
-
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnApplicationExit);
 
             conn = new DBConnection();
@@ -245,6 +243,7 @@ namespace P4PSpeechDB
                             ListCollectionView collection = new ListCollectionView(row);
 
                             collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
+                            collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
                             dataGridFiles.ItemsSource = collection;
                         }
                         myReader.Close();

@@ -362,6 +362,7 @@ namespace P4PSpeechDB
 
         }
 
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (conn.openConn() == true)
@@ -411,6 +412,11 @@ namespace P4PSpeechDB
             mediaElement.Stop();
         }
 
+        private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            mediaElement.Close();
+        }
+
         //On exit, removes the temp dir
         private void OnApplicationExit(object sender, EventArgs e)
         {
@@ -448,6 +454,20 @@ namespace P4PSpeechDB
             // already deleted, so we just delete the empty folder
             Directory.Delete(path);
         }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                MessageBox.Show(searchBox.Text);
+            }
+
+        }
+
+
+
+
+        
 
     }
 }

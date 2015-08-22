@@ -18,6 +18,8 @@ using System.Collections.ObjectModel;
 using MySql.Data.MySqlClient;
 using Path = System.IO.Path;
 using System.IO;
+using System.Collections;
+using System.ComponentModel;
 
 namespace P4PSpeechDB
 {
@@ -30,6 +32,7 @@ namespace P4PSpeechDB
         private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
         private DBConnection conn;
         private List<String> Tablenames = new List<String>();
+        private ObservableCollection<DatagridRow> row = new ObservableCollection<DatagridRow>(); //DAtagrid row item
 
         public MainWindow()
         {
@@ -209,7 +212,7 @@ namespace P4PSpeechDB
         {
             if (conn.openConn() == true)
             {
-                ObservableCollection<DatagridRow> row = new ObservableCollection<DatagridRow>();
+               
                 MySqlDataReader myReader;
 
                 try
@@ -455,11 +458,34 @@ namespace P4PSpeechDB
             Directory.Delete(path);
         }
 
+
+        //Search the datagrid and filter
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                MessageBox.Show(searchBox.Text);
+                try
+                {
+
+                    // Collection which will take your ObservableCollection (the datagrid row item)
+                    var itemSourceList = new CollectionViewSource() { Source = this.row };
+
+                    // ICollectionView the View/UI part 
+                    ICollectionView Itemlist = itemSourceList.View;
+
+                    // your Filter
+                    var filter = new Predicate<object>(item => ((DatagridRow)item).ID.Contains(searchBox.Text));
+
+                    //now we add our Filter
+                    Itemlist.Filter = filter;
+
+                    dataGridFiles.ItemsSource = Itemlist;
+
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message);
+                }
             }
 
         }
@@ -467,7 +493,7 @@ namespace P4PSpeechDB
 
 
 
-        
+
 
     }
 }

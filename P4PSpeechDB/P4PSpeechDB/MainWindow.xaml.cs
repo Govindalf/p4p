@@ -470,14 +470,11 @@ namespace P4PSpeechDB
                     // Collection which will take your ObservableCollection (the datagrid row item)
                     var itemSourceList = new CollectionViewSource() { Source = this.row };
 
+                    //now we add our Filter
+                    itemSourceList.Filter += new FilterEventHandler(searchFilter);
+
                     // ICollectionView the View/UI part 
                     ICollectionView Itemlist = itemSourceList.View;
-
-                    // your Filter
-                    var filter = new Predicate<object>(item => ((DatagridRow)item).ID.Contains(searchBox.Text));
-
-                    //now we add our Filter
-                    Itemlist.Filter = filter;
 
                     dataGridFiles.ItemsSource = Itemlist;
 
@@ -490,6 +487,18 @@ namespace P4PSpeechDB
 
         }
 
+        //Regex filter
+        private void searchFilter(object sender, FilterEventArgs e)
+        {
+            var obj = e.Item as DatagridRow;
+            if (obj != null)
+            {
+                if (System.Text.RegularExpressions.Regex.IsMatch(obj.ID, searchBox.Text))
+                    e.Accepted = true;
+                else
+                    e.Accepted = false;
+            }
+        }
 
 
 

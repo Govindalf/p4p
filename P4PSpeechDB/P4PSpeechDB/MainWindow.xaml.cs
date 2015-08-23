@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Diagnostics;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -240,13 +241,15 @@ namespace P4PSpeechDB
                             }
 
                             //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
-                            System.Console.WriteLine(name);
                             row.Add(new DatagridRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name });
                             ListCollectionView collection = new ListCollectionView(row);
-
+                            PropertyGroupDescription propertyDes = new PropertyGroupDescription("ProjectName");
+                            
                             collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
                             collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
+                            
                             dataGridFiles.ItemsSource = collection;
+                            dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
                         }
                         myReader.Close();
                         //adp.Fill(ds, "LoadDataBinding");

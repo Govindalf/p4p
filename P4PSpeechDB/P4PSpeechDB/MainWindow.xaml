@@ -3,13 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="EMU 2.0" Height="420" Width="725">
     <Window.Resources>
-        <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}" BasedOn="{x:Null}">
-            <Setter Property="Margin" Value="20,0,0,0"/>
+        <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
+            
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type GroupItem}">
-                        
-                        
                         <Expander x:Name="exp" IsExpanded="False"
                                       Background="White"
                                       Foreground="Black">
@@ -22,7 +20,7 @@
                             </Expander.Header>
                             
                             <StackPanel>
-                                <ItemsPresenter/>
+                                <ItemsPresenter Margin="20,0,0,0"/>
                             </StackPanel>
                         </Expander>
                     </ControlTemplate>
@@ -34,10 +32,10 @@
     <Grid Height="423" Margin="0,0,0,-0.2" VerticalAlignment="Top" >
         <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON DONT PRESS" HorizontalAlignment="Left" Margin="177,352,0,0" VerticalAlignment="Top" Width="330" Height="18" Click="ButtonLoad_Click" RenderTransformOrigin="1.338,0.589"/>
         <Button Content="Add File" HorizontalAlignment="Left" Margin="10,314,0,0" VerticalAlignment="Top" Width="141" Height="56" Click="ButtonBrowse_Click"/>
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="10,77,0,0" Name="dataGridFiles" ItemsSource="{Binding Path=LoadDataBinding}" HorizontalAlignment="Left" Width="497">
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="10,77,0,0" Name="dataGridFiles" ItemsSource="{Binding Path=LoadDataBinding}" HorizontalAlignment="Left" Width="497" HeadersVisibility="Column">
 
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Path=ID}" Header="FileID" Width="120" IsReadOnly="True"/>
+                <DataGridTextColumn Binding="{Binding Path=ID}" Header="FileID" Width="120" IsReadOnly="True" SortDirection="Ascending"/>
                 <DataGridTextColumn Binding="{Binding Path=Speaker}" Header="Speaker" Width="210" IsReadOnly="True" />
                 <DataGridTextColumn Binding="{Binding Path=ProjectName}" Header="Project" Width="210" IsReadOnly="True" />
             </DataGrid.Columns>
@@ -70,4 +68,5 @@
         <MediaElement Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="575,254,0,0"/>
 
     </Grid>
+    
 </Window>

@@ -149,7 +149,7 @@ namespace P4PSpeechDB
                         try
                         {
                             MySqlCommand comm = conn.getCommand();
-                            comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, File mediumblob, ProjectName varchar(100))";
+                            comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, File mediumblob, Speaker varchar(20), ProjectName varchar(100))";
                             comm.ExecuteNonQuery();
                         }
                         catch (Exception ex)
@@ -175,15 +175,17 @@ namespace P4PSpeechDB
 
         private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, string folderName, byte[] rawData)
         {
-            string pathNameVar = "File";
+            filename = Path.GetFileNameWithoutExtension(dlg.SafeFileName);
+            string speaker = Path.GetFileNameWithoutExtension(dlg.SafeFileName).Substring(0, 4);
 
             try
             {
 
                 MySqlCommand comm = conn.getCommand();
-                comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID," + pathNameVar + ", ProjectName) VALUES(@ID, @FileAsBlob, @ProjectName)";
-                comm.Parameters.AddWithValue("@ID", Path.GetFileNameWithoutExtension(dlg.SafeFileName));
+                comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID, File, Speaker, ProjectName) VALUES(@ID, @FileAsBlob, @Speaker, @ProjectName)";
+                comm.Parameters.AddWithValue("@ID", filename);
                 comm.Parameters.AddWithValue("@FileAsBlob", rawData);
+                comm.Parameters.AddWithValue("@Speaker", speaker);
                 comm.Parameters.AddWithValue("@ProjectName", folderName);
                 comm.ExecuteNonQuery();
 
@@ -238,7 +240,7 @@ namespace P4PSpeechDB
                             }
 
                             //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
-
+                            System.Console.WriteLine(name);
                             row.Add(new DatagridRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name });
                             ListCollectionView collection = new ListCollectionView(row);
 

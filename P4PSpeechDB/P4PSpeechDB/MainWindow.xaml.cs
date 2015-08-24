@@ -245,20 +245,18 @@ namespace P4PSpeechDB
 
                             //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
                             row.Add(new DatagridRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name });
-                            ListCollectionView collection = new ListCollectionView(row);
-                            PropertyGroupDescription propertyDes = new PropertyGroupDescription("ProjectName");
-                            
-                            collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
-                            collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
-                            
-                            dataGridFiles.ItemsSource = collection;
-                            dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
+                           
                         }
                         myReader.Close();
                         //adp.Fill(ds, "LoadDataBinding");
                         //dataGridFiles.DataContext = ds;
 
                     }
+
+                    //Pass in the collection made of the datagrid rows
+                    ListCollectionView collection = new ListCollectionView(row);
+                    buildDatagridGroups(collection);
+
 
                 }
                 catch (MySqlException ex)
@@ -268,6 +266,20 @@ namespace P4PSpeechDB
             }
             conn.closeConn();
         }
+
+        //Sets up the grouping for the datagrid
+        private void buildDatagridGroups(ICollectionView collection) 
+        {
+            PropertyGroupDescription propertyDes = new PropertyGroupDescription("ProjectName");
+
+            collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
+            collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
+
+            dataGridFiles.ItemsSource = collection;
+            dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
+        }
+
+
 
         //On datagrid row click, opens the file
         private void resultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -478,10 +490,11 @@ namespace P4PSpeechDB
                     itemSourceList.Filter += new FilterEventHandler(searchFilter);
 
                     // ICollectionView the View/UI part 
-                    ICollectionView Itemlist = itemSourceList.View;
-
-                    dataGridFiles.ItemsSource = Itemlist;
-
+                    ICollectionView itemlist = itemSourceList.View;
+                    
+                    buildDatagridGroups(itemlist);
+                    //dataGridFiles.ItemsSource = itemlist;
+                    gridcontrol
                 }
                 catch (Exception exc)
                 {

@@ -19,6 +19,8 @@ using System.Collections.ObjectModel;
 using MySql.Data.MySqlClient;
 using Path = System.IO.Path;
 using System.IO;
+using System.Collections;
+using System.ComponentModel;
 
 namespace P4PSpeechDB
 {
@@ -31,6 +33,7 @@ namespace P4PSpeechDB
         private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
         private DBConnection conn;
         private List<String> Tablenames = new List<String>();
+        private ObservableCollection<DatagridRow> row = new ObservableCollection<DatagridRow>(); //DAtagrid row item
 
         public MainWindow()
         {
@@ -210,7 +213,7 @@ namespace P4PSpeechDB
         {
             if (conn.openConn() == true)
             {
-                ObservableCollection<DatagridRow> row = new ObservableCollection<DatagridRow>();
+               
                 MySqlDataReader myReader;
 
                 try
@@ -366,6 +369,7 @@ namespace P4PSpeechDB
 
         }
 
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (conn.openConn() == true)
@@ -415,6 +419,11 @@ namespace P4PSpeechDB
             mediaElement.Stop();
         }
 
+        private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            mediaElement.Close();
+        }
+
         //On exit, removes the temp dir
         private void OnApplicationExit(object sender, EventArgs e)
         {
@@ -452,6 +461,52 @@ namespace P4PSpeechDB
             // already deleted, so we just delete the empty folder
             Directory.Delete(path);
         }
+
+
+        //Search the datagrid and filter
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                try
+                {
+
+                    // Collection which will take your ObservableCollection (the datagrid row item)
+                    var itemSourceList = new CollectionViewSource() { Source = this.row };
+
+                    //now we add our Filter
+                    itemSourceList.Filter += new FilterEventHandler(searchFilter);
+
+                    // ICollectionView the View/UI part 
+                    ICollectionView Itemlist = itemSourceList.View;
+
+                    dataGridFiles.ItemsSource = Itemlist;
+
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message);
+                }
+            }
+
+        }
+
+        //Regex filter
+        private void searchFilter(object sender, FilterEventArgs e)
+        {
+            var obj = e.Item as DatagridRow;
+            if (obj != null)
+            {
+                if (System.Text.RegularExpressions.Regex.IsMatch(obj.ID, searchBox.Text))
+                    e.Accepted = true;
+                else
+                    e.Accepted = false;
+            }
+        }
+
+
+
+
 
     }
 }

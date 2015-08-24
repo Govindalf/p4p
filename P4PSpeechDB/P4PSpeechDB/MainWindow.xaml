@@ -4,21 +4,21 @@
         Title="EMU 2.0" Height="420" Width="725">
     <Window.Resources>
         <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
-            
+
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type GroupItem}">
                         <Expander x:Name="exp" IsExpanded="False"
                                       Background="White"
                                       Foreground="Black">
-                            
+
                             <Expander.Header>
 
-                                    <TextBlock Text="{Binding Name}" />
+                                <TextBlock Text="{Binding Name}" />
                                 <!--<TextBlock Text="{Binding Path =ItemCount}" />-->
 
                             </Expander.Header>
-                            
+
                             <StackPanel>
                                 <ItemsPresenter Margin="20,0,0,0"/>
                             </StackPanel>
@@ -37,7 +37,8 @@
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Path=ID}" Header="FileID" Width="120" IsReadOnly="True" SortDirection="Ascending"/>
-                <DataGridTextColumn Binding="{Binding Path=Speaker}" Header="Speaker" Width="210" IsReadOnly="True" />
+                <DataGridTextColumn Binding="{Binding Path=Speaker}" Header="Speaker" Width="100" IsReadOnly="True" />
+                <DataGridTextColumn Binding="{Binding Path=tableName}" Header="FileType" Width="100" IsReadOnly="True" />
                 <DataGridTextColumn Binding="{Binding Path=ProjectName}" Header="Project" Width="210" IsReadOnly="True" />
             </DataGrid.Columns>
             <DataGrid.RowStyle>
@@ -45,7 +46,7 @@
                     <EventSetter Event="MouseDoubleClick" Handler="resultDataGrid_MouseDoubleClick"/>
                 </Style>
             </DataGrid.RowStyle>
-            
+
             <DataGrid.GroupStyle>
                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                     <GroupStyle.Panel>
@@ -55,7 +56,6 @@
                     </GroupStyle.Panel>
                 </GroupStyle>
             </DataGrid.GroupStyle>
-            
         </DataGrid>
         <TextBox Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="10,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="341" FontStyle="Italic" Foreground="#7F000000" KeyDown="TextBox_KeyDown" >
             <TextBox.Style>
@@ -92,5 +92,5 @@
         <MediaElement Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="575,254,0,0" MediaEnded="mediaElement_MediaEnded"/>
 
     </Grid>
-    
+
 </Window>

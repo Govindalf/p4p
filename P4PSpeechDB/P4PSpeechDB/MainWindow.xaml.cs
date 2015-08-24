@@ -494,7 +494,7 @@ namespace P4PSpeechDB
                     
                     buildDatagridGroups(itemlist);
                     //dataGridFiles.ItemsSource = itemlist;
-                    gridcontrol
+                   
                 }
                 catch (Exception exc)
                 {

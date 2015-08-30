@@ -179,7 +179,8 @@ namespace P4PSpeechDB
 
         private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, string folderName, byte[] rawData)
         {
-            filename = Path.GetFileNameWithoutExtension(dlg.SafeFileName);
+
+            filename = Path.GetFileName(filename);
             string speaker = Path.GetFileNameWithoutExtension(dlg.SafeFileName).Substring(0, 4);
 
             try

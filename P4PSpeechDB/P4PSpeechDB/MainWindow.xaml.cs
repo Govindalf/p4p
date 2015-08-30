@@ -218,7 +218,7 @@ namespace P4PSpeechDB
 
                 try
                 {
-
+                    row.Clear();
                     //Get number of tables in database, for all tables, do the following
                     DataSet ds = new DataSet();
                     foreach (string name in Tablenames)
@@ -245,7 +245,7 @@ namespace P4PSpeechDB
 
                             //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
                             row.Add(new DatagridRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name });
-                           
+
                         }
                         myReader.Close();
                         //adp.Fill(ds, "LoadDataBinding");
@@ -263,6 +263,7 @@ namespace P4PSpeechDB
                 {
                     MessageBox.Show(ex.ToString());
                 }
+
             }
             conn.closeConn();
         }

@@ -20,7 +20,6 @@ using MySql.Data.MySqlClient;
 using Path = System.IO.Path;
 using System.IO;
 using System.Collections;
-using System.ComponentModel;
 
 namespace P4PSpeechDB
 {
@@ -35,9 +34,13 @@ namespace P4PSpeechDB
         private List<String> Tablenames = new List<String>();
         private ObservableCollection<DatagridRow> row = new ObservableCollection<DatagridRow>(); //DAtagrid row item
 
+        public Boolean IsExpanded{ get; set; }
+
         public MainWindow()
         {
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnApplicationExit);
+            IsExpanded = false;
+            this.DataContext = this;
 
             conn = new DBConnection();
             try

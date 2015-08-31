@@ -41,3 +41,5 @@ C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\FolderMsgPrompt.g
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\FolderMsgPrompt.baml
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\FolderMsgPrompt.g.cs
 C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csprojResolveAssemblyReference.cache
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\GenerateTempPrompt.baml
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\GenerateTempPrompt.g.cs

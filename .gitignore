@@ -25,6 +25,7 @@ bld/
 testOutput
 testDB
 P4Ptestfiles
+TemplateStr
 
 # Visual Studio 2015 cache/options directory
 .vs/

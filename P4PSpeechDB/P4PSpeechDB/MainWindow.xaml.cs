@@ -31,8 +31,9 @@ namespace P4PSpeechDB
         private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
         private DBConnection conn;
-        private List<String> Tablenames = new List<String>();
-        private ObservableCollection<DatagridRow> row = new ObservableCollection<DatagridRow>(); //DAtagrid row item
+        private List<String> tableNames = new List<String>();
+        private ObservableCollection<SpeakerRow> row = new ObservableCollection<SpeakerRow>(); //DAtagrid row item
+        DataGridLoader dgl;
 
         public Boolean IsExpanded{ get; set; }
 
@@ -56,7 +57,7 @@ namespace P4PSpeechDB
                     {
                         while (reader.Read())
                         {
-                            Tablenames.Add(reader.GetString(0));
+                            tableNames.Add(reader.GetString(0));
                         }
                     }
                 }
@@ -67,13 +68,19 @@ namespace P4PSpeechDB
                 MessageBox.Show(ex.Message);
             }
             InitializeComponent();
-            loadDataGrid();
+
+            //Loads all datagrid with relevant data
+            dgl = new DataGridLoader(conn, tableNames);
+            dgl.setUpDataGrids();
+            dataGridFiles.ItemsSource = dgl.getCollection("S");
+            dataGridProjects.ItemsSource = dgl.getCollection("P");
+            //loadDataGrid();
         }
 
         // depreciated
         private void ButtonLoad_Click(object sender, RoutedEventArgs e)
         {
-            loadDataGrid();
+            dgl.setUpDataGrids();
 
             if (conn.openConn() == true)
             {
@@ -170,7 +177,7 @@ namespace P4PSpeechDB
                     }
                 }
             }
-            loadDataGrid();
+            dgl.setUpDataGrids();
 
         }
 
@@ -212,7 +219,7 @@ namespace P4PSpeechDB
 
         }
 
-        private void loadDataGrid()
+   /*    private void loadDataGrid()
         {
             if (conn.openConn() == true)
             {
@@ -224,7 +231,7 @@ namespace P4PSpeechDB
 
                     //Get number of tables in database, for all tables, do the following
                     DataSet ds = new DataSet();
-                    foreach (string name in Tablenames)
+                    foreach (string name in tableNames)
                     {
                         //Exclude the projects table
                         if (name.Equals("projects"))
@@ -269,7 +276,7 @@ namespace P4PSpeechDB
             }
             conn.closeConn();
         }
-
+        */
         //Sets up the grouping for the datagrid
         private void buildDatagridGroups(ICollectionView collection) 
         {
@@ -281,7 +288,7 @@ namespace P4PSpeechDB
             dataGridFiles.ItemsSource = collection;
             dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
         }
-
+        
 
 
         //On datagrid row click, opens the file
@@ -290,7 +297,7 @@ namespace P4PSpeechDB
             if (sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as DatagridRow;
+                var item = dgr.DataContext as SpeakerRow;
                 MySqlDataReader reader;
 
                 int bufferSize = 16777215; //mediumblob buffer size
@@ -510,7 +517,7 @@ namespace P4PSpeechDB
         //Regex filter
         private void searchFilter(object sender, FilterEventArgs e)
         {
-            var obj = e.Item as DatagridRow;
+            var obj = e.Item as SpeakerRow;
             if (obj != null)
             {
                 if (System.Text.RegularExpressions.Regex.IsMatch(obj.ID, searchBox.Text))

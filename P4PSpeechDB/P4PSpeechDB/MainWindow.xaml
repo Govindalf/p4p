@@ -33,7 +33,7 @@
         <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON DONT PRESS" HorizontalAlignment="Left" Margin="177,352,0,0" VerticalAlignment="Top" Width="330" Height="18" Click="ButtonLoad_Click" RenderTransformOrigin="1.338,0.589"/>
         <Button Content="Add File" HorizontalAlignment="Left" Margin="10,314,0,0" VerticalAlignment="Top" Width="141" Height="56" Click="ButtonBrowse_Click"/>
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="165,77,0,0" Name="dataGridFiles" ItemsSource="{Binding Path=LoadDataBinding}" HorizontalAlignment="Left" Width="263" HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="165,77,0,0" Name="dataGridFiles"  HorizontalAlignment="Left" Width="263" HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Path=ID}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
@@ -92,8 +92,8 @@
         </StackPanel>
         <MediaElement Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="507,290,0,0" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual"
               UnloadedBehavior="Stop" />
-        
-        
+
+
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="715,74,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="386" HeadersVisibility="Column" CanUserAddRows="False">
 
             <DataGrid.Columns>
@@ -116,9 +116,9 @@
                 </GroupStyle>
             </DataGrid.GroupStyle>
         </DataGrid>
-        
-        
-        
+
+
+
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="10,77,0,0" 
                   x:Name="dataGridProjects" HorizontalAlignment="Left" Width="141" 
                   HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
@@ -127,6 +127,11 @@
                 <DataGridTextColumn Binding="{Binding PID}" Header="Project" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
             </DataGrid.Columns>
 
+            <DataGrid.RowStyle>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <EventSetter Event="GotFocus" Handler="dataGridProjects_GotCellFocus"></EventSetter>
+                </Style>
+            </DataGrid.RowStyle>
 
         </DataGrid>
 

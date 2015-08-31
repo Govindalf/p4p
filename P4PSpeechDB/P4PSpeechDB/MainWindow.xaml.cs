@@ -35,7 +35,7 @@ namespace P4PSpeechDB
         private ObservableCollection<SpeakerRow> row = new ObservableCollection<SpeakerRow>(); //DAtagrid row item
         DataGridLoader dgl;
 
-        public Boolean IsExpanded{ get; set; }
+        public Boolean IsExpanded { get; set; }
 
         public MainWindow()
         {
@@ -219,66 +219,9 @@ namespace P4PSpeechDB
 
         }
 
-   /*    private void loadDataGrid()
-        {
-            if (conn.openConn() == true)
-            {
-               
-                MySqlDataReader myReader;
 
-                try
-                {
-
-                    //Get number of tables in database, for all tables, do the following
-                    DataSet ds = new DataSet();
-                    foreach (string name in tableNames)
-                    {
-                        //Exclude the projects table
-                        if (name.Equals("projects"))
-                        {
-                            continue;
-                        }
-                        //System.Console.WriteLine(name);
-                        //MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
-
-                        MySqlCommand cmd = new MySqlCommand("Select ID, ProjectName, Speaker  from " + name, conn.getConn());
-                        //MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
-
-                        myReader = cmd.ExecuteReader();
-                        while (myReader.Read())
-                        {
-                            string projectName = "default";
-                            if (myReader.GetValue(1).ToString() != "")
-                            {
-                                projectName = myReader.GetValue(1).ToString();
-                            }
-
-                            //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
-                            row.Add(new DatagridRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name });
-                           
-                        }
-                        myReader.Close();
-                        //adp.Fill(ds, "LoadDataBinding");
-                        //dataGridFiles.DataContext = ds;
-
-                    }
-
-                    //Pass in the collection made of the datagrid rows
-                    ListCollectionView collection = new ListCollectionView(row);
-                    buildDatagridGroups(collection);
-
-
-                }
-                catch (MySqlException ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-            }
-            conn.closeConn();
-        }
-        */
         //Sets up the grouping for the datagrid
-        private void buildDatagridGroups(ICollectionView collection) 
+        private void buildDatagridGroups(ICollectionView collection)
         {
             PropertyGroupDescription propertyDes = new PropertyGroupDescription("ProjectName");
 
@@ -288,8 +231,24 @@ namespace P4PSpeechDB
             dataGridFiles.ItemsSource = collection;
             dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
         }
-        
 
+        private void dataGridProjects_GotCellFocus(object sender, RoutedEventArgs e)
+        {
+           
+            if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
+            {
+                DataGridRow dgr = sender as DataGridRow;
+                var item = dgr.DataContext as ProjectRow;
+
+                if (item != null)
+                {
+                    string projectName = item.PID.ToString();
+                    dgl.loadSpeakers(projectName);
+
+                    dataGridFiles.ItemsSource = dgl.getCollection("S");
+                }
+            }
+        }
 
         //On datagrid row click, opens the file
         private void resultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -501,10 +460,10 @@ namespace P4PSpeechDB
 
                     // ICollectionView the View/UI part 
                     ICollectionView itemlist = itemSourceList.View;
-                    
+
                     buildDatagridGroups(itemlist);
                     //dataGridFiles.ItemsSource = itemlist;
-                   
+
                 }
                 catch (Exception exc)
                 {

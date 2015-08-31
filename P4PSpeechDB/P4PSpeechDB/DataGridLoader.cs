@@ -20,7 +20,7 @@ namespace P4PSpeechDB
         ICollectionView collectionS; //speakers
         ICollectionView collectionA; //analysis
         private List<String> tableNames;
-        private ObservableCollection<SpeakerRow> rowS = new ObservableCollection<SpeakerRow>(); //DAtagrid row item
+        private ObservableCollection<SpeakerRow> rowS; //DAtagrid row item
         private ObservableCollection<ProjectRow> rowP = new ObservableCollection<ProjectRow>(); //DAtagrid row item
 
         public DataGridLoader(DBConnection conn, List<String> tableNames)
@@ -32,7 +32,7 @@ namespace P4PSpeechDB
         public void setUpDataGrids()
         {
             loadProjects();
-            loadSpeakers();
+            loadSpeakers(null);
         }
 
         public ICollectionView getCollection(string type)
@@ -71,13 +71,17 @@ namespace P4PSpeechDB
             }
         }
 
-        private void loadSpeakers()
+        public void loadSpeakers(string PID)
         {
             if (conn.openConn() == true)
             {
+                if (PID == null)
+                {
+                    PID = "DefaultProject";
+                }
 
                 MySqlDataReader myReader;
-
+                rowS = new ObservableCollection<SpeakerRow>();
                 try
                 {
 
@@ -93,8 +97,13 @@ namespace P4PSpeechDB
                         //System.Console.WriteLine(name);
                         //MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
 
-                        MySqlCommand cmd = new MySqlCommand("Select ID, ProjectName, Speaker  from " + name, conn.getConn());
-                        //MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
+                        //MySqlCommand cmd = new MySqlCommand("Select ID, ProjectName, Speaker  from " + name, conn.getConn() );
+
+                        MySqlCommand cmd = new MySqlCommand();
+                        cmd.Connection = conn.getConn();
+                        cmd.CommandText = "SELECT ID, ProjectName, Speaker FROM " + name + " WHERE ProjectName = @pName"; // @name" ; // WHERE ProjectName = '" + PID + "'";
+                        //cmd.Parameters.AddWithValue("@name", name);
+                        cmd.Parameters.AddWithValue("@pName", PID);
 
                         myReader = cmd.ExecuteReader();
                         while (myReader.Read())
@@ -132,7 +141,6 @@ namespace P4PSpeechDB
         {
             PropertyGroupDescription propertyDes = new PropertyGroupDescription("ProjectName");
 
-            collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
             collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
             //dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
         }

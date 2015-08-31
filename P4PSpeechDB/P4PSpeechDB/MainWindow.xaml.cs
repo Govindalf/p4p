@@ -33,6 +33,7 @@ namespace P4PSpeechDB
         private DBConnection conn;
         private List<String> tableNames = new List<String>();
         private ObservableCollection<Row> rowS; //DAtagrid row item
+        private ObservableCollection<Row> rowA; //DAtagrid row item
         DataGridLoader dgl;
 
         public Boolean IsExpanded { get; set; }
@@ -193,7 +194,6 @@ namespace P4PSpeechDB
         //When a row in the projects grid is selected
         private void dataGridProjects_GotCellFocus(object sender, RoutedEventArgs e)
         {
-
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
@@ -210,20 +210,20 @@ namespace P4PSpeechDB
         }
 
         //When a row in the analysis grid is selected
-        private void dataGridAnalysis_GotCellFocus(object sender, RoutedEventArgs e)
+        private void dataGridFiles_GotCellFocus(object sender, RoutedEventArgs e)
         {
-
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as ProjectRow;
+                var item = dgr.DataContext as SpeakerRow;
 
                 if (item != null)
                 {
-                    string projectName = item.PID.ToString();
-                    dgl.loadSpeakers(projectName);
-                    rowS = dgl.getCollection("S");
-                    buildDatagridGroups(new ListCollectionView(rowS));
+                    string ID = item.ID;
+                    dgl.loadAnalysis(ID);
+                    rowA = dgl.getCollection("A");
+                    dataGridAnalysis.ItemsSource = new ListCollectionView(rowA);
+                    //buildDatagridGroups(new ListCollectionView(rowA));
                 }
             }
         }

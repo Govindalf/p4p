@@ -1,7 +1,7 @@
 ﻿<Window x:Class="P4PSpeechDB.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="EMU 2.0" Height="421" Width="1126.5">
+        Title="EMU 2.0" Height="522.375" Width="869.5">
     <Window.Resources>
         <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
 
@@ -29,22 +29,27 @@
         </Style>
     </Window.Resources>
 
-    <Grid Height="393" Margin="0,0,17,0" VerticalAlignment="Top" >
-        <Button Content="Add File" HorizontalAlignment="Left" Margin="10,314,0,0" VerticalAlignment="Top" Width="141" Height="56" Click="ButtonBrowse_Click"/>
+    <Grid Height="610" Margin="0,0,17,-220" VerticalAlignment="Top" >
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="293" Margin="165,77,0,0" Name="dataGridFiles"  
-                  HorizontalAlignment="Left" Width="263" HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <MediaElement x:Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="395,299,0,0" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual"
+              UnloadedBehavior="Stop" />
+
+
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="398" Margin="165,77,0,0" x:Name="dataGridFiles"  
+    		HorizontalAlignment="Left" Width="263" HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Path=ID}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
+                <DataGridTextColumn Binding="{Binding ID}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
                 <!--<DataGridTextColumn Binding="{Binding Path=Speaker}" Header="Speaker" Width="100" IsReadOnly="True" /> -->
-                <DataGridTextColumn Binding="{Binding Path=tableName}" Header="FileType" Width="*" IsReadOnly="True" />
+                <DataGridTextColumn Binding="{Binding tableName}" Header="FileType" Width="*" IsReadOnly="True" />
                 <!--<DataGridTextColumn Binding="{Binding Path=ProjectName}" Header="Project" Width="210" IsReadOnly="True" />-->
             </DataGrid.Columns>
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
-                    <EventSetter Event="MouseDoubleClick" Handler="resultDataGrid_MouseDoubleClick"/>
+                    <EventSetter Event="Control.MouseDoubleClick" Handler="resultDataGrid_MouseDoubleClick"/>
+                    <EventSetter Event="UIElement.GotFocus" Handler="dataGridFiles_GotCellFocus"/>
                 </Style>
+
             </DataGrid.RowStyle>
 
             <DataGrid.GroupStyle>
@@ -58,9 +63,9 @@
             </DataGrid.GroupStyle>
         </DataGrid>
 
-        <TextBox Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="165,40,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="263" FontStyle="Italic" Foreground="#7F000000" KeyDown="TextBox_KeyDown" >
+        <TextBox x:Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="165,40,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="263" FontStyle="Italic" Foreground="#7F000000" KeyDown="TextBox_KeyDown" >
             <TextBox.Style>
-                <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                <Style xmlns:sys="clr-namespace:System;assembly=mscorlib" TargetType="{x:Type TextBox}">
                     <Style.Resources>
                         <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                             <VisualBrush.Visual>
@@ -82,30 +87,30 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        
+
         <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="656,332,0,0" VerticalAlignment="Top" Width="330" Click="loadAllButton_Click"/>
-       
-        <StackPanel HorizontalAlignment="Left" Height="296" Margin="442,77,0,0" VerticalAlignment="Top" Width="168" Background="LightSlateGray">
-            <Button Content="Generate Template File" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
-            <Button Content="Vocal Tract Synthesis" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
-            <Button Content="Go to WebMaus" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
-            <Button Content="Stop Audio" Margin="18,0" Click="Button_Click_1"/>
+
+        <StackPanel HorizontalAlignment="Left" Height="215" Margin="10,260,0,0" VerticalAlignment="Top" Width="150" Background="LightSlateGray">
+            <Button Content="Add File" HorizontalAlignment="Left" VerticalAlignment="Top" Width="131" Height="35" Click="ButtonBrowse_Click" Margin="10,10,0,0"/>
+            <Button Content="Vocal Tract Synthesis" HorizontalAlignment="Left" Height="34" Margin="10,10,0,0" Width="130"/>
+            <Button Content="Generate Template File" HorizontalAlignment="Left" Height="35" Margin="10,10,0,0" Width="130"/>
+            <Button Content="Go to WebMaus" HorizontalAlignment="Left" Height="37" Margin="10,10,0,0" Width="130"/>
+            <Button Content="Stop Audio" Margin="18,5" Click="Button_Click_1" />
 
         </StackPanel>
-        <MediaElement Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="507,290,0,0" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual"
-              UnloadedBehavior="Stop" />
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="644,77,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="386" HeadersVisibility="Column" CanUserAddRows="False">
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="398" Margin="448,77,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="386" HeadersVisibility="Column" CanUserAddRows="False">
 
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding AID}" Header="FileID" Width="120" IsReadOnly="True" SortDirection="Ascending"/>
+                <DataGridTextColumn Binding="{Binding AID}" Header="Analysis ID" Width="120" IsReadOnly="True" SortDirection="Ascending"/>
+                <DataGridTextColumn Binding="{Binding Description}" Header="Description" Width="*" IsReadOnly="True" />
             </DataGrid.Columns>
-            <DataGrid.RowStyle>
+            <!-- <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
-                    <EventSetter Event="Control.MouseDoubleClick" Handler="dataGridAnalysis_GotCellFocus"/>
+                    <EventSetter Event="GotFocus" Handler="dataGridAnalysis_GotCellFocus"/>
                 </Style>
-            </DataGrid.RowStyle>
+            </DataGrid.RowStyle> -->
 
             <DataGrid.GroupStyle>
                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
@@ -120,7 +125,7 @@
 
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="10,77,0,0" 
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="166" Margin="10,77,0,0" 
                   x:Name="dataGridProjects" HorizontalAlignment="Left" Width="141" 
                   HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
@@ -130,7 +135,7 @@
 
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
-                    <EventSetter Event="GotFocus" Handler="dataGridProjects_GotCellFocus"></EventSetter>
+                    <EventSetter Event="UIElement.GotFocus" Handler="dataGridProjects_GotCellFocus"/>
                 </Style>
             </DataGrid.RowStyle>
 

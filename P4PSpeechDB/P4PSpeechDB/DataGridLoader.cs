@@ -72,19 +72,24 @@ namespace P4PSpeechDB
             }
         }
 
-        private void loadAnalysis()
+        public void loadAnalysis(string fileID)
         {
+
             if (conn.openConn() == true)
             {
 
                 MySqlDataReader myReader;
-                MySqlCommand cmd = new MySqlCommand("Select AID, Description from analysis", conn.getConn());
+                rowA = new ObservableCollection<Row>();
+                MySqlCommand cmd = new MySqlCommand(@"SELECT a.AID, a.Description FROM analysis a INNER JOIN files2analysis f2a
+                                                      ON a.AID = f2a.AID WHERE f2a.ID = @ID", conn.getConn());
+
+                cmd.Parameters.AddWithValue("@ID", fileID);
 
                 myReader = cmd.ExecuteReader();
                 while (myReader.Read())
                 {
-                    rowA.Add(new AnalysisRow { AID = myReader.GetString("AID") });
-                    rowA.Add(new AnalysisRow { Description = myReader.GetString("Description") });
+                    rowA.Add(new AnalysisRow { AID = myReader.GetString("AID"), Description = myReader.GetString("Description") });
+
                 }
                 myReader.Close();
                 collectionA = new ListCollectionView(rowA);

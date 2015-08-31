@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Diagnostics;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -31,12 +32,14 @@ namespace P4PSpeechDB
         private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
         private DBConnection conn;
+
         private List<String> tableNames = new List<String>();
         private ObservableCollection<Row> rowS; //DAtagrid row item
         private ObservableCollection<Row> rowA; //DAtagrid row item
         DataGridLoader dgl;
 
         public Boolean IsExpanded { get; set; }
+
 
         public MainWindow()
         {
@@ -150,7 +153,8 @@ namespace P4PSpeechDB
 
         private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, string folderName, byte[] rawData)
         {
-            filename = Path.GetFileNameWithoutExtension(dlg.SafeFileName);
+
+            filename = Path.GetFileName(filename);
             string speaker = Path.GetFileNameWithoutExtension(dlg.SafeFileName).Substring(0, 4);
 
             try
@@ -180,6 +184,7 @@ namespace P4PSpeechDB
 
         }
 
+<<<<<<< HEAD
 
         //Sets up the grouping for the datagrid
         private void buildDatagridGroups(ICollectionView collection)
@@ -190,6 +195,55 @@ namespace P4PSpeechDB
             dataGridFiles.ItemsSource = collection;
             dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
         }
+=======
+        private void loadDataGrid()
+        {
+            if (conn.openConn() == true)
+            {
+               
+                MySqlDataReader myReader;
+
+                try
+                {
+                    row.Clear();
+                    //Get number of tables in database, for all tables, do the following
+                    DataSet ds = new DataSet();
+                    foreach (string name in Tablenames)
+                    {
+                        //Exclude the projects table
+                        if (name.Equals("projects") || name.Equals("analysis") || name.Equals("files2analysis"))
+                        {
+                            continue;
+                        }
+                        //System.Console.WriteLine(name);
+                        //MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
+
+                        MySqlCommand cmd = new MySqlCommand("Select ID, ProjectName, Speaker  from " + name, conn.getConn());
+                        //MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
+
+                        myReader = cmd.ExecuteReader();
+                        while (myReader.Read())
+                        {
+                            string projectName = "default";
+                            if (myReader.GetValue(1).ToString() != "")
+                            {
+                                projectName = myReader.GetValue(1).ToString();
+                            }
+
+                            //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
+                            row.Add(new DatagridRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name });
+
+                        }
+                        myReader.Close();
+                        //adp.Fill(ds, "LoadDataBinding");
+                        //dataGridFiles.DataContext = ds;
+
+                    }
+
+                    //Pass in the collection made of the datagrid rows
+                    collection = new ListCollectionView(row);
+                    buildDatagridGroups(collection);
+>>>>>>> SpeechTemplate
 
         //When a row in the projects grid is selected
         private void dataGridProjects_GotCellFocus(object sender, RoutedEventArgs e)
@@ -206,16 +260,19 @@ namespace P4PSpeechDB
                     rowS = dgl.getCollection("S");
                     buildDatagridGroups(new ListCollectionView(rowS));
                 }
+
             }
         }
 
         //When a row in the analysis grid is selected
         private void dataGridFiles_GotCellFocus(object sender, RoutedEventArgs e)
         {
+
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
                 var item = dgr.DataContext as SpeakerRow;
+
 
                 if (item != null)
                 {
@@ -575,9 +632,125 @@ namespace P4PSpeechDB
             }
         }
 
+        private void ButtonDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var listOfItems = dataGridFiles.SelectedItems;
+            foreach (var i in dataGridFiles.SelectedItems)
+            {
+                string tableName = (i as SpeakerRow).tableName;
+                string idName = (i as SpeakerRow).ID;
+                System.Console.WriteLine(tableName);
+                System.Console.WriteLine(idName);
+                System.Console.WriteLine(i);
+                SpeakerRow dgRow = (from r in row where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
+                //newRow.Remove(dgRow);
+                if (conn.openConn() == true)
+                {
+                    try
+                    {
+                        //Create tables if they dont already exist
+                        MySqlCommand comm = conn.getCommand();
+                        comm.CommandText = "DELETE FROM " + tableName + " WHERE ID=@idName";
+                        comm.Parameters.AddWithValue("@idName", idName);
+                        comm.ExecuteNonQuery();
+                    }
+                    catch (MySqlException ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    conn.closeConn();
+                }
+            }
 
+            collection = new ListCollectionView(row);
+            buildDatagridGroups(collection);
+            
+        }
 
+        private void ButtonTemplate_Click(object sender, RoutedEventArgs e)
+        {
 
+            // Enter a sf0 and sfb file
+            // Find all lines with columns
+            // Get string and split by space
+            // get 2nd substring
+            // write in file, track + samples + wav
+            // write in file, track + 2nd substring + sfb/sf0
+
+            string [] tempName = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
+            string pathName = @"C:\Users\Rodel\Documents\p4p\TemplateStr\";
+            string ext = "tpl";
+
+            pathName += tempName[0] + "." + ext;
+            System.Console.WriteLine(pathName);
+
+            try
+            {
+                string sfbFile = "";
+                List<String> wordToTrack = new List<string>();
+
+                // Delete if file exists. 
+                if (File.Exists(pathName))
+                {
+                    File.Delete(pathName);
+                }
+
+                if (conn.openConn() == true)
+                {
+                    MySqlCommand comm = conn.getCommand();
+                    comm.CommandText = "SELECT File FROM sfb WHERE ProjectName=@projName";
+                    comm.Parameters.AddWithValue("@projName", tempName[1]);
+                    using (MySqlDataReader reader = comm.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            sfbFile = reader.GetString(0);
+                        }
+                    }
+                    //comm.ExecuteNonQuery();
+                }
+                conn.closeConn();
+                if (sfbFile != null)
+                {
+                    int startText = sfbFile.IndexOf("Column");
+                    int endText = sfbFile.IndexOf("---");
+                    string filteredText = sfbFile.Substring(startText, endText);
+                    string[] splitByColumn = filteredText.Split(new string[] { "Column" }, StringSplitOptions.None);
+                    for (int i = 1; i <splitByColumn.Length ; i++)
+                    {
+                        string[] splitBySpace = splitByColumn[i].Split(new char[0]);
+                        wordToTrack.Add(splitBySpace[1]);
+                    }
+
+                }
+
+                // Create a new file 
+                using (FileStream fs = File.Create(pathName))
+                {
+                    // Add some text to file
+                    Byte[] heading = new UTF8Encoding(true).GetBytes("! this file was generated by Cirilla \n \n");
+                    fs.Write(heading, 0, heading.Length);
+
+                    byte[] sampleWavString = new UTF8Encoding(true).GetBytes("track samples wav\n");
+                    fs.Write(sampleWavString, 0, sampleWavString.Length);
+
+                    foreach (string str in wordToTrack){
+                        // make sure to fix hardcoded sfb
+                        byte[] trackString = new UTF8Encoding(true).GetBytes("track " + str + " sfb\n");
+                        fs.Write(trackString, 0, trackString.Length);
+                    }
+                    byte[] primaryExt = new UTF8Encoding(true).GetBytes("\nset PrimaryExtension wav \n");
+                    fs.Write(primaryExt, 0, primaryExt.Length);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        
 
     }
 }

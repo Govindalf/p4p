@@ -32,7 +32,7 @@ namespace P4PSpeechDB
         private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
         private DBConnection conn;
         private List<String> tableNames = new List<String>();
-        private ObservableCollection<SpeakerRow> row = new ObservableCollection<SpeakerRow>(); //DAtagrid row item
+        private ObservableCollection<Row> rowS ; //DAtagrid row item
         DataGridLoader dgl;
 
         public Boolean IsExpanded { get; set; }
@@ -72,9 +72,11 @@ namespace P4PSpeechDB
             //Loads all datagrid with relevant data
             dgl = new DataGridLoader(conn, tableNames);
             dgl.setUpDataGrids();
-            dataGridFiles.ItemsSource = dgl.getCollection("S");
+            rowS = dgl.getCollection("S");
+            buildDatagridGroups(new ListCollectionView(rowS));
+            
             dataGridProjects.ItemsSource = dgl.getCollection("P");
-            //loadDataGrid();
+
         }
 
         // depreciated
@@ -224,14 +226,13 @@ namespace P4PSpeechDB
         private void buildDatagridGroups(ICollectionView collection)
         {
             PropertyGroupDescription propertyDes = new PropertyGroupDescription("ProjectName");
-
-            collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
             collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
 
             dataGridFiles.ItemsSource = collection;
             dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
         }
 
+        //When a row in the projects grid is selected
         private void dataGridProjects_GotCellFocus(object sender, RoutedEventArgs e)
         {
            
@@ -244,8 +245,8 @@ namespace P4PSpeechDB
                 {
                     string projectName = item.PID.ToString();
                     dgl.loadSpeakers(projectName);
-
-                    dataGridFiles.ItemsSource = dgl.getCollection("S");
+                    rowS = dgl.getCollection("S") ;
+                    buildDatagridGroups(new ListCollectionView(rowS));
                 }
             }
         }
@@ -453,14 +454,13 @@ namespace P4PSpeechDB
                 {
 
                     // Collection which will take your ObservableCollection (the datagrid row item)
-                    var itemSourceList = new CollectionViewSource() { Source = this.row };
+                    var itemSourceList = new CollectionViewSource() { Source = this.rowS };
 
                     //now we add our Filter
                     itemSourceList.Filter += new FilterEventHandler(searchFilter);
 
                     // ICollectionView the View/UI part 
                     ICollectionView itemlist = itemSourceList.View;
-
                     buildDatagridGroups(itemlist);
                     //dataGridFiles.ItemsSource = itemlist;
 

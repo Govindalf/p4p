@@ -78,6 +78,7 @@
     <Compile Include="DataGridLoader.cs" />
     <Compile Include="ProjectRow.cs" />
     <Compile Include="DBConnection.cs" />
+    <Compile Include="Row.cs" />
     <Compile Include="SpeakerRow.cs" />
     <Compile Include="FolderMsgPrompt.xaml.cs">
       <DependentUpon>FolderMsgPrompt.xaml</DependentUpon>

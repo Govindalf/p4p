@@ -33,7 +33,7 @@
         <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON DONT PRESS" HorizontalAlignment="Left" Margin="177,352,0,0" VerticalAlignment="Top" Width="330" Height="18" Click="ButtonLoad_Click" RenderTransformOrigin="1.338,0.589"/>
         <Button Content="Add File" HorizontalAlignment="Left" Margin="10,314,0,0" VerticalAlignment="Top" Width="141" Height="56" Click="ButtonBrowse_Click"/>
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="165,77,0,0" Name="dataGridFiles"  HorizontalAlignment="Left" Width="263" HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="293" Margin="165,77,0,0" Name="dataGridFiles"  HorizontalAlignment="Left" Width="263" HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Path=ID}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
@@ -58,7 +58,7 @@
             </DataGrid.GroupStyle>
         </DataGrid>
 
-        <TextBox Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="10,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="341" FontStyle="Italic" Foreground="#7F000000" KeyDown="TextBox_KeyDown" >
+        <TextBox Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="165,40,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="263" FontStyle="Italic" Foreground="#7F000000" KeyDown="TextBox_KeyDown" >
             <TextBox.Style>
                 <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                     <Style.Resources>
@@ -83,7 +83,7 @@
             </TextBox.Style>
         </TextBox>
         <Button Visibility="Hidden" Content="LESS DANGEROUS BUT STILL MAGIC ADD ALL BUTTON" HorizontalAlignment="Left" Margin="177,314,0,0" VerticalAlignment="Top" Width="330" Click="Button_Click"/>
-        <StackPanel HorizontalAlignment="Left" Height="296" Margin="461,74,0,0" VerticalAlignment="Top" Width="168" Background="LightSlateGray">
+        <StackPanel HorizontalAlignment="Left" Height="296" Margin="442,77,0,0" VerticalAlignment="Top" Width="168" Background="LightSlateGray">
             <Button Content="Generate Template File" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
             <Button Content="Vocal Tract Synthesis" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
             <Button Content="Go to WebMaus" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
@@ -94,7 +94,7 @@
               UnloadedBehavior="Stop" />
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="715,74,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="386" HeadersVisibility="Column" CanUserAddRows="False">
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="644,77,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="386" HeadersVisibility="Column" CanUserAddRows="False">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding ID}" Header="FileID" Width="120" IsReadOnly="True" SortDirection="Ascending"/>

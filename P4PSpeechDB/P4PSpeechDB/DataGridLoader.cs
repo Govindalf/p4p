@@ -20,8 +20,9 @@ namespace P4PSpeechDB
         ICollectionView collectionS; //speakers
         ICollectionView collectionA; //analysis
         private List<String> tableNames;
-        private ObservableCollection<SpeakerRow> rowS; //DAtagrid row item
-        private ObservableCollection<ProjectRow> rowP = new ObservableCollection<ProjectRow>(); //DAtagrid row item
+        private ObservableCollection<Row> rowA; //DAtagrid row item
+        private ObservableCollection<Row> rowS; //DAtagrid row item
+        private ObservableCollection<Row> rowP = new ObservableCollection<Row>(); //DAtagrid row item
 
         public DataGridLoader(DBConnection conn, List<String> tableNames)
         {
@@ -35,16 +36,16 @@ namespace P4PSpeechDB
             loadSpeakers(null);
         }
 
-        public ICollectionView getCollection(string type)
+        public ObservableCollection<Row> getCollection(string type)
         {
             switch (type)
             {
                 case "P":
-                    return this.collectionP;
+                    return this.rowP;
                 case "S":
-                    return this.collectionS;
+                    return this.rowS;
                 case "A":
-                    return this.collectionA;
+                    return this.rowA;
                 default:
                     throw new Exception("Invalid type value");
             }
@@ -81,7 +82,7 @@ namespace P4PSpeechDB
                 }
 
                 MySqlDataReader myReader;
-                rowS = new ObservableCollection<SpeakerRow>();
+                rowS = new ObservableCollection<Row>();
                 try
                 {
 
@@ -94,10 +95,6 @@ namespace P4PSpeechDB
                         {
                             continue;
                         }
-                        //System.Console.WriteLine(name);
-                        //MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
-
-                        //MySqlCommand cmd = new MySqlCommand("Select ID, ProjectName, Speaker  from " + name, conn.getConn() );
 
                         MySqlCommand cmd = new MySqlCommand();
                         cmd.Connection = conn.getConn();
@@ -114,19 +111,15 @@ namespace P4PSpeechDB
                                 projectName = myReader.GetValue(1).ToString();
                             }
 
-                            //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
                             rowS.Add(new SpeakerRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name });
 
                         }
                         myReader.Close();
-                        //adp.Fill(ds, "LoadDataBinding");
-                        //dataGridFiles.DataContext = ds;
 
                     }
 
                     //Pass in the collection made of the datagrid rows
                     collectionS = new ListCollectionView(rowS);
-                    buildDatagridGroups(collectionS);
                 }
                 catch (MySqlException ex)
                 {
@@ -136,14 +129,6 @@ namespace P4PSpeechDB
             conn.closeConn();
         }
 
-        //Sets up the grouping for the datagrid
-        private void buildDatagridGroups(ICollectionView collection)
-        {
-            PropertyGroupDescription propertyDes = new PropertyGroupDescription("ProjectName");
-
-            collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
-            //dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
-        }
 
 
     }

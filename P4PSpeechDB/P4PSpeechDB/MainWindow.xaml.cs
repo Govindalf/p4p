@@ -69,7 +69,7 @@ namespace P4PSpeechDB
                 MessageBox.Show(ex.Message);
             }
             InitializeComponent();
-
+            //randomlyMatchAnalysis();
             //Loads all datagrid with relevant data
             dgl = new DataGridLoader(conn, tableNames);
             dgl.setUpDataGrids();
@@ -209,6 +209,25 @@ namespace P4PSpeechDB
             }
         }
 
+        //When a row in the analysis grid is selected
+        private void dataGridAnalysis_GotCellFocus(object sender, RoutedEventArgs e)
+        {
+
+            if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
+            {
+                DataGridRow dgr = sender as DataGridRow;
+                var item = dgr.DataContext as ProjectRow;
+
+                if (item != null)
+                {
+                    string projectName = item.PID.ToString();
+                    dgl.loadSpeakers(projectName);
+                    rowS = dgl.getCollection("S");
+                    buildDatagridGroups(new ListCollectionView(rowS));
+                }
+            }
+        }
+
         //On datagrid row click, opens the file
         private void resultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -309,6 +328,67 @@ namespace P4PSpeechDB
 
         }
 
+
+        //Testing, randomly macthes analysis to files
+        private void randomlyMatchAnalysis()
+        {
+            if (conn.openConn() == true)
+            {
+                MySqlCommand comm;
+                MySqlDataReader myReader;
+                List<string> IDlist = new List<string>();
+                List<string> AIDlist = new List<string>();
+                comm = conn.getCommand();
+                MySqlCommand cmd = new MySqlCommand(@"(SELECT ID FROM WAV) UNION (SELECT ID FROM hlb) UNION (SELECT ID FROM sf0) UNION
+                                                        (SELECT ID FROM lab) UNION
+                                                        (SELECT ID FROM sfb) UNION
+                                                        (SELECT ID FROM wav) UNION
+                                                        (SELECT ID FROM trg) ", conn.getConn());
+
+                myReader = cmd.ExecuteReader();
+                while (myReader.Read())
+                {
+                    IDlist.Add(myReader.GetString("ID"));
+                }
+                MessageBox.Show(IDlist.Count.ToString());
+                myReader.Close();
+
+                comm = conn.getCommand();
+                cmd = new MySqlCommand("SELECT AID FROM analysis", conn.getConn());
+                myReader = cmd.ExecuteReader();
+                while (myReader.Read())
+                {
+                    AIDlist.Add(myReader.GetString("AID"));
+                }
+                myReader.Close();
+
+                foreach (string ID in IDlist)
+                {
+
+
+                    Random random = new Random();
+                    int randomNumber = random.Next(0, 10);
+                    for (int i = 0; i < randomNumber; i++)
+                    {
+                        comm = conn.getCommand();
+                        comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID, @AID)";
+                        comm.Parameters.AddWithValue("@ID", ID);
+                        comm.Parameters.AddWithValue("@AID", AIDlist[random.Next(0, AIDlist.Count-1)]);
+                        comm.ExecuteNonQuery();
+
+                    }
+
+
+
+                }
+
+                conn.closeConn();
+
+            }
+
+        }
+
+
         //Loads all the data in the target folder into the db
         private void loadAllButton_Click(object sender, RoutedEventArgs e)
         {
@@ -363,7 +443,7 @@ namespace P4PSpeechDB
 
 
                             comm = conn.getCommand();
-                            comm.CommandText = "INSERT INTO projects (PID) VALUES (@PID)"; //Dont insert dups
+                            comm.CommandText = "INSERT IGNORE INTO projects (PID) VALUES (@PID)"; //ignore = Dont insert dups
                             MessageBox.Show(dir.ToString());
                             comm.Parameters.AddWithValue("@PID", dir);
                             comm.ExecuteNonQuery();

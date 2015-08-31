@@ -76,6 +76,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataGridLoader.cs" />
+    <Compile Include="AnalysisRow.cs" />
     <Compile Include="ProjectRow.cs" />
     <Compile Include="DBConnection.cs" />
     <Compile Include="Row.cs" />

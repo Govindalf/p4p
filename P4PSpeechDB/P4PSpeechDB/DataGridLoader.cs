@@ -72,6 +72,27 @@ namespace P4PSpeechDB
             }
         }
 
+        private void loadAnalysis()
+        {
+            if (conn.openConn() == true)
+            {
+
+                MySqlDataReader myReader;
+                MySqlCommand cmd = new MySqlCommand("Select AID, Description from analysis", conn.getConn());
+
+                myReader = cmd.ExecuteReader();
+                while (myReader.Read())
+                {
+                    rowA.Add(new AnalysisRow { AID = myReader.GetString("AID") });
+                    rowA.Add(new AnalysisRow { Description = myReader.GetString("Description") });
+                }
+                myReader.Close();
+                collectionA = new ListCollectionView(rowA);
+
+                conn.closeConn();
+            }
+        }
+
         public void loadSpeakers(string PID)
         {
             if (conn.openConn() == true)
@@ -91,7 +112,7 @@ namespace P4PSpeechDB
                     foreach (string name in tableNames)
                     {
                         //Exclude the projects table
-                        if (name.Equals("projects") || name.Equals("analysis"))
+                        if (name.Equals("projects") || name.Equals("analysis") || name.Equals("files2analysis"))
                         {
                             continue;
                         }

@@ -521,13 +521,62 @@ namespace P4PSpeechDB
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e)
         {
-            string tableName = (dataGridFiles.SelectedItem as DatagridRow).tableName;
-            string idName = (dataGridFiles.SelectedItem as DatagridRow).ID;
-            DatagridRow dgRow = (from r in row where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
-            row.Remove(dgRow);
+            //for(int i = 0; i < dataGridFiles.SelectedItems.Count; i++){
+            //    string tableName = (dataGridFiles.SelectedItems[i] as DatagridRow).tableName;
+            //    string idName = (dataGridFiles.SelectedItems[i] as DatagridRow).ID;
+            //    System.Console.WriteLine(tableName);
+            //    System.Console.WriteLine(idName);
+            //    System.Console.WriteLine(i);
+            //    DatagridRow dgRow = (from r in row where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
+            //    //row.Remove(dgRow);
+            //    if (conn.openConn() == true)
+            //    {
+            //        try
+            //        {
+            //            //Create tables if they dont already exist
+            //            MySqlCommand comm = conn.getCommand();
+            //            comm.CommandText = "DELETE FROM " + tableName + " WHERE ID=@idName";
+            //            comm.Parameters.AddWithValue("@idName", idName);
+            //            comm.ExecuteNonQuery();
+            //        }
+            //        catch (MySqlException ex)
+            //        {
+            //            MessageBox.Show(ex.ToString());
+            //        }
+            //        conn.closeConn();
+            //    }
+            //}
+            var listOfItems = dataGridFiles.SelectedItems;
+            foreach (var i in dataGridFiles.SelectedItems)
+            {
+                string tableName = (i as DatagridRow).tableName;
+                string idName = (i as DatagridRow).ID;
+                System.Console.WriteLine(tableName);
+                System.Console.WriteLine(idName);
+                System.Console.WriteLine(i);
+                DatagridRow dgRow = (from r in row where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
+                //newRow.Remove(dgRow);
+                if (conn.openConn() == true)
+                {
+                    try
+                    {
+                        //Create tables if they dont already exist
+                        MySqlCommand comm = conn.getCommand();
+                        comm.CommandText = "DELETE FROM " + tableName + " WHERE ID=@idName";
+                        comm.Parameters.AddWithValue("@idName", idName);
+                        comm.ExecuteNonQuery();
+                    }
+                    catch (MySqlException ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                    conn.closeConn();
+                }
+            }
+
             collection = new ListCollectionView(row);
             buildDatagridGroups(collection);
-
+            
         }
 
     }

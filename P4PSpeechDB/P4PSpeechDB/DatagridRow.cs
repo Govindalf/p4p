@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace P4PSpeechDB
 {
-    class DatagridRow
+    public class DatagridRow
     {
         public string ID { get; set; }
         public string filePath { get; set; }

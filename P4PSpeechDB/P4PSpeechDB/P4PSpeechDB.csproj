@@ -67,6 +67,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="GenerateTempPrompt.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -79,6 +83,9 @@
     <Compile Include="DatagridRow.cs" />
     <Compile Include="FolderMsgPrompt.xaml.cs">
       <DependentUpon>FolderMsgPrompt.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GenerateTempPrompt.xaml.cs">
+      <DependentUpon>GenerateTempPrompt.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

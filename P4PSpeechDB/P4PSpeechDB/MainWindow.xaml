@@ -13,10 +13,16 @@
                                       Foreground="Black">
 
                             <Expander.Header>
-
-                                <TextBlock Text="{Binding Name}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Margin" Value="5,0,0,0"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <CheckBox IsChecked="{Binding IsHeaderSelected}" MaxHeight="15" MaxWidth="15"/>
+                                    <TextBlock Text="{Binding Name}" />
                                 <!--<TextBlock Text="{Binding Path =ItemCount}" />-->
-
+                                </StackPanel>
                             </Expander.Header>
 
                             <StackPanel>
@@ -58,7 +64,7 @@
                 </GroupStyle>
             </DataGrid.GroupStyle>
         </DataGrid>
-        <TextBox Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="10,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="341" FontStyle="Italic" Foreground="#7F000000" KeyDown="TextBox_KeyDown" >
+        <TextBox Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="10,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="255" FontStyle="Italic" Foreground="#7F000000" KeyDown="TextBox_KeyDown" >
             <TextBox.Style>
                 <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                     <Style.Resources>
@@ -84,7 +90,7 @@
         </TextBox>
         <Button Visibility="Hidden" Content="LESS DANGEROUS BUT STILL MAGIC ADD ALL BUTTON" HorizontalAlignment="Left" Margin="177,314,0,0" VerticalAlignment="Top" Width="330" Click="Button_Click"/>
         <StackPanel HorizontalAlignment="Left" Height="332" Margin="530,38,0,0" VerticalAlignment="Top" Width="168" Background="LightSlateGray">
-            <Button Content="Generate Template File" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
+            <Button Content="Generate Template File" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132" Click="ButtonTemplate_Click"/>
             <Button Content="Vocal Tract Synthesis" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
             <Button Content="Go to WebMaus" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
             <Button Content="Stop Audio" Margin="18,0" Click="Button_Click_1"/>
@@ -92,6 +98,8 @@
         </StackPanel>
         <MediaElement Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="575,254,0,0" MediaEnded="mediaElement_MediaEnded"/>
         <Button Content="Delete" HorizontalAlignment="Left" Margin="177,314,0,0" VerticalAlignment="Top" Width="140" Height="56" Click="ButtonDelete_Click"/>
+        <ComboBox HorizontalAlignment="Left" Margin="387,38,0,0" VerticalAlignment="Top" Width="120"/>
+        <TextBlock HorizontalAlignment="Left" Margin="335,42,0,0" TextWrapping="Wrap" Text="Sort By" VerticalAlignment="Top"/>
 
     </Grid>
 

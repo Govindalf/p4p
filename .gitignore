@@ -23,6 +23,8 @@ bld/
 [Oo]bj/
 
 testOutput
+testDB
+P4Ptestfiles
 
 # Visual Studio 2015 cache/options directory
 .vs/

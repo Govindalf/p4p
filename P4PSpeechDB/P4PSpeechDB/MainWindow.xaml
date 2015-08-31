@@ -30,10 +30,10 @@
     </Window.Resources>
 
     <Grid Height="393" Margin="0,0,17,0" VerticalAlignment="Top" >
-        <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON DONT PRESS" HorizontalAlignment="Left" Margin="177,352,0,0" VerticalAlignment="Top" Width="330" Height="18" Click="ButtonLoad_Click" RenderTransformOrigin="1.338,0.589"/>
         <Button Content="Add File" HorizontalAlignment="Left" Margin="10,314,0,0" VerticalAlignment="Top" Width="141" Height="56" Click="ButtonBrowse_Click"/>
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="293" Margin="165,77,0,0" Name="dataGridFiles"  HorizontalAlignment="Left" Width="263" HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="293" Margin="165,77,0,0" Name="dataGridFiles"  
+                  HorizontalAlignment="Left" Width="263" HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Path=ID}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
@@ -82,7 +82,9 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <Button Visibility="Hidden" Content="LESS DANGEROUS BUT STILL MAGIC ADD ALL BUTTON" HorizontalAlignment="Left" Margin="177,314,0,0" VerticalAlignment="Top" Width="330" Click="Button_Click"/>
+        
+        <Button Visibility="Visible" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="656,332,0,0" VerticalAlignment="Top" Width="330" Click="loadAllButton_Click"/>
+       
         <StackPanel HorizontalAlignment="Left" Height="296" Margin="442,77,0,0" VerticalAlignment="Top" Width="168" Background="LightSlateGray">
             <Button Content="Generate Template File" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>
             <Button Content="Vocal Tract Synthesis" HorizontalAlignment="Left" Height="54" Margin="18,10,0,0" Width="132"/>

@@ -33,7 +33,8 @@
         <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON DONT PRESS" HorizontalAlignment="Left" Margin="177,352,0,0" VerticalAlignment="Top" Width="330" Height="18" Click="ButtonLoad_Click" RenderTransformOrigin="1.338,0.589"/>
         <Button Content="Add File" HorizontalAlignment="Left" Margin="10,314,0,0" VerticalAlignment="Top" Width="141" Height="56" Click="ButtonBrowse_Click"/>
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="10,77,0,0" Name="dataGridFiles" ItemsSource="{Binding Path=LoadDataBinding}" HorizontalAlignment="Left" Width="497" HeadersVisibility="Column" CanUserAddRows="False">
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="225" Margin="10,77,0,0" Name="dataGridFiles" ItemsSource="{Binding Path=LoadDataBinding}" HorizontalAlignment="Left" Width="497" HeadersVisibility="Column" 
+                  CanUserAddRows="False" CanUserDeleteRows="True">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Path=ID}" Header="FileID" Width="120" IsReadOnly="True" SortDirection="Ascending"/>
@@ -90,6 +91,7 @@
 
         </StackPanel>
         <MediaElement Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="575,254,0,0" MediaEnded="mediaElement_MediaEnded"/>
+        <Button Content="Delete" HorizontalAlignment="Left" Margin="177,314,0,0" VerticalAlignment="Top" Width="140" Height="56" Click="ButtonDelete_Click"/>
 
     </Grid>
 

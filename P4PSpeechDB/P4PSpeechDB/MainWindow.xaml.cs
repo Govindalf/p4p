@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Diagnostics;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -20,7 +21,6 @@ using MySql.Data.MySqlClient;
 using Path = System.IO.Path;
 using System.IO;
 using System.Collections;
-using System.ComponentModel;
 
 namespace P4PSpeechDB
 {
@@ -32,6 +32,7 @@ namespace P4PSpeechDB
         private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
         private DBConnection conn;
+        ListCollectionView collection;
         private List<String> Tablenames = new List<String>();
         private ObservableCollection<DatagridRow> row = new ObservableCollection<DatagridRow>(); //DAtagrid row item
 
@@ -255,7 +256,7 @@ namespace P4PSpeechDB
                     }
 
                     //Pass in the collection made of the datagrid rows
-                    ListCollectionView collection = new ListCollectionView(row);
+                    collection = new ListCollectionView(row);
                     buildDatagridGroups(collection);
 
 
@@ -272,7 +273,6 @@ namespace P4PSpeechDB
         //Sets up the grouping for the datagrid
         private void buildDatagridGroups(ICollectionView collection) 
         {
-            PropertyGroupDescription propertyDes = new PropertyGroupDescription("ProjectName");
 
             collection.GroupDescriptions.Add(new PropertyGroupDescription("ProjectName"));
             collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
@@ -519,9 +519,16 @@ namespace P4PSpeechDB
             }
         }
 
+        private void ButtonDelete_Click(object sender, RoutedEventArgs e)
+        {
+            string tableName = (dataGridFiles.SelectedItem as DatagridRow).tableName;
+            string idName = (dataGridFiles.SelectedItem as DatagridRow).ID;
+            DatagridRow dgRow = (from r in row where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
+            row.Remove(dgRow);
+            collection = new ListCollectionView(row);
+            buildDatagridGroups(collection);
 
-
-
+        }
 
     }
 }

@@ -184,7 +184,6 @@ namespace P4PSpeechDB
 
         }
 
-<<<<<<< HEAD
 
         //Sets up the grouping for the datagrid
         private void buildDatagridGroups(ICollectionView collection)
@@ -195,57 +194,57 @@ namespace P4PSpeechDB
             dataGridFiles.ItemsSource = collection;
             dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
         }
-=======
-        private void loadDataGrid()
-        {
-            if (conn.openConn() == true)
-            {
+
+        //private void loadDataGrid()
+        //{
+        //    if (conn.openConn() == true)
+        //    {
                
-                MySqlDataReader myReader;
+        //        MySqlDataReader myReader;
 
-                try
-                {
-                    row.Clear();
-                    //Get number of tables in database, for all tables, do the following
-                    DataSet ds = new DataSet();
-                    foreach (string name in Tablenames)
-                    {
-                        //Exclude the projects table
-                        if (name.Equals("projects") || name.Equals("analysis") || name.Equals("files2analysis"))
-                        {
-                            continue;
-                        }
-                        //System.Console.WriteLine(name);
-                        //MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
+        //        try
+        //        {
+        //            row.Clear();
+        //            //Get number of tables in database, for all tables, do the following
+        //            DataSet ds = new DataSet();
+        //            foreach (string name in Tablenames)
+        //            {
+        //                //Exclude the projects table
+        //                if (name.Equals("projects") || name.Equals("analysis") || name.Equals("files2analysis"))
+        //                {
+        //                    continue;
+        //                }
+        //                //System.Console.WriteLine(name);
+        //                //MySqlCommand cmd = new MySqlCommand("Select ID, filePath, ProjectName  from " + name, conn.getConn());
 
-                        MySqlCommand cmd = new MySqlCommand("Select ID, ProjectName, Speaker  from " + name, conn.getConn());
-                        //MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
+        //                MySqlCommand cmd = new MySqlCommand("Select ID, ProjectName, Speaker  from " + name, conn.getConn());
+        //                //MySqlDataAdapter adp = new MySqlDataAdapter(cmd);
 
-                        myReader = cmd.ExecuteReader();
-                        while (myReader.Read())
-                        {
-                            string projectName = "default";
-                            if (myReader.GetValue(1).ToString() != "")
-                            {
-                                projectName = myReader.GetValue(1).ToString();
-                            }
+        //                myReader = cmd.ExecuteReader();
+        //                while (myReader.Read())
+        //                {
+        //                    string projectName = "default";
+        //                    if (myReader.GetValue(1).ToString() != "")
+        //                    {
+        //                        projectName = myReader.GetValue(1).ToString();
+        //                    }
 
-                            //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
-                            row.Add(new DatagridRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name });
+        //                    //dbFile.Add(new DBFile { ID = myReader.GetString("ID"), filePath = myReader.GetString("filePath"), ProjectName = projectName });
+        //                    row.Add(new DatagridRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name });
 
-                        }
-                        myReader.Close();
-                        //adp.Fill(ds, "LoadDataBinding");
-                        //dataGridFiles.DataContext = ds;
+        //                }
+        //                myReader.Close();
+        //                //adp.Fill(ds, "LoadDataBinding");
+        //                //dataGridFiles.DataContext = ds;
 
-                    }
+        //            }
 
-                    //Pass in the collection made of the datagrid rows
-                    collection = new ListCollectionView(row);
-                    buildDatagridGroups(collection);
->>>>>>> SpeechTemplate
+        //            //Pass in the collection made of the datagrid rows
+        //            collection = new ListCollectionView(row);
+        //            buildDatagridGroups(collection);
 
-        //When a row in the projects grid is selected
+
+        ////When a row in the projects grid is selected
         private void dataGridProjects_GotCellFocus(object sender, RoutedEventArgs e)
         {
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
@@ -634,36 +633,36 @@ namespace P4PSpeechDB
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e)
         {
-            var listOfItems = dataGridFiles.SelectedItems;
-            foreach (var i in dataGridFiles.SelectedItems)
-            {
-                string tableName = (i as SpeakerRow).tableName;
-                string idName = (i as SpeakerRow).ID;
-                System.Console.WriteLine(tableName);
-                System.Console.WriteLine(idName);
-                System.Console.WriteLine(i);
-                SpeakerRow dgRow = (from r in row where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
-                //newRow.Remove(dgRow);
-                if (conn.openConn() == true)
-                {
-                    try
-                    {
-                        //Create tables if they dont already exist
-                        MySqlCommand comm = conn.getCommand();
-                        comm.CommandText = "DELETE FROM " + tableName + " WHERE ID=@idName";
-                        comm.Parameters.AddWithValue("@idName", idName);
-                        comm.ExecuteNonQuery();
-                    }
-                    catch (MySqlException ex)
-                    {
-                        MessageBox.Show(ex.ToString());
-                    }
-                    conn.closeConn();
-                }
-            }
+            //var listOfItems = dataGridFiles.SelectedItems;
+            //foreach (var i in dataGridFiles.SelectedItems)
+            //{
+            //    string tableName = (i as SpeakerRow).tableName;
+            //    string idName = (i as SpeakerRow).ID;
+            //    System.Console.WriteLine(tableName);
+            //    System.Console.WriteLine(idName);
+            //    System.Console.WriteLine(i);
+            //    SpeakerRow dgRow = (from r in rowS where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
+            //    //newRow.Remove(dgRow);
+            //    if (conn.openConn() == true)
+            //    {
+            //        try
+            //        {
+            //            //Create tables if they dont already exist
+            //            MySqlCommand comm = conn.getCommand();
+            //            comm.CommandText = "DELETE FROM " + tableName + " WHERE ID=@idName";
+            //            comm.Parameters.AddWithValue("@idName", idName);
+            //            comm.ExecuteNonQuery();
+            //        }
+            //        catch (MySqlException ex)
+            //        {
+            //            MessageBox.Show(ex.ToString());
+            //        }
+            //        conn.closeConn();
+            //    }
+            //}
 
-            collection = new ListCollectionView(row);
-            buildDatagridGroups(collection);
+            //ListCollectionView collection = new ListCollectionView(rowS);
+            //buildDatagridGroups(collection);
             
         }
 

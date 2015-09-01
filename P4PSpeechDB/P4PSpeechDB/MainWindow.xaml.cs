@@ -235,6 +235,12 @@ namespace P4PSpeechDB
             }
         }
 
+
+        private void analysisDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
         //On datagrid row click, opens the file
         private void resultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

@@ -3,6 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="EMU 2.0" Height="533.665" Width="869.5">
     <Window.Resources>
+        
+        
         <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
 
             <Setter Property="Template">
@@ -47,10 +49,9 @@
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding ID}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
-                <!--<DataGridTextColumn Binding="{Binding Path=Speaker}" Header="Speaker" Width="100" IsReadOnly="True" /> -->
                 <DataGridTextColumn Binding="{Binding tableName}" Header="FileType" Width="*" IsReadOnly="True" />
-                <!--<DataGridTextColumn Binding="{Binding Path=ProjectName}" Header="Project" Width="210" IsReadOnly="True" />-->
             </DataGrid.Columns>
+            
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <EventSetter Event="Control.MouseDoubleClick" Handler="resultDataGrid_MouseDoubleClick"/>
@@ -140,7 +141,7 @@
 
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="166" Margin="10,77,0,0" 
                   x:Name="dataGridProjects" HorizontalAlignment="Left" Width="141" 
-                  HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                  HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" IsSynchronizedWithCurrentItem="False">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding PID}" Header="Project" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
@@ -160,6 +161,9 @@
 
         </ComboBox> 
         <TextBlock HorizontalAlignment="Left" Margin="165,112,0,0" TextWrapping="Wrap" Text="Group By" VerticalAlignment="Top"/>
+        
+        <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="177,178,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"/>
+        <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="458,110,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236"/>
 
     </Grid>
 

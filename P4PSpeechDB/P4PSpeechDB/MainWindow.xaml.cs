@@ -207,6 +207,8 @@ namespace P4PSpeechDB
         //When a row in the projects grid is selected
         private void dataGridProjects_GotCellFocus(object sender, RoutedEventArgs e)
         {
+            this.emptyGrid.Visibility = System.Windows.Visibility.Hidden;
+
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
@@ -227,6 +229,7 @@ namespace P4PSpeechDB
         //When a row in the analysis grid is selected
         private void dataGridFiles_GotCellFocus(object sender, RoutedEventArgs e)
         {
+            this.emptyGrid2.Visibility = System.Windows.Visibility.Hidden;
 
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
             {

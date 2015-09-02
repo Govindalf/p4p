@@ -136,8 +136,7 @@ namespace P4PSpeechDB
                             {
                                 projectName = myReader.GetValue(1).ToString();
                             }
-
-                            rowS.Add(new SpeakerRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name });
+                            rowS.Add(new SpeakerRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name, Age = (myReader.GetString("Speaker"))[0].ToString() });
 
                         }
                         myReader.Close();

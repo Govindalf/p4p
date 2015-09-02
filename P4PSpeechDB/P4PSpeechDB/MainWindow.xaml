@@ -41,7 +41,7 @@
               UnloadedBehavior="Stop" />
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="410" Margin="165,77,0,0" x:Name="dataGridFiles"  
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="341" Margin="165,146,0,0" x:Name="dataGridFiles"  
     		HorizontalAlignment="Left" Width="263" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
 
@@ -70,7 +70,7 @@
             </DataGrid.GroupStyle>
         </DataGrid>
 
-        <TextBox x:Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="165,38,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="263" FontStyle="Italic" Foreground="#7F000000" KeyDown="TextBox_KeyDown" >
+        <TextBox x:Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="165,77,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="263" FontStyle="Italic" Foreground="#7F000000" KeyDown="TextBox_KeyDown" >
 
             <TextBox.Style>
                 <Style xmlns:sys="clr-namespace:System;assembly=mscorlib" TargetType="{x:Type TextBox}">
@@ -122,8 +122,8 @@
                 </Style>
 
             </DataGrid.RowStyle>
-            
-            
+
+
 
             <DataGrid.GroupStyle>
                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
@@ -153,6 +153,13 @@
             </DataGrid.RowStyle>
 
         </DataGrid>
+        <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="223,110,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="speakerCombo_SelectionChanged" SelectedValuePath="Content">
+            <ComboBoxItem Name="Speaker">Speaker</ComboBoxItem>
+            <ComboBoxItem Name="tableName">File Type</ComboBoxItem>
+            <ComboBoxItem Name="Age">Age</ComboBoxItem>
+
+        </ComboBox> 
+        <TextBlock HorizontalAlignment="Left" Margin="165,112,0,0" TextWrapping="Wrap" Text="Group By" VerticalAlignment="Top"/>
 
     </Grid>
 

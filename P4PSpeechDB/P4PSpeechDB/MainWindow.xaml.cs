@@ -39,15 +39,22 @@ namespace P4PSpeechDB
         DataGridLoader dgl;
 
         public Boolean IsExpanded { get; set; }
-
+        private string groupValue = "Speaker"; //Default grouping on this value
 
         public MainWindow()
         {
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnApplicationExit);
             IsExpanded = false;
             this.DataContext = this;
-
             conn = new DBConnection();
+
+            //Loads all datagrid with relevant data
+            dgl = new DataGridLoader(conn, tableNames);
+            dgl.setUpDataGrids();
+            rowS = dgl.getCollection("S");
+
+            InitializeComponent();
+            this.speakerCombo.Text = groupValue;
 
             try
             {
@@ -72,12 +79,8 @@ namespace P4PSpeechDB
             {
                 MessageBox.Show(ex.Message);
             }
-            InitializeComponent();
             //randomlyMatchAnalysis();
-            //Loads all datagrid with relevant data
-            dgl = new DataGridLoader(conn, tableNames);
-            dgl.setUpDataGrids();
-            rowS = dgl.getCollection("S");
+
             buildDatagridGroups(new ListCollectionView(rowS));
 
             dataGridProjects.ItemsSource = dgl.getCollection("P");
@@ -188,7 +191,13 @@ namespace P4PSpeechDB
         private void buildDatagridGroups(ICollectionView collection)
         {
             PropertyGroupDescription propertyDes = new PropertyGroupDescription("ProjectName");
-            collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
+            collection.GroupDescriptions.Add(new PropertyGroupDescription(groupValue));
+
+            if (groupValue.Equals("Age"))
+            {
+
+                collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
+            }
 
             dataGridFiles.ItemsSource = collection;
             dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
@@ -208,6 +217,7 @@ namespace P4PSpeechDB
                     string projectName = item.PID.ToString();
                     dgl.loadSpeakers(projectName);
                     rowS = dgl.getCollection("S");
+
                     buildDatagridGroups(new ListCollectionView(rowS));
                 }
 
@@ -386,7 +396,7 @@ namespace P4PSpeechDB
                         comm = conn.getCommand();
                         comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID, @AID)";
                         comm.Parameters.AddWithValue("@ID", ID);
-                        comm.Parameters.AddWithValue("@AID", AIDlist[random.Next(0, AIDlist.Count-1)]);
+                        comm.Parameters.AddWithValue("@AID", AIDlist[random.Next(0, AIDlist.Count - 1)]);
                         comm.ExecuteNonQuery();
 
                     }
@@ -633,7 +643,7 @@ namespace P4PSpeechDB
             // write in file, track + samples + wav
             // write in file, track + 2nd substring + sfb/sf0
 
-            string [] tempName = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
+            string[] tempName = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
             string pathName = @"..\\..\\..\\..\\TemplateStr\";
             string ext = "tpl";
 
@@ -672,7 +682,7 @@ namespace P4PSpeechDB
                     int endText = sfbFile.IndexOf("---");
                     string filteredText = sfbFile.Substring(startText, endText);
                     string[] splitByColumn = filteredText.Split(new string[] { "Column" }, StringSplitOptions.None);
-                    for (int i = 1; i <splitByColumn.Length ; i++)
+                    for (int i = 1; i < splitByColumn.Length; i++)
                     {
                         string[] splitBySpace = splitByColumn[i].Split(new char[0]);
                         wordToTrack.Add(splitBySpace[1]);
@@ -690,7 +700,8 @@ namespace P4PSpeechDB
                     byte[] sampleWavString = new UTF8Encoding(true).GetBytes("track samples wav\n");
                     fs.Write(sampleWavString, 0, sampleWavString.Length);
 
-                    foreach (string str in wordToTrack){
+                    foreach (string str in wordToTrack)
+                    {
                         // make sure to fix hardcoded sfb
                         byte[] trackString = new UTF8Encoding(true).GetBytes("track " + str + " sfb\n");
                         fs.Write(trackString, 0, trackString.Length);
@@ -706,7 +717,19 @@ namespace P4PSpeechDB
             }
         }
 
-        
+        private void speakerCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox cmb = sender as ComboBox;
+            ComboBoxItem typeItem = (ComboBoxItem)cmb.SelectedItem;
+
+
+
+            groupValue = typeItem.Name.ToString();
+
+            buildDatagridGroups(new ListCollectionView(rowS));
+        }
 
     }
+
+
 }

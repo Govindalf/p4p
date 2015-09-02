@@ -15,5 +15,6 @@ namespace P4PSpeechDB
         public string ProjectName { get; set; }
         public string tableName { get; set; }
         public string Speaker { get; set; }
+        public string Age { get; set; }
     }
 }

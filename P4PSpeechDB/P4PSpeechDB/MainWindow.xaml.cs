@@ -675,11 +675,9 @@ namespace P4PSpeechDB
             // get 2nd substring
             // write in file, track + samples + wav
             // write in file, track + 2nd substring + sfb/sf0
-            List<List<string>> listResults = new List<List<string>>();
-            listResults = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
+            List<List<string>> listResults = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
             string pathName = @"C:\Users\Rodel\Documents\p4p\TemplateStr\";
             string ext = "tpl";
-            System.Console.WriteLine(listResults.Count);
             //if (tempName != null)
             //{
 

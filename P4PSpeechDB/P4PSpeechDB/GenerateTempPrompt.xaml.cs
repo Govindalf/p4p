@@ -28,8 +28,8 @@ namespace P4PSpeechDB
         }
 
         private string folderNameCB;
-        private string formIdentifier = "Form";
-        private string pitchIdentifier = "Pitch";
+        private static string formIdentifier = "sfb";
+        private static string pitchIdentifier = "sf0";
         private string sf0Name;
         private string sfbName;
         private int countForm = 1;
@@ -50,7 +50,7 @@ namespace P4PSpeechDB
         private static List<string> otherTrackList = new List<string>();
 
 
-        DBConnection conn;
+        private DBConnection conn;
 
         public GenerateTempPrompt(string question, string title, string defaultValue = "", InputType inputType = InputType.Text)
         {
@@ -178,6 +178,7 @@ namespace P4PSpeechDB
                         if (sfbReturnList.Count > 0)
                         {
                             returnList.Add(sfbReturnList);
+                            inst.insertToTable(formIdentifier);
                         }
 
                         // For the Pitch track class. if the user selected a pitch track value to add to the template file
@@ -205,6 +206,7 @@ namespace P4PSpeechDB
                         if (sf0ReturnList.Count > 0)
                         {
                             returnList.Add(sf0ReturnList);
+                            inst.insertToTable(pitchIdentifier);
                         }
                         return returnList;
                     }
@@ -224,6 +226,43 @@ namespace P4PSpeechDB
             }
             //System.Console.WriteLine();
             return null;
+        }
+
+        private void insertToTable(string trackID) 
+        {
+            List<string> distinctList = new List<string>();
+            if(trackID.Equals(formIdentifier))
+            {
+                distinctList = sfbReturnList.Except(formOptions).ToList();
+                
+            }
+            else if(trackID.Equals(pitchIdentifier))
+            {
+                distinctList = sf0ReturnList.Except(pitchOptions).ToList();
+            }
+
+            try
+            {
+                if (conn.openConn() == true)
+                {
+                    MySqlCommand comm = conn.getCommand();
+                    if (distinctList.Count != 0)
+                    {
+                        foreach (string str in distinctList)
+                        {
+                            comm.CommandText = "INSERT INTO trackOptions (ID, trackClass) VALUES (@ID, @trackClass)";
+                            comm.Parameters.AddWithValue("@ID", str);
+                            comm.Parameters.AddWithValue("@trackClass", trackID);
+                            comm.ExecuteNonQuery();
+                        }
+                    }
+                }
+                conn.closeConn();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         void PromptDialog_Loaded(object sender, RoutedEventArgs e)
@@ -296,16 +335,4 @@ namespace P4PSpeechDB
         }
     }
 
-    class Tuple<T, U, P>
-    {
-        public Tuple(T first, U second, P third)
-        {
-            First = first;
-            Second = second;
-            Third = third;
-        }
-        public T First { get; private set; }
-        public U Second { get; private set; }
-        public P Third { get; private set; }
-    }
 }

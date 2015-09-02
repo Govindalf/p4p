@@ -251,27 +251,25 @@ namespace P4PSpeechDB
 
         private void analysisDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
-        }
-
-        //On datagrid row click, opens the file
-        private void resultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
             if (sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as SpeakerRow;
+                var item = dgr.DataContext as AnalysisRow;
                 MySqlDataReader reader;
 
-                int bufferSize = 16777215; //mediumblob buffer size
-                byte[] rawData = new byte[bufferSize];
-                FileStream fs;
 
                 if (item != null)
                 {
-                    string tableName = item.tableName.ToString();
-                    string fileName = item.ID.ToString();
-                    string filePath = "";
+                    string fileType;
+                    if (item.FileType == null)
+                    {
+                        fileType = "txt"; //default in case of shenanigans
+                    }
+                    else
+                    {
+                        fileType = item.FileType.ToString();
+                    }
+                    string fileName = item.AID.ToString();
                     if (conn.openConn() == true)
                     {
 
@@ -279,50 +277,10 @@ namespace P4PSpeechDB
                         {
                             MySqlCommand cmd = new MySqlCommand();
                             cmd.Connection = conn.getConn();
-                            cmd.CommandText = "SELECT File FROM " + tableName + " where ID = '" + fileName + "'";
-                            //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
-                            //cmd.Parameters.AddWithValue("@fName", fileName);
+                            cmd.CommandText = "SELECT File FROM analysis where AID = '" + fileName + "'";
                             reader = cmd.ExecuteReader();
-                            if (!reader.HasRows)
-                                throw new Exception("There are no blobs to save");
 
-                            while (reader.Read())
-                            {
-
-
-                                Directory.CreateDirectory("..\\..\\..\\..\\testOutput");
-                                fs = new FileStream("..\\..\\..\\..\\testOutput\\" + fileName + "." + tableName, FileMode.OpenOrCreate, FileAccess.Write);
-                                filePath = fs.Name;
-                                BinaryWriter bw = new BinaryWriter(fs);
-
-                                // Reset the starting byte for the new BLOB.
-                                long startIndex = 0;
-
-                                // Read the bytes into outbyte[] and retain the number of bytes returned.
-                                long retval = reader.GetBytes(0, startIndex, rawData, 0, bufferSize);
-
-                                // Continue reading and writing while there are bytes beyond the size of the buffer.
-                                while (retval == bufferSize)
-                                {
-                                    bw.Write(rawData);
-                                    bw.Flush();
-
-                                    // Reposition the start index to the end of the last buffer and fill the buffer.
-                                    startIndex += bufferSize;
-                                    retval = reader.GetBytes(1, startIndex, rawData, 0, bufferSize);
-                                }
-
-                                // Write the remaining buffer.
-                                bw.Write(rawData, 0, (int)retval);
-                                bw.Flush();
-
-                                // Close the output file.
-                                bw.Close();
-                                fs.Close();
-
-                            }
-
-                            openOrPlayFile(filePath, tableName);
+                            openOrPlayFile(reader, fileName, fileType);
                         }
                         catch (MySqlException ex)
                         {
@@ -336,20 +294,112 @@ namespace P4PSpeechDB
             }
         }
 
-        private void openOrPlayFile(string path, string fileType)
+        //On datagrid row click, opens the file
+        private void resultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (sender != null)
+            {
+                DataGridRow dgr = sender as DataGridRow;
+                var item = dgr.DataContext as SpeakerRow;
+                MySqlDataReader reader;
+
+
+                if (item != null)
+                {
+                    string tableName = item.tableName.ToString();
+                    string fileName = item.ID.ToString();
+                    if (conn.openConn() == true)
+                    {
+
+                        try
+                        {
+                            MySqlCommand cmd = new MySqlCommand();
+                            cmd.Connection = conn.getConn();
+                            cmd.CommandText = "SELECT File FROM " + tableName + " where ID = '" + fileName + "'";
+                            //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
+                            //cmd.Parameters.AddWithValue("@fName", fileName);
+                            reader = cmd.ExecuteReader();
+
+                            openOrPlayFile(reader, fileName, tableName);
+                        }
+                        catch (MySqlException ex)
+                        {
+                            MessageBox.Show(ex.ToString());
+                        }
+                        conn.closeConn();
+                    }
+
+                }
+
+            }
+        }
+
+        private void openOrPlayFile(MySqlDataReader reader, string fileName, string fileType)
+        {
+
+            int bufferSize = 16777215; //mediumblob buffer size
+            byte[] rawData = new byte[bufferSize];
+            FileStream fs;
+            string filePath = "";
+
+            if (!reader.HasRows)
+                throw new Exception("There are no blobs to save");
+
+            while (reader.Read())
+            {
+
+
+                Directory.CreateDirectory("..\\..\\..\\..\\testOutput");
+                fs = new FileStream("..\\..\\..\\..\\testOutput\\" + fileName + "." + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+                filePath = fs.Name;
+                BinaryWriter bw = new BinaryWriter(fs);
+
+                // Reset the starting byte for the new BLOB.
+                long startIndex = 0;
+
+                // Read the bytes into outbyte[] and retain the number of bytes returned.
+                long retval = reader.GetBytes(0, startIndex, rawData, 0, bufferSize);
+
+                // Continue reading and writing while there are bytes beyond the size of the buffer.
+                while (retval == bufferSize)
+                {
+                    bw.Write(rawData);
+                    bw.Flush();
+
+                    // Reposition the start index to the end of the last buffer and fill the buffer.
+                    startIndex += bufferSize;
+                    retval = reader.GetBytes(1, startIndex, rawData, 0, bufferSize);
+                }
+
+                // Write the remaining buffer.
+                bw.Write(rawData, 0, (int)retval);
+                bw.Flush();
+
+                // Close the output file.
+                bw.Close();
+                fs.Close();
+
+            }
 
             // Filter audio, images etc. to open appropriate program
             if (fileType.Equals("wav") || fileType.Equals("WAV"))
             {
-                mediaElement.Source = new Uri(path, UriKind.RelativeOrAbsolute);
+                mediaElement.Source = new Uri(filePath, UriKind.RelativeOrAbsolute);
                 mediaElement.LoadedBehavior = MediaState.Manual;
                 //mediaElement.UnloadedBehavior = MediaState.Stop;
                 mediaElement.Play();
             }
             else
             {
-                Process.Start("notepad++.exe", path);
+                //Process.Start("notepad++.exe", path);
+                try
+                {
+                    Process.Start(filePath);
+                }
+                catch (System.ComponentModel.Win32Exception e)
+                {
+                    MessageBox.Show("Access denied, please run application with administrator privileges.")
+                }
             }
 
         }
@@ -439,7 +489,7 @@ namespace P4PSpeechDB
                         {
                             //Create analysis table
                             comm = conn.getCommand();
-                            comm.CommandText = "CREATE TABLE IF NOT EXISTS analysis (AID varchar(150) primary key, File mediumblob, Description varchar(500))";
+                            comm.CommandText = "CREATE TABLE IF NOT EXISTS analysis (AID varchar(150) primary key, File mediumblob, Description varchar(500), FileType varchar(20))";
                             comm.ExecuteNonQuery();
 
                             foreach (FileInfo file in files)
@@ -448,10 +498,11 @@ namespace P4PSpeechDB
                                 rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
 
                                 comm = conn.getCommand();
-                                comm.CommandText = "INSERT INTO analysis (AID, File, Description) VALUES (@AID, @fileAsBlob, @desc)";
+                                comm.CommandText = "INSERT INTO analysis (AID, File, Description, FileType) VALUES (@AID, @fileAsBlob, @desc, @type)";
                                 comm.Parameters.AddWithValue("@AID", fileName);
                                 comm.Parameters.AddWithValue("@fileAsBlob", rawData);
                                 comm.Parameters.AddWithValue("@desc", "No description");
+                                comm.Parameters.AddWithValue("@type", file.Extension);
                                 comm.ExecuteNonQuery();
 
                             }

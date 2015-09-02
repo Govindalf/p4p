@@ -66,17 +66,17 @@ namespace P4PSpeechDB
             try
             {
                 // store all of the tables in the mysql database into a list
-                using (myConn = new DBConnection().getConn())
+                using ((myConn = new DBConnection().getConn()))
+                using (MySqlCommand comm = myConn.CreateCommand())
                 {
-                    string query = "show tables from SpeechDB";
-                    MySqlCommand command = new MySqlCommand(query, conn.getConn());
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    myConn.Open();
+                    comm.CommandText = "show tables from SpeechDB";
+                    using (MySqlDataReader reader = comm.ExecuteReader())
                     {
                         while (reader.Read())
                         {
                             tableNames.Add(reader.GetString(0));
                         }
-                        reader.Close();
                     }
                 }
             }
@@ -263,7 +263,6 @@ namespace P4PSpeechDB
             {
                 DataGridRow dgr = sender as DataGridRow;
                 var item = dgr.DataContext as AnalysisRow;
-                MySqlDataReader reader;
 
 
                 if (item != null)
@@ -286,25 +285,25 @@ namespace P4PSpeechDB
                     {
                         openOrPlayLocalFile("..\\..\\..\\..\\testOutput\\ANALYSIS\\" + fileName + "." + fileType);
                     }
-                    else if (conn.openConn() == true)
+                    else
                     {
-
-                        try
+                        using ((myConn = new DBConnection().getConn()))
+                        using (MySqlCommand cmd = myConn.CreateCommand())
                         {
-                            MySqlCommand cmd = new MySqlCommand();
-                            cmd.Connection = conn.getConn();
-                            cmd.CommandText = "SELECT File FROM analysis where AID = '" + fileName + "'";
-                            using (reader = cmd.ExecuteReader())
+                            try
                             {
+                                myConn.Open();
+                                cmd.CommandText = "SELECT File FROM analysis where AID = '" + fileName + "'";
 
-                                openOrPlayFile(reader, fileName, fileType, "ANALYSIS", item);
+                                openOrPlayFile(cmd, fileName, fileType, "ANALYSIS", item);
+
                             }
+                            catch (MySqlException ex)
+                            {
+                                MessageBox.Show(ex.ToString());
+                            }
+
                         }
-                        catch (MySqlException ex)
-                        {
-                            MessageBox.Show(ex.ToString());
-                        }
-                        conn.closeConn();
                     }
 
                 }
@@ -319,8 +318,6 @@ namespace P4PSpeechDB
             {
                 DataGridRow dgr = sender as DataGridRow;
                 var item = dgr.DataContext as SpeakerRow;
-                MySqlDataReader reader;
-
 
                 if (item != null)
                 {
@@ -334,27 +331,26 @@ namespace P4PSpeechDB
                     {
                         openOrPlayLocalFile("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.Speaker + "\\" + fileName + "." + fileType);
                     }
-                    else if (conn.openConn() == true)
+                    else
                     {
-
-                        try
+                        using ((myConn = new DBConnection().getConn()))
+                        using (MySqlCommand cmd = myConn.CreateCommand())
                         {
-                            MySqlCommand cmd = new MySqlCommand();
-                            cmd.Connection = conn.getConn();
-                            cmd.CommandText = "SELECT File FROM " + fileType + " where ID = '" + fileName + "'";
-                            //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
-                            //cmd.Parameters.AddWithValue("@fName", fileName);
-                            using (reader = cmd.ExecuteReader())
+                            myConn.Open();
+                            try
                             {
+                                cmd.CommandText = "SELECT File FROM " + fileType + " where ID = '" + fileName + "'";
+                                //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
+                                //cmd.Parameters.AddWithValue("@fName", fileName);
 
-                                openOrPlayFile(reader, fileName, fileType, projectName, item);
+                                openOrPlayFile(cmd, fileName, fileType, projectName, item);
+
+                            }
+                            catch (MySqlException ex)
+                            {
+                                MessageBox.Show(ex.ToString());
                             }
                         }
-                        catch (MySqlException ex)
-                        {
-                            MessageBox.Show(ex.ToString());
-                        }
-                        conn.closeConn();
                     }
 
                 }
@@ -368,97 +364,102 @@ namespace P4PSpeechDB
             Process.Start(filePath);
         }
 
-        private void openOrPlayFile(MySqlDataReader reader, string fileName, string fileType, string projectName, Row row)
+        private void openOrPlayFile(MySqlCommand cmd, string fileName, string fileType, string projectName, Row row)
         {
-
-            int bufferSize; //mediumblob buffer size
-            byte[] rawData;
-            FileStream fs;
-            string filePath = "";
-
-            if (!reader.HasRows)
-                throw new Exception("There are no blobs to save");
-
-            while (reader.Read())
+            using (MySqlDataReader reader = cmd.ExecuteReader())
             {
-                //Checks for the file and then puts it in the corect folder location
-                if (row is AnalysisRow)
+
+                int bufferSize; //mediumblob buffer size
+                byte[] rawData;
+                FileStream fs;
+                string filePath = "";
+
+                if (!reader.HasRows)
+                    throw new Exception("There are no blobs to save");
+
+                while (reader.Read())
                 {
-                    Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\ANALYSIS");
-                    fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + fileName + "." + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+                    //Checks for the file and then puts it in the corect folder location
+                    if (row is AnalysisRow)
+                    {
+                        Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\ANALYSIS");
+                        fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + fileName + "." + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+                    }
+                    else
+                    {
+                        Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + ((SpeakerRow)row).Speaker);
+                        fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + ((SpeakerRow)row).Speaker + "\\" + fileName + "." + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+                    }
+
+
+
+
+                    int ndx = reader.GetOrdinal("File");
+                    bufferSize = (int)reader.GetBytes(ndx, 0, null, 0, 0);  //get the length of data
+                    rawData = new byte[bufferSize];
+
+                    filePath = fs.Name;
+                    BinaryWriter bw = new BinaryWriter(fs);
+
+                    // Reset the starting byte for the new BLOB.
+                    int startIndex = 0;
+                    int bytesRead = 0;
+
+                    while (startIndex < bufferSize)
+                    {
+                        bytesRead = (int)reader.GetBytes(ndx, startIndex,
+                           rawData, startIndex, bufferSize - startIndex);
+                        bw.Write(rawData);
+                        bw.Flush();
+                        startIndex += bytesRead;
+                    }
+
+
+                }
+
+
+                //Fixed access denied error
+                File.SetAttributes(filePath, FileAttributes.Normal);
+
+                // Filter audio, images etc. to open appropriate program
+                if (fileType.Equals("wav") || fileType.Equals("WAV"))
+                {
+                    mediaElement.Source = new Uri(filePath, UriKind.RelativeOrAbsolute);
+                    mediaElement.LoadedBehavior = MediaState.Manual;
+                    //mediaElement.UnloadedBehavior = MediaState.Stop;
+                    mediaElement.Play();
                 }
                 else
                 {
-                    Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + ((SpeakerRow)row).Speaker);
-                    fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + ((SpeakerRow)row).Speaker + "\\" + fileName + "." + fileType, FileMode.OpenOrCreate, FileAccess.Write);
-                }
-
-
-
-
-                int ndx = reader.GetOrdinal("File");
-                bufferSize = (int)reader.GetBytes(ndx, 0, null, 0, 0);  //get the length of data
-                rawData = new byte[bufferSize];
-
-                filePath = fs.Name;
-                BinaryWriter bw = new BinaryWriter(fs);
-
-                // Reset the starting byte for the new BLOB.
-                int startIndex = 0;
-                int bytesRead = 0;
-
-                while (startIndex < bufferSize)
-                {
-                    bytesRead = (int)reader.GetBytes(ndx, startIndex,
-                       rawData, startIndex, bufferSize - startIndex);
-                    bw.Write(rawData);
-                    bw.Flush();
-                    startIndex += bytesRead;
-                }
-
-                reader.Close();
-
-            }
-
-            // Filter audio, images etc. to open appropriate program
-            if (fileType.Equals("wav") || fileType.Equals("WAV"))
-            {
-                mediaElement.Source = new Uri(filePath, UriKind.RelativeOrAbsolute);
-                mediaElement.LoadedBehavior = MediaState.Manual;
-                //mediaElement.UnloadedBehavior = MediaState.Stop;
-                mediaElement.Play();
-            }
-            else
-            {
-                //Process.Start("notepad++.exe", path);
-                try
-                {
-                    Process.Start(filePath);
-                }
-                catch (System.ComponentModel.Win32Exception)
-                {
-                    MessageBox.Show("Access denied, please run application with administrator privileges.");
+                    //Process.Start("notepad++.exe", path);
+                    try
+                    {
+                        Process.Start(filePath);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Access denied, please run application with administrator privileges.");
+                    }
                 }
             }
-
         }
 
 
         //Testing, randomly macthes analysis to files
         private void randomlyMatchAnalysis()
         {
-            if (conn.openConn() == true)
+            using ((myConn = new DBConnection().getConn()))
+            using (MySqlCommand cmd = myConn.CreateCommand())
             {
-                MySqlCommand comm;
+                myConn.Open();
                 MySqlDataReader myReader;
                 List<string> IDlist = new List<string>();
                 List<string> AIDlist = new List<string>();
-                comm = conn.getCommand();
-                MySqlCommand cmd = new MySqlCommand(@"(SELECT ID FROM WAV) UNION (SELECT ID FROM hlb) UNION (SELECT ID FROM sf0) UNION
+                cmd.CommandText = @"(SELECT ID FROM WAV) UNION (SELECT ID FROM hlb) UNION (SELECT ID FROM sf0) UNION
                                                         (SELECT ID FROM lab) UNION
                                                         (SELECT ID FROM sfb) UNION
                                                         (SELECT ID FROM wav) UNION
-                                                        (SELECT ID FROM trg) ", conn.getConn());
+                                                        (SELECT ID FROM trg) ";
 
                 using (myReader = cmd.ExecuteReader())
                 {
@@ -467,17 +468,15 @@ namespace P4PSpeechDB
                         IDlist.Add(myReader.GetString("ID"));
                     }
                     MessageBox.Show(IDlist.Count.ToString());
-                    myReader.Close();
 
-                    comm = conn.getCommand();
-                    cmd = new MySqlCommand("SELECT AID FROM analysis", conn.getConn());
-                    myReader = cmd.ExecuteReader();
-                    while (myReader.Read())
+                    cmd.CommandText = "SELECT AID FROM analysis";
+                    using (myReader = cmd.ExecuteReader())
                     {
-                        AIDlist.Add(myReader.GetString("AID"));
+                        while (myReader.Read())
+                        {
+                            AIDlist.Add(myReader.GetString("AID"));
+                        }
                     }
-                    myReader.Close();
-
                     foreach (string ID in IDlist)
                     {
 
@@ -486,20 +485,16 @@ namespace P4PSpeechDB
                         int randomNumber = random.Next(0, 10);
                         for (int i = 0; i < randomNumber; i++)
                         {
-                            comm = conn.getCommand();
-                            comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID, @AID)";
-                            comm.Parameters.AddWithValue("@ID", ID);
-                            comm.Parameters.AddWithValue("@AID", AIDlist[random.Next(0, AIDlist.Count - 1)]);
-                            comm.ExecuteNonQuery();
+                            cmd.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID, @AID)";
+                            cmd.Parameters.AddWithValue("@ID", ID);
+                            cmd.Parameters.AddWithValue("@AID", AIDlist[random.Next(0, AIDlist.Count - 1)]);
+                            cmd.ExecuteNonQuery();
 
                         }
 
                     }
 
                 }
-
-
-                conn.closeConn();
 
             }
 
@@ -509,9 +504,10 @@ namespace P4PSpeechDB
         //Loads all the data in the target folder into the db
         private void loadAllButton_Click(object sender, RoutedEventArgs e)
         {
-            if (conn.openConn() == true)
+            using ((myConn = new DBConnection().getConn()))
+            using (MySqlCommand cmd = myConn.CreateCommand())
             {
-
+                myConn.Open();
                 DirectoryInfo[] dirs = new DirectoryInfo(testDBRoot).GetDirectories();
                 byte[] rawData;
                 //Adds all files selected into folders to the db
@@ -523,28 +519,25 @@ namespace P4PSpeechDB
 
 
                         FileInfo[] files = new DirectoryInfo(dir.FullName).GetFiles("*.*", SearchOption.AllDirectories);
-                        MySqlCommand comm;
 
                         //If analysis table exists, add them separately
                         if (dir.Name.Equals("ANALYSIS"))
                         {
                             //Create analysis table
-                            comm = conn.getCommand();
-                            comm.CommandText = "CREATE TABLE IF NOT EXISTS analysis (AID varchar(150) primary key, File mediumblob, Description varchar(500), FileType varchar(20))";
-                            comm.ExecuteNonQuery();
+                            cmd.CommandText = "CREATE TABLE IF NOT EXISTS analysis (AID varchar(150) primary key, File mediumblob, Description varchar(500), FileType varchar(20))";
+                            cmd.ExecuteNonQuery();
 
                             foreach (FileInfo file in files)
                             {
                                 string fileName = Path.GetFileNameWithoutExtension(file.FullName);
                                 rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
 
-                                comm = conn.getCommand();
-                                comm.CommandText = "INSERT INTO analysis (AID, File, Description, FileType) VALUES (@AID, @fileAsBlob, @desc, @type)";
-                                comm.Parameters.AddWithValue("@AID", fileName);
-                                comm.Parameters.AddWithValue("@fileAsBlob", rawData);
-                                comm.Parameters.AddWithValue("@desc", "No description");
-                                comm.Parameters.AddWithValue("@type", file.Extension);
-                                comm.ExecuteNonQuery();
+                                cmd.CommandText = "INSERT INTO analysis (AID, File, Description, FileType) VALUES (@AID, @fileAsBlob, @desc, @type)";
+                                cmd.Parameters.AddWithValue("@AID", fileName);
+                                cmd.Parameters.AddWithValue("@fileAsBlob", rawData);
+                                cmd.Parameters.AddWithValue("@desc", "No description");
+                                cmd.Parameters.AddWithValue("@type", file.Extension);
+                                cmd.ExecuteNonQuery();
 
                             }
 
@@ -555,16 +548,14 @@ namespace P4PSpeechDB
 
                             //Create projects table
 
-                            comm = conn.getCommand();
-                            comm.CommandText = "CREATE TABLE IF NOT EXISTS projects (PID varchar(150) primary key)";
-                            comm.ExecuteNonQuery();
+                            cmd.CommandText = "CREATE TABLE IF NOT EXISTS projects (PID varchar(150) primary key)";
+                            cmd.ExecuteNonQuery();
 
 
-                            comm = conn.getCommand();
-                            comm.CommandText = "INSERT IGNORE INTO projects (PID) VALUES (@PID)"; //ignore = Dont insert dups
+                            cmd.CommandText = "INSERT IGNORE INTO projects (PID) VALUES (@PID)"; //ignore = Dont insert dups
                             MessageBox.Show(dir.ToString());
-                            comm.Parameters.AddWithValue("@PID", dir);
-                            comm.ExecuteNonQuery();
+                            cmd.Parameters.AddWithValue("@PID", dir);
+                            cmd.ExecuteNonQuery();
 
                             foreach (FileInfo file in files)
                             {
@@ -576,18 +567,16 @@ namespace P4PSpeechDB
                                 string speaker = fileName.Substring(0, 4);
 
                                 //Create tables if they dont already exist
-                                comm = conn.getCommand();
-                                comm.CommandText = "CREATE TABLE IF NOT EXISTS " + ext + "(ID varchar(150) primary key, File mediumblob, Speaker varchar(20), ProjectName varchar(100))";
-                                comm.ExecuteNonQuery();
+                                cmd.CommandText = "CREATE TABLE IF NOT EXISTS " + ext + "(ID varchar(150) primary key, File mediumblob, Speaker varchar(20), ProjectName varchar(100))";
+                                cmd.ExecuteNonQuery();
 
                                 //Add file paths to the above table
-                                comm = conn.getCommand();
-                                comm.CommandText = "INSERT INTO " + ext + " (ID, File, Speaker, ProjectName) VALUES (@ID, @fileAsBlob, @speaker, @projectName)";
-                                comm.Parameters.AddWithValue("@ID", fileName);
-                                comm.Parameters.AddWithValue("@fileAsBlob", rawData);
-                                comm.Parameters.AddWithValue("@speaker", speaker);
-                                comm.Parameters.AddWithValue("@projectName", dir);
-                                comm.ExecuteNonQuery();
+                                cmd.CommandText = "INSERT INTO " + ext + " (ID, File, Speaker, ProjectName) VALUES (@ID, @fileAsBlob, @speaker, @projectName)";
+                                cmd.Parameters.AddWithValue("@ID", fileName);
+                                cmd.Parameters.AddWithValue("@fileAsBlob", rawData);
+                                cmd.Parameters.AddWithValue("@speaker", speaker);
+                                cmd.Parameters.AddWithValue("@projectName", dir);
+                                cmd.ExecuteNonQuery();
 
 
                             }
@@ -598,7 +587,6 @@ namespace P4PSpeechDB
                 {
                     MessageBox.Show(ex.ToString());
                 }
-                conn.closeConn();
                 MessageBox.Show("ALL DONE");
             }
         }
@@ -759,9 +747,10 @@ namespace P4PSpeechDB
                     File.Delete(pathName);
                 }
 
-                if (conn.openConn() == true)
+                using ((myConn = new DBConnection().getConn()))
+                using (MySqlCommand comm = myConn.CreateCommand())
                 {
-                    MySqlCommand comm = conn.getCommand();
+                    myConn.Open();
                     comm.CommandText = "SELECT File FROM sfb WHERE ProjectName=@projName";
                     comm.Parameters.AddWithValue("@projName", tempName[1]);
                     using (MySqlDataReader reader = comm.ExecuteReader())
@@ -773,7 +762,7 @@ namespace P4PSpeechDB
                     }
                     //comm.ExecuteNonQuery();
                 }
-                conn.closeConn();
+
                 if (sfbFile != null)
                 {
                     int startText = sfbFile.IndexOf("Column");
@@ -925,7 +914,6 @@ namespace P4PSpeechDB
                                 fs.Close();
                             }
 
-                            reader.Close();
                         }
                     }
                 }

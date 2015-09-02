@@ -61,11 +61,15 @@ namespace P4PSpeechDB
 
         private void loadProjects()
         {
-            if (conn.openConn() == true)
+
+            using (MySqlConnection conn = new DBConnection().getConn())
+            using (var cmd = conn.CreateCommand())
             {
+                conn.Open();
+
 
                 MySqlDataReader myReader;
-                MySqlCommand cmd = new MySqlCommand("Select PID from projects", conn.getConn());
+                cmd.CommandText = "Select PID from projects";
 
                 using (myReader = cmd.ExecuteReader())
                 {
@@ -74,23 +78,23 @@ namespace P4PSpeechDB
                         rowP.Add(new ProjectRow { PID = myReader.GetString("PID") });
                     }
                 }
-                myReader.Close();
                 collectionP = new ListCollectionView(rowP);
 
-                conn.closeConn();
             }
         }
 
         public void loadAnalysis(string fileID)
         {
 
-            if (conn.openConn() == true)
+            using (MySqlConnection conn = new DBConnection().getConn())
+            using (var cmd = conn.CreateCommand())
             {
+                conn.Open();
 
                 MySqlDataReader myReader;
                 rowA = new ObservableCollection<Row>();
-                MySqlCommand cmd = new MySqlCommand(@"SELECT a.AID, a.Description FROM analysis a INNER JOIN files2analysis f2a
-                                                      ON a.AID = f2a.AID WHERE f2a.ID = @ID", conn.getConn());
+                cmd.CommandText = @"SELECT a.AID, a.Description FROM analysis a INNER JOIN files2analysis f2a
+                                                      ON a.AID = f2a.AID WHERE f2a.ID = @ID";
 
                 cmd.Parameters.AddWithValue("@ID", fileID);
 
@@ -102,39 +106,39 @@ namespace P4PSpeechDB
 
                     }
                 }
-                myReader.Close();
                 collectionA = new ListCollectionView(rowA);
 
-                conn.closeConn();
             }
         }
 
         public void loadSpeakers(string PID)
         {
-            if (conn.openConn() == true)
+
+            if (PID == null)
             {
-                if (PID == null)
-                {
-                    PID = "DefaultProject";
-                }
+                PID = "DefaultProject";
+            }
 
-                MySqlDataReader myReader;
-                rowS = new ObservableCollection<Row>();
-                try
-                {
+            MySqlDataReader myReader;
+            rowS = new ObservableCollection<Row>();
+            try
+            {
 
-                    //Get number of tables in database, for all tables, do the following
-                    DataSet ds = new DataSet();
-                    foreach (string name in tableNames)
+                //Get number of tables in database, for all tables, do the following
+                DataSet ds = new DataSet();
+                foreach (string name in tableNames)
+                {
+                    //Exclude the projects table
+                    if (ignoreTables.Contains(name))
                     {
-                        //Exclude the projects table
-                        if (ignoreTables.Contains(name))
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        MySqlCommand cmd = new MySqlCommand();
-                        cmd.Connection = conn.getConn();
+                    using (MySqlConnection conn = new DBConnection().getConn())
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        conn.Open();
+
                         cmd.CommandText = "SELECT ID, ProjectName, Speaker FROM " + name + " WHERE ProjectName = @pName"; // @name" ; // WHERE ProjectName = '" + PID + "'";
                         //cmd.Parameters.AddWithValue("@name", name);
                         cmd.Parameters.AddWithValue("@pName", PID);
@@ -153,16 +157,15 @@ namespace P4PSpeechDB
                             }
                         }
                     }
+                }
 
-                    //Pass in the collection made of the datagrid rows
-                    collectionS = new ListCollectionView(rowS);
-                }
-                catch (MySqlException ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
+                //Pass in the collection made of the datagrid rows
+                collectionS = new ListCollectionView(rowS);
             }
-            conn.closeConn();
+            catch (MySqlException ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
 

@@ -29,7 +29,7 @@ namespace P4PSpeechDB
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
+        //private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
         private DBConnection conn;
 
@@ -273,7 +273,15 @@ namespace P4PSpeechDB
                         fileType = item.FileType.ToString();
                     }
                     string fileName = item.AID.ToString();
-                    if (conn.openConn() == true)
+
+
+
+                    //Check if file exists locally, if not open from db
+                    if (File.Exists("..\\..\\..\\..\\testOutput\\ANALYSIS\\" + fileName + "." + fileType))
+                    {
+                        openOrPlayLocalFile("..\\..\\..\\..\\testOutput\\ANALYSIS\\" + fileName + "." + fileType);
+                    }
+                    else if (conn.openConn() == true)
                     {
 
                         try
@@ -283,7 +291,7 @@ namespace P4PSpeechDB
                             cmd.CommandText = "SELECT File FROM analysis where AID = '" + fileName + "'";
                             reader = cmd.ExecuteReader();
 
-                            openOrPlayFile(reader, fileName, fileType);
+                            openOrPlayFile(reader, fileName, fileType, "ANALYSIS", item);
                         }
                         catch (MySqlException ex)
                         {
@@ -309,21 +317,29 @@ namespace P4PSpeechDB
 
                 if (item != null)
                 {
-                    string tableName = item.tableName.ToString();
+                    string fileType = item.tableName.ToString();
                     string fileName = item.ID.ToString();
-                    if (conn.openConn() == true)
+                    string projectName = item.ProjectName.ToString();
+
+
+                    //Check if file exists locally, if not open from db
+                    if (File.Exists("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.Speaker + "\\" + fileName + "." + fileType))
+                    {
+                        openOrPlayLocalFile("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.Speaker + "\\" + fileName + "." + fileType);
+                    }
+                    else if (conn.openConn() == true)
                     {
 
                         try
                         {
                             MySqlCommand cmd = new MySqlCommand();
                             cmd.Connection = conn.getConn();
-                            cmd.CommandText = "SELECT File FROM " + tableName + " where ID = '" + fileName + "'";
+                            cmd.CommandText = "SELECT File FROM " + fileType + " where ID = '" + fileName + "'";
                             //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
                             //cmd.Parameters.AddWithValue("@fName", fileName);
                             reader = cmd.ExecuteReader();
 
-                            openOrPlayFile(reader, fileName, tableName);
+                            openOrPlayFile(reader, fileName, fileType, projectName, item);
                         }
                         catch (MySqlException ex)
                         {
@@ -337,7 +353,13 @@ namespace P4PSpeechDB
             }
         }
 
-        private void openOrPlayFile(MySqlDataReader reader, string fileName, string fileType)
+        private void openOrPlayLocalFile(string filePath)
+        {
+
+            Process.Start(filePath);
+        }
+
+        private void openOrPlayFile(MySqlDataReader reader, string fileName, string fileType, string projectName, Row row)
         {
 
             int bufferSize = 16777215; //mediumblob buffer size
@@ -350,10 +372,18 @@ namespace P4PSpeechDB
 
             while (reader.Read())
             {
+                //Checks for the file and then puts it in the corect folder location
+                if (row is AnalysisRow)
+                {
+                    Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\ANALYSIS");
+                    fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + fileName + "." + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+                }
+                else
+                {
+                    Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + ((SpeakerRow)row).Speaker);
+                    fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + ((SpeakerRow)row).Speaker + "\\" + fileName + "." + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+                }
 
-
-                Directory.CreateDirectory("..\\..\\..\\..\\testOutput");
-                fs = new FileStream("..\\..\\..\\..\\testOutput\\" + fileName + "." + fileType, FileMode.OpenOrCreate, FileAccess.Write);
                 filePath = fs.Name;
                 BinaryWriter bw = new BinaryWriter(fs);
 
@@ -399,7 +429,7 @@ namespace P4PSpeechDB
                 {
                     Process.Start(filePath);
                 }
-                catch (System.ComponentModel.Win32Exception e)
+                catch (System.ComponentModel.Win32Exception)
                 {
                     MessageBox.Show("Access denied, please run application with administrator privileges.");
                 }

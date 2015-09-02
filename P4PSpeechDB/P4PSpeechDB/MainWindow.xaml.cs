@@ -398,7 +398,7 @@ namespace P4PSpeechDB
                 }
                 catch (System.ComponentModel.Win32Exception e)
                 {
-                    MessageBox.Show("Access denied, please run application with administrator privileges.")
+                    MessageBox.Show("Access denied, please run application with administrator privileges.");
                 }
             }
 

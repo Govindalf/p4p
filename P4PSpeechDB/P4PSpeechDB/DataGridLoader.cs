@@ -24,10 +24,17 @@ namespace P4PSpeechDB
         private ObservableCollection<Row> rowS; //DAtagrid row item
         private ObservableCollection<Row> rowP = new ObservableCollection<Row>(); //DAtagrid row item
 
+        private List<string> ignoreTables = new List<string>();
+
         public DataGridLoader(DBConnection conn, List<String> tableNames)
         {
             this.conn = conn;
             this.tableNames = tableNames;
+
+            ignoreTables.Add("projects");
+            ignoreTables.Add("analysis");
+            ignoreTables.Add("files2analysis");
+            ignoreTables.Add("trackOptions");
         }
 
         public void setUpDataGrids()
@@ -117,7 +124,7 @@ namespace P4PSpeechDB
                     foreach (string name in tableNames)
                     {
                         //Exclude the projects table
-                        if (name.Equals("projects") || name.Equals("analysis") || name.Equals("files2analysis"))
+                        if (ignoreTables.Contains(name))
                         {
                             continue;
                         }

@@ -141,8 +141,19 @@
 
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="166" Margin="10,77,0,0" 
                   x:Name="dataGridProjects" HorizontalAlignment="Left" Width="141" 
-                  HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" IsSynchronizedWithCurrentItem="False">
+                  HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                  IsSynchronizedWithCurrentItem="False">
+            
+            <DataGrid.ContextMenu>
+                <ContextMenu >
+                    <MenuItem x:Name="menuShow" Header="Show in explorer" Click="MenuItem_Click" />
+                    <MenuItem x:Name="menuRemoveLocal" Header="Remove local files"  Click="MenuItem_Click" />
 
+                    <MenuItem x:Name="menuRemoveDB" Header="Remove from database"  Click="MenuItem_Click" />
+                    <MenuItem x:Name="menuDownload" Header="Download"  Click="MenuItem_Click" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding PID}" Header="Project" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
             </DataGrid.Columns>
@@ -154,6 +165,7 @@
             </DataGrid.RowStyle>
 
         </DataGrid>
+        
         <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="223,110,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="speakerCombo_SelectionChanged" SelectedValuePath="Content">
             <ComboBoxItem Name="Speaker">Speaker</ComboBoxItem>
             <ComboBoxItem Name="tableName">File Type</ComboBoxItem>

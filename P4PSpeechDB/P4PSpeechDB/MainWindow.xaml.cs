@@ -21,6 +21,7 @@ using MySql.Data.MySqlClient;
 using Path = System.IO.Path;
 using System.IO;
 using System.Collections;
+using System.Reflection;
 
 namespace P4PSpeechDB
 {
@@ -818,6 +819,33 @@ namespace P4PSpeechDB
 
             buildDatagridGroups(new ListCollectionView(rowS));
         }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ProjectRow pr = dataGridProjects.SelectedValue as ProjectRow;
+            MenuItem mi = sender as MenuItem;
+
+            //Open the project folder in explorer
+            switch (mi.Name)
+            {
+                case "menuShow":
+
+                    string folder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                    string parentDir = Directory.GetParent(folder).Parent.Parent.Parent.FullName;
+                    Process.Start("explorer.exe", parentDir + @"\testOutput\" + pr.PID);
+                    break;
+
+                case "menuRemoveLocal":
+                    break;
+
+                case "menuRemoveDB":
+                    break;
+
+                case "menuDownload":
+                    break;
+            }
+        }
+
 
     }
 

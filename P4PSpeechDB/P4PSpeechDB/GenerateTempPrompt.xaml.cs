@@ -28,6 +28,12 @@ namespace P4PSpeechDB
         }
 
         private string folderNameCB;
+        private string formIdentifier = "Form";
+        private string pitchIdentifier = "Pitch";
+        private int countForm = 1;
+        private int countPitch = 1;
+        private int moveDownForm = 32;
+        private int moveDownPitch = 32;
         DBConnection conn;
 
         public GenerateTempPrompt(string question, string title, string defaultValue = "", InputType inputType = InputType.Text)
@@ -123,5 +129,58 @@ namespace P4PSpeechDB
         {
             Close();
         }
+
+        private void CreateWPFComboBox(string trackId, int moveDown)
+        {
+            ComboBox cbox = new ComboBox();
+            cbox.Width = 78;
+            cbox.Margin = new Thickness(150,5 + moveDown,5.2,5);
+            cbox.IsEditable = true;
+
+            var converter = new BrushConverter();
+            cbox.Background = (Brush) converter.ConvertFromString("#FFE4E0E0");
+            
+            //ComboBoxItem cboxitem3 = new ComboBoxItem();
+            //cboxitem3.Content = "MSDN";
+            //cbox.Items.Add(cboxitem3);
+            if (trackId.Equals(formIdentifier)){
+                cbox.Name = "formTrack" + countForm;
+                cbForm.Children.Add(cbox);
+            }
+            else if (trackId.Equals(pitchIdentifier))
+            {
+                cbox.Name = "formTrack" + countForm;
+                cbPitch.Children.Add(cbox);
+            }
+
+        }
+
+        private void txtTrack2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void ButtonForformant_Click(object sender, RoutedEventArgs e)
+        {
+            countForm++;
+            btForm.Margin = new Thickness(0, moveDownForm, 5.2, 5);
+            //spSf0.Margin = new Thickness(0, moveDownForm, 5.2, 5);
+            //btPitch.Margin = new Thickness(0, moveDownForm, 5.2, 5);
+
+            CreateWPFComboBox(formIdentifier, moveDownForm);
+            moveDownForm += 32;
+
+        }
+
+        private void ButtonForPitch_Click(object sender, RoutedEventArgs e)
+        {
+            countPitch++;
+            btPitch.Margin = new Thickness(0, moveDownPitch, 5.2, 5);
+
+            CreateWPFComboBox(pitchIdentifier, moveDownPitch);
+            moveDownPitch += 32;
+        }
+
+
     }
 }

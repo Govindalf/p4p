@@ -22,6 +22,8 @@ using Path = System.IO.Path;
 using System.IO;
 using System.Collections;
 using System.Reflection;
+using System.Threading;
+using System.Windows.Threading;
 
 namespace P4PSpeechDB
 {
@@ -33,11 +35,15 @@ namespace P4PSpeechDB
         //private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
         private DBConnection conn;
+        MySqlConnection myConn = null;
+
+
 
         private List<String> tableNames = new List<String>();
         private ObservableCollection<Row> rowS; //DAtagrid row item
         private ObservableCollection<Row> rowA; //DAtagrid row item
         DataGridLoader dgl;
+        ProgressBar prog = null;
 
         public Boolean IsExpanded { get; set; }
         private string groupValue = "Speaker"; //Default grouping on this value
@@ -59,10 +65,8 @@ namespace P4PSpeechDB
 
             try
             {
-                conn.openConn();
-
                 // store all of the tables in the mysql database into a list
-                using (conn.getConn())
+                using (myConn = new DBConnection().getConn())
                 {
                     string query = "show tables from SpeechDB";
                     MySqlCommand command = new MySqlCommand(query, conn.getConn());
@@ -72,9 +76,9 @@ namespace P4PSpeechDB
                         {
                             tableNames.Add(reader.GetString(0));
                         }
+                        reader.Close();
                     }
                 }
-                conn.closeConn();
             }
             catch (Exception ex)
             {
@@ -290,9 +294,11 @@ namespace P4PSpeechDB
                             MySqlCommand cmd = new MySqlCommand();
                             cmd.Connection = conn.getConn();
                             cmd.CommandText = "SELECT File FROM analysis where AID = '" + fileName + "'";
-                            reader = cmd.ExecuteReader();
+                            using (reader = cmd.ExecuteReader())
+                            {
 
-                            openOrPlayFile(reader, fileName, fileType, "ANALYSIS", item);
+                                openOrPlayFile(reader, fileName, fileType, "ANALYSIS", item);
+                            }
                         }
                         catch (MySqlException ex)
                         {
@@ -338,9 +344,11 @@ namespace P4PSpeechDB
                             cmd.CommandText = "SELECT File FROM " + fileType + " where ID = '" + fileName + "'";
                             //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
                             //cmd.Parameters.AddWithValue("@fName", fileName);
-                            reader = cmd.ExecuteReader();
+                            using (reader = cmd.ExecuteReader())
+                            {
 
-                            openOrPlayFile(reader, fileName, fileType, projectName, item);
+                                openOrPlayFile(reader, fileName, fileType, projectName, item);
+                            }
                         }
                         catch (MySqlException ex)
                         {
@@ -363,8 +371,8 @@ namespace P4PSpeechDB
         private void openOrPlayFile(MySqlDataReader reader, string fileName, string fileType, string projectName, Row row)
         {
 
-            int bufferSize = 16777215; //mediumblob buffer size
-            byte[] rawData = new byte[bufferSize];
+            int bufferSize; //mediumblob buffer size
+            byte[] rawData;
             FileStream fs;
             string filePath = "";
 
@@ -385,33 +393,30 @@ namespace P4PSpeechDB
                     fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + ((SpeakerRow)row).Speaker + "\\" + fileName + "." + fileType, FileMode.OpenOrCreate, FileAccess.Write);
                 }
 
+
+
+
+                int ndx = reader.GetOrdinal("File");
+                bufferSize = (int)reader.GetBytes(ndx, 0, null, 0, 0);  //get the length of data
+                rawData = new byte[bufferSize];
+
                 filePath = fs.Name;
                 BinaryWriter bw = new BinaryWriter(fs);
 
                 // Reset the starting byte for the new BLOB.
-                long startIndex = 0;
+                int startIndex = 0;
+                int bytesRead = 0;
 
-                // Read the bytes into outbyte[] and retain the number of bytes returned.
-                long retval = reader.GetBytes(0, startIndex, rawData, 0, bufferSize);
-
-                // Continue reading and writing while there are bytes beyond the size of the buffer.
-                while (retval == bufferSize)
+                while (startIndex < bufferSize)
                 {
+                    bytesRead = (int)reader.GetBytes(ndx, startIndex,
+                       rawData, startIndex, bufferSize - startIndex);
                     bw.Write(rawData);
                     bw.Flush();
-
-                    // Reposition the start index to the end of the last buffer and fill the buffer.
-                    startIndex += bufferSize;
-                    retval = reader.GetBytes(1, startIndex, rawData, 0, bufferSize);
+                    startIndex += bytesRead;
                 }
 
-                // Write the remaining buffer.
-                bw.Write(rawData, 0, (int)retval);
-                bw.Flush();
-
-                // Close the output file.
-                bw.Close();
-                fs.Close();
+                reader.Close();
 
             }
 
@@ -455,42 +460,44 @@ namespace P4PSpeechDB
                                                         (SELECT ID FROM wav) UNION
                                                         (SELECT ID FROM trg) ", conn.getConn());
 
-                myReader = cmd.ExecuteReader();
-                while (myReader.Read())
+                using (myReader = cmd.ExecuteReader())
                 {
-                    IDlist.Add(myReader.GetString("ID"));
-                }
-                MessageBox.Show(IDlist.Count.ToString());
-                myReader.Close();
-
-                comm = conn.getCommand();
-                cmd = new MySqlCommand("SELECT AID FROM analysis", conn.getConn());
-                myReader = cmd.ExecuteReader();
-                while (myReader.Read())
-                {
-                    AIDlist.Add(myReader.GetString("AID"));
-                }
-                myReader.Close();
-
-                foreach (string ID in IDlist)
-                {
-
-
-                    Random random = new Random();
-                    int randomNumber = random.Next(0, 10);
-                    for (int i = 0; i < randomNumber; i++)
+                    while (myReader.Read())
                     {
-                        comm = conn.getCommand();
-                        comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID, @AID)";
-                        comm.Parameters.AddWithValue("@ID", ID);
-                        comm.Parameters.AddWithValue("@AID", AIDlist[random.Next(0, AIDlist.Count - 1)]);
-                        comm.ExecuteNonQuery();
+                        IDlist.Add(myReader.GetString("ID"));
+                    }
+                    MessageBox.Show(IDlist.Count.ToString());
+                    myReader.Close();
+
+                    comm = conn.getCommand();
+                    cmd = new MySqlCommand("SELECT AID FROM analysis", conn.getConn());
+                    myReader = cmd.ExecuteReader();
+                    while (myReader.Read())
+                    {
+                        AIDlist.Add(myReader.GetString("AID"));
+                    }
+                    myReader.Close();
+
+                    foreach (string ID in IDlist)
+                    {
+
+
+                        Random random = new Random();
+                        int randomNumber = random.Next(0, 10);
+                        for (int i = 0; i < randomNumber; i++)
+                        {
+                            comm = conn.getCommand();
+                            comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID, @AID)";
+                            comm.Parameters.AddWithValue("@ID", ID);
+                            comm.Parameters.AddWithValue("@AID", AIDlist[random.Next(0, AIDlist.Count - 1)]);
+                            comm.ExecuteNonQuery();
+
+                        }
 
                     }
 
-
-
                 }
+
 
                 conn.closeConn();
 
@@ -849,80 +856,135 @@ namespace P4PSpeechDB
             }
         }
 
-        private void downloadProject(string path, string PID)
+
+        private void backgroundWorker_DoWork(
+            object sender,
+            DoWorkEventArgs e)
         {
+            string[] parameters = e.Argument as string[];
+            string PID = parameters[1];
+            string path = parameters[0];
+
+            this.Dispatcher.Invoke((Action)(() =>
+            {
+                prog.Show();
+            }));
+
             int bufferSize;//mediumblob buffer size
             byte[] rawData;
             FileStream fs;
             string filePath = "";
 
-            foreach (string table in tableNames)
+            using (MySqlConnection tempConn = new DBConnection().getConn())
+            using (var cmd = tempConn.CreateCommand())
             {
-                if (!dgl.ignoreTables.Contains(table)) //Only the file tables
+                tempConn.Open();
+                foreach (string table in tableNames)
                 {
-                    if (conn.openConn())
+                    if (!dgl.ignoreTables.Contains(table)) //Only the file tables
                     {
-                        MySqlCommand cmd = new MySqlCommand();
-                        cmd.Connection = conn.getConn();
+
+                        cmd.Connection = tempConn;
                         cmd.CommandText = "SELECT * FROM " + table + " WHERE ProjectName='" + PID + "'";
                         //cmd.Parameters.AddWithValue("@table", table);
                         //cmd.Parameters.AddWithValue("@PID", PID);
 
-                        MySqlDataReader reader = cmd.ExecuteReader();
-                        while (reader.Read())
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
                         {
-
-                            int ndx = reader.GetOrdinal("File");
-                            bufferSize = (int)reader.GetBytes(ndx, 0, null, 0, 0);  //get the length of data
-                            rawData = new byte[bufferSize];
-
-                            Directory.CreateDirectory(path + PID + @"\" + reader.GetString("Speaker"));
-                            fs = new FileStream(path + PID + @"\" + reader.GetString("Speaker") + @"\" + reader.GetString("ID") + "." + table, FileMode.OpenOrCreate, FileAccess.Write);
-                            filePath = fs.Name;
-                            BinaryWriter bw = new BinaryWriter(fs);
-
-                            // Reset the starting byte for the new BLOB.
-                            int startIndex = 0;
-                            int bytesRead=0;
-
-                            while (startIndex < bufferSize)
+                            while (reader.Read())
                             {
-                                bytesRead = (int)reader.GetBytes(ndx, startIndex,
-                                   rawData, startIndex, bufferSize - startIndex);
-                                bw.Write(rawData);
+
+                                int ndx = reader.GetOrdinal("File");
+                                bufferSize = (int)reader.GetBytes(ndx, 0, null, 0, 0);  //get the length of data
+                                rawData = new byte[bufferSize];
+
+                                Directory.CreateDirectory(path + PID + @"\" + reader.GetString("Speaker"));
+                                fs = new FileStream(path + PID + @"\" + reader.GetString("Speaker") + @"\" + reader.GetString("ID") + "." + table, FileMode.OpenOrCreate, FileAccess.Write);
+                                filePath = fs.Name;
+                                BinaryWriter bw = new BinaryWriter(fs);
+
+                                // Reset the starting byte for the new BLOB.
+                                int startIndex = 0;
+                                int bytesRead = 0;
+
+                                while (startIndex < bufferSize)
+                                {
+                                    bytesRead = (int)reader.GetBytes(ndx, startIndex,
+                                       rawData, startIndex, bufferSize - startIndex);
+                                    bw.Write(rawData);
+                                    bw.Flush();
+                                    startIndex += bytesRead;
+                                }
+
+                                // Write the remaining buffer.
+                                bw.Write(rawData, 0, (int)bytesRead);
                                 bw.Flush();
-                                startIndex += bytesRead;
+
+                                // Close the output file.
+                                bw.Close();
+                                fs.Close();
                             }
 
-                            //// Read the bytes into outbyte[] and retain the number of bytes returned.
-                            //long retval = reader.GetBytes(ndx, startIndex, rawData, 0, bufferSize);
-
-                            //// Continue reading and writing while there are bytes beyond the size of the buffer.
-                            //while (retval == bufferSize)
-                            //{
-                            //    bw.Write(rawData);
-                            //    bw.Flush();
-
-                            //    // Reposition the start index to the end of the last buffer and fill the buffer.
-                            //    startIndex += bufferSize;
-                            //    retval = reader.GetBytes(ndx, startIndex, rawData, 0, bufferSize);
-                            //}
-
-                            // Write the remaining buffer.
-                            bw.Write(rawData, 0, (int)bytesRead);
-                            bw.Flush();
-
-                            // Close the output file.
-                            bw.Close();
-                            fs.Close();
+                            reader.Close();
                         }
-                        conn.closeConn();
                     }
                 }
             }
         }
 
+
+        private void backgroundWorker_RunWorkerCompleted(
+            object sender,
+            RunWorkerCompletedEventArgs e)
+        {
+
+            prog.Close();
+        }
+
+        private void downloadProject(string path, string PID)
+        {
+
+            BackgroundWorker backgroundWorker;
+
+            // Instantiate BackgroundWorker and attach handlers to its 
+            // DowWork and RunWorkerCompleted events.
+            backgroundWorker = new System.ComponentModel.BackgroundWorker();
+            backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(backgroundWorker_DoWork);
+            backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
+
+            string[] parameters = new string[] { path, PID };
+
+            prog = new ProgressBar();
+            // Start the download operation in the background. 
+            backgroundWorker.RunWorkerAsync(parameters);
+
+            // Once you have started the background thread you  
+            // can exit the handler and the application will  
+            // wait until the RunWorkerCompleted event is raised. 
+
+            // Or if you want to do something else in the main thread, 
+            // such as update a progress bar, you can do so in a loop  
+            // while checking IsBusy to see if the background task is 
+            // still running. 
+
+            while (backgroundWorker.IsBusy)
+            {
+
+                // Keep UI messages moving, so the form remains  
+                // responsive during the asynchronous operation.
+
+                Application.Current.Dispatcher.Invoke(DispatcherPriority.Background,
+                                                      new Action(delegate { }));
+            }
+
+
+
+        }
+
+
     }
 
-
 }
+
+
+

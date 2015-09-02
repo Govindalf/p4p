@@ -56,7 +56,7 @@ namespace P4PSpeechDB
                 default:
                     throw new Exception("Invalid type value");
             }
-            
+
         }
 
         private void loadProjects()
@@ -67,10 +67,12 @@ namespace P4PSpeechDB
                 MySqlDataReader myReader;
                 MySqlCommand cmd = new MySqlCommand("Select PID from projects", conn.getConn());
 
-                myReader = cmd.ExecuteReader();
-                while (myReader.Read())
+                using (myReader = cmd.ExecuteReader())
                 {
-                    rowP.Add(new ProjectRow { PID = myReader.GetString("PID") });
+                    while (myReader.Read())
+                    {
+                        rowP.Add(new ProjectRow { PID = myReader.GetString("PID") });
+                    }
                 }
                 myReader.Close();
                 collectionP = new ListCollectionView(rowP);
@@ -92,11 +94,13 @@ namespace P4PSpeechDB
 
                 cmd.Parameters.AddWithValue("@ID", fileID);
 
-                myReader = cmd.ExecuteReader();
-                while (myReader.Read())
+                using (myReader = cmd.ExecuteReader())
                 {
-                    rowA.Add(new AnalysisRow { AID = myReader.GetString("AID"), Description = myReader.GetString("Description") });
+                    while (myReader.Read())
+                    {
+                        rowA.Add(new AnalysisRow { AID = myReader.GetString("AID"), Description = myReader.GetString("Description") });
 
+                    }
                 }
                 myReader.Close();
                 collectionA = new ListCollectionView(rowA);
@@ -135,19 +139,19 @@ namespace P4PSpeechDB
                         //cmd.Parameters.AddWithValue("@name", name);
                         cmd.Parameters.AddWithValue("@pName", PID);
 
-                        myReader = cmd.ExecuteReader();
-                        while (myReader.Read())
+                        using (myReader = cmd.ExecuteReader())
                         {
-                            string projectName = "default";
-                            if (myReader.GetValue(1).ToString() != "")
+                            while (myReader.Read())
                             {
-                                projectName = myReader.GetValue(1).ToString();
+                                string projectName = "default";
+                                if (myReader.GetValue(1).ToString() != "")
+                                {
+                                    projectName = myReader.GetValue(1).ToString();
+                                }
+                                rowS.Add(new SpeakerRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name, Age = (myReader.GetString("Speaker"))[0].ToString() });
+
                             }
-                            rowS.Add(new SpeakerRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name, Age = (myReader.GetString("Speaker"))[0].ToString() });
-
                         }
-                        myReader.Close();
-
                     }
 
                     //Pass in the collection made of the datagrid rows

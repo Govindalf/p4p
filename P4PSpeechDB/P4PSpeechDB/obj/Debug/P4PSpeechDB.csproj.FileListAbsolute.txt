@@ -15,3 +15,5 @@ C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.P
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csproj.GenerateResource.Cache
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.exe
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.pdb
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\Progressbar.baml
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\Progressbar.g.cs

@@ -193,11 +193,13 @@ namespace P4PSpeechDB
             PropertyGroupDescription propertyDes = new PropertyGroupDescription("ProjectName");
             collection.GroupDescriptions.Add(new PropertyGroupDescription(groupValue));
 
+
             if (groupValue.Equals("Age"))
             {
 
                 collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
             }
+
 
             dataGridFiles.ItemsSource = collection;
             dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
@@ -205,6 +207,7 @@ namespace P4PSpeechDB
 
 
         //When a row in the projects grid is selected
+
         private void dataGridProjects_GotCellFocus(object sender, RoutedEventArgs e)
         {
             this.emptyGrid.Visibility = System.Windows.Visibility.Hidden;
@@ -662,7 +665,9 @@ namespace P4PSpeechDB
             //    System.Console.WriteLine(tableName);
             //    System.Console.WriteLine(idName);
             //    System.Console.WriteLine(i);
-            //    SpeakerRow dgRow = (from r in row where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
+
+            //    SpeakerRow dgRow = (from r in rowS where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
+
             //    //newRow.Remove(dgRow);
             //    if (conn.openConn() == true)
             //    {
@@ -682,7 +687,8 @@ namespace P4PSpeechDB
             //    }
             //}
 
-            //collection = new ListCollectionView(row);
+
+            //ListCollectionView collection = new ListCollectionView(rowS);
             //buildDatagridGroups(collection);
 
         }

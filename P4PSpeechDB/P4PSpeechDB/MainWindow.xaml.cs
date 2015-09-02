@@ -825,13 +825,15 @@ namespace P4PSpeechDB
             ProjectRow pr = dataGridProjects.SelectedValue as ProjectRow;
             MenuItem mi = sender as MenuItem;
 
+
+
+            string folder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            string parentDir = Directory.GetParent(folder).Parent.Parent.Parent.FullName;
+
             //Open the project folder in explorer
             switch (mi.Name)
             {
                 case "menuShow":
-
-                    string folder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-                    string parentDir = Directory.GetParent(folder).Parent.Parent.Parent.FullName;
                     Process.Start("explorer.exe", parentDir + @"\testOutput\" + pr.PID);
                     break;
 
@@ -842,10 +844,83 @@ namespace P4PSpeechDB
                     break;
 
                 case "menuDownload":
+                    downloadProject(parentDir + @"\testOutput\", pr.PID);
                     break;
             }
         }
 
+        private void downloadProject(string path, string PID)
+        {
+            int bufferSize;//mediumblob buffer size
+            byte[] rawData;
+            FileStream fs;
+            string filePath = "";
+
+            foreach (string table in tableNames)
+            {
+                if (!dgl.ignoreTables.Contains(table)) //Only the file tables
+                {
+                    if (conn.openConn())
+                    {
+                        MySqlCommand cmd = new MySqlCommand();
+                        cmd.Connection = conn.getConn();
+                        cmd.CommandText = "SELECT * FROM " + table + " WHERE ProjectName='" + PID + "'";
+                        //cmd.Parameters.AddWithValue("@table", table);
+                        //cmd.Parameters.AddWithValue("@PID", PID);
+
+                        MySqlDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+
+                            int ndx = reader.GetOrdinal("File");
+                            bufferSize = (int)reader.GetBytes(ndx, 0, null, 0, 0);  //get the length of data
+                            rawData = new byte[bufferSize];
+
+                            Directory.CreateDirectory(path + PID + @"\" + reader.GetString("Speaker"));
+                            fs = new FileStream(path + PID + @"\" + reader.GetString("Speaker") + @"\" + reader.GetString("ID") + "." + table, FileMode.OpenOrCreate, FileAccess.Write);
+                            filePath = fs.Name;
+                            BinaryWriter bw = new BinaryWriter(fs);
+
+                            // Reset the starting byte for the new BLOB.
+                            int startIndex = 0;
+                            int bytesRead=0;
+
+                            while (startIndex < bufferSize)
+                            {
+                                bytesRead = (int)reader.GetBytes(ndx, startIndex,
+                                   rawData, startIndex, bufferSize - startIndex);
+                                bw.Write(rawData);
+                                bw.Flush();
+                                startIndex += bytesRead;
+                            }
+
+                            //// Read the bytes into outbyte[] and retain the number of bytes returned.
+                            //long retval = reader.GetBytes(ndx, startIndex, rawData, 0, bufferSize);
+
+                            //// Continue reading and writing while there are bytes beyond the size of the buffer.
+                            //while (retval == bufferSize)
+                            //{
+                            //    bw.Write(rawData);
+                            //    bw.Flush();
+
+                            //    // Reposition the start index to the end of the last buffer and fill the buffer.
+                            //    startIndex += bufferSize;
+                            //    retval = reader.GetBytes(ndx, startIndex, rawData, 0, bufferSize);
+                            //}
+
+                            // Write the remaining buffer.
+                            bw.Write(rawData, 0, (int)bytesRead);
+                            bw.Flush();
+
+                            // Close the output file.
+                            bw.Close();
+                            fs.Close();
+                        }
+                        conn.closeConn();
+                    }
+                }
+            }
+        }
 
     }
 

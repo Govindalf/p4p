@@ -24,7 +24,7 @@ namespace P4PSpeechDB
         private ObservableCollection<Row> rowS; //DAtagrid row item
         private ObservableCollection<Row> rowP = new ObservableCollection<Row>(); //DAtagrid row item
 
-        private List<string> ignoreTables = new List<string>();
+        public List<string> ignoreTables = new List<string>();
 
         public DataGridLoader(DBConnection conn, List<String> tableNames)
         {

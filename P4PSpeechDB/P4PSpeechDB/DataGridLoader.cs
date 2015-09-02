@@ -117,7 +117,7 @@ namespace P4PSpeechDB
                     foreach (string name in tableNames)
                     {
                         //Exclude the projects table
-                        if (name.Equals("projects") || name.Equals("analysis") || name.Equals("files2analysis"))
+                        if (name.Equals("projects") || name.Equals("analysis") || name.Equals("files2analysis") || name.Equals("trackOptions"))
                         {
                             continue;
                         }

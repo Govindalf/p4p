@@ -1,29 +1,32 @@
 ﻿<Window x:Class="P4PSpeechDB.GenerateTempPrompt"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="GenerateTempPrompt" Height="350.4" Width="300">
+        Title="GenerateTempPrompt" Height="350.4" Width="325" MinWidth="325">
     <StackPanel Margin="5">
         <TextBlock Name="txtCreateFolder" Margin="5"/>
         <TextBox Name="txtFolderName" Margin="5,5,5.2,5" Background="#FFE4E0E0"/>
         <TextBlock x:Name="txtOr" Margin="10,5,5.2,5" Text="Choose a project:"/>
         <ComboBox Name="cbChooseFolder" Margin="5,5,5.2,5" Background="#FFE4E0E0"/>
-        <StackPanel Orientation="Horizontal" Margin="0,5,5.2,5" HorizontalAlignment="Right" Width="270">
-            <CheckBox IsChecked="{Binding IsFormantSelected}" MaxHeight="15" MaxWidth="15"/>
-            <TextBlock Name="txtTrackFormant" Margin="5" Text="sfb"/>
-            <Canvas Name="cbForm">
-                <ComboBox Name="formTrack1" Margin="150,5,5.2,5" Background="#FFE4E0E0" Width="78" IsEditable="True" SelectionChanged="txtTrack2_SelectionChanged"/>
-            </Canvas>
-        </StackPanel>
-        <Button Name="btForm" Content="Add another formant type" Click="ButtonForformant_Click" Margin="5" Background="White" BorderBrush="White"/>
-        <StackPanel Name="spSf0" Orientation="Horizontal" Margin="0,5,5.2,5" HorizontalAlignment="Right" Width="270">
-            <CheckBox IsChecked="{Binding IsPitchSelected}" MaxHeight="15" MaxWidth="15"/>
-            <TextBlock Name="txtTrackPitch" Margin="5" Text="sf0"/>
-            <Canvas Name="cbPitch">
-                <ComboBox Name="pitchTrack1" Margin="150,5,5.2,5" Background="#FFE4E0E0" Width="78" IsEditable="True"/>
-            </Canvas>
-        </StackPanel>
-        <Button Name="btPitch" Content="Add another pitch type" Click="ButtonForPitch_Click" Margin="5" Background="White" BorderBrush="White"/>
-
+        <GroupBox Header="Track level">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Margin="0,5,5.2,5" HorizontalAlignment="Right" Width="280">
+                    <CheckBox IsChecked="{Binding IsFormantSelected}" MaxHeight="15" MaxWidth="15" Margin="10,0,0,0"/>
+                    <TextBlock Name="txtTrackFormant" Margin="5" Text="sfb"/>
+                    <Canvas Name="cbForm">
+                        <ComboBox Name="formTrack1" Margin="130,0,5.2,5" Background="#FFE4E0E0" Width="78" IsEditable="True"/>
+                    </Canvas>
+                </StackPanel>
+            <Button Name="btForm" Content="Add another formant type" Click="ButtonForformant_Click" Margin="5" Background="White" BorderBrush="White"/>
+            <StackPanel Name="spSf0" Orientation="Horizontal" Margin="0,5,5.2,5" HorizontalAlignment="Right" Width="280">
+                <CheckBox IsChecked="{Binding IsPitchSelected}" MaxHeight="15" MaxWidth="15" Margin="10,0,0,0"/>
+                <TextBlock Name="txtTrackPitch" Margin="5" Text="sf0"/>
+                <Canvas Name="cbPitch">
+                    <ComboBox Name="pitchTrack1" Margin="130,0,5.2,5" Background="#FFE4E0E0" Width="78" IsEditable="True"/>
+                </Canvas>
+            </StackPanel>
+                <Button Name="btPitch" Content="Add another pitch type" Click="ButtonForPitch_Click" Margin="5" Background="White" BorderBrush="White"/>
+            </StackPanel>
+        </GroupBox>
         <StackPanel Name="spButtons" Orientation="Horizontal" Margin="0,5,5.2,5" HorizontalAlignment="Right">
             <Button Content="Create template" IsDefault="True" Margin="5" x:Name="btnAdd" Click="btnAdd_Click" />
             <Button Content="_Cancel" IsCancel="True" Margin="5" x:Name="btnCancel" Click="btnCancel_Click" />

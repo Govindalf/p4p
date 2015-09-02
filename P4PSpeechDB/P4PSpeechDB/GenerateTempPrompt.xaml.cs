@@ -30,10 +30,13 @@ namespace P4PSpeechDB
         private string folderNameCB;
         private string formIdentifier = "Form";
         private string pitchIdentifier = "Pitch";
+        private string sf0Name;
+        private string sfbName;
         private int countForm = 1;
         private int countPitch = 1;
-        private int moveDownForm = 32;
-        private int moveDownPitch = 32;
+        private int moveDownForm = 27;
+        private int moveDownPitch = 27;
+
         DBConnection conn;
 
         public GenerateTempPrompt(string question, string title, string defaultValue = "", InputType inputType = InputType.Text)
@@ -51,14 +54,21 @@ namespace P4PSpeechDB
         // fill in the values of each project name in the combobox
         private void fillCombo() 
         {
-            string query = "SELECT * FROM SpeechDB.projects";
+            string queryProject = "SELECT * FROM SpeechDB.projects";
+            string querySf0 = "SELECT * FROM SpeechDB.trackOptions WHERE trackClass='sf0'";
+            string querySfb = "SELECT * FROM SpeechDB.trackOptions WHERE trackClass='sfb'";
+
             MySqlDataReader myReader;
-            MySqlCommand cmd = new MySqlCommand(query, conn.getConn());
+            MySqlCommand cmdProject = new MySqlCommand(queryProject, conn.getConn());
+            MySqlCommand cmdSf0 = new MySqlCommand(querySf0, conn.getConn());
+            MySqlCommand cmdSfb = new MySqlCommand(querySfb, conn.getConn());
+
             try
             {
+                // the project drop down box
                 if (conn.openConn() == true)
                 {
-                    myReader = cmd.ExecuteReader();
+                    myReader = cmdProject.ExecuteReader();
                     while (myReader.Read())
                     {
                         string projectName = myReader.GetString("PID");
@@ -66,7 +76,24 @@ namespace P4PSpeechDB
                         folderNameCB = (string) cbChooseFolder.SelectedValue;
                     }
                     myReader.Close();
+
+                    myReader = cmdSf0.ExecuteReader();
+                    while (myReader.Read())
+                    {
+                        sf0Name = myReader.GetString("ID");
+                        pitchTrack1.Items.Add(sf0Name);
+                    }
+                    myReader.Close();
+
+                    myReader = cmdSfb.ExecuteReader();
+                    while (myReader.Read())
+                    {
+                        sfbName = myReader.GetString("ID");
+                        formTrack1.Items.Add(sfbName);
+                    }
+                    myReader.Close();
                 }
+
             }
             catch (Exception ex)
             {
@@ -134,7 +161,7 @@ namespace P4PSpeechDB
         {
             ComboBox cbox = new ComboBox();
             cbox.Width = 78;
-            cbox.Margin = new Thickness(150,5 + moveDown,5.2,5);
+            cbox.Margin = new Thickness(130,5 + moveDown,5.2,5);
             cbox.IsEditable = true;
 
             var converter = new BrushConverter();
@@ -149,14 +176,9 @@ namespace P4PSpeechDB
             }
             else if (trackId.Equals(pitchIdentifier))
             {
-                cbox.Name = "formTrack" + countForm;
+                cbox.Name = "pitchTrack" + countForm;
                 cbPitch.Children.Add(cbox);
             }
-
-        }
-
-        private void txtTrack2_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
 
         }
 
@@ -164,10 +186,9 @@ namespace P4PSpeechDB
         {
             countForm++;
             btForm.Margin = new Thickness(0, moveDownForm, 5.2, 5);
-            //spSf0.Margin = new Thickness(0, moveDownForm, 5.2, 5);
-            //btPitch.Margin = new Thickness(0, moveDownForm, 5.2, 5);
-
             CreateWPFComboBox(formIdentifier, moveDownForm);
+            this.SizeToContent = SizeToContent.Height;
+            System.Console.WriteLine(this.Width);
             moveDownForm += 32;
 
         }
@@ -178,9 +199,8 @@ namespace P4PSpeechDB
             btPitch.Margin = new Thickness(0, moveDownPitch, 5.2, 5);
 
             CreateWPFComboBox(pitchIdentifier, moveDownPitch);
+            this.SizeToContent = SizeToContent.Height;
             moveDownPitch += 32;
         }
-
-
     }
 }

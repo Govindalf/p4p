@@ -138,6 +138,11 @@ namespace P4PSpeechDB
                     using (var cmd = conn.CreateCommand())
                     {
                         conn.Open();
+                        //Exclude the projects table
+                        if (name.Equals("projects") || name.Equals("analysis") || name.Equals("files2analysis") || name.Equals("trackOptions"))
+                        {
+                            continue;
+                        }
 
                         cmd.CommandText = "SELECT ID, ProjectName, Speaker FROM " + name + " WHERE ProjectName = @pName"; // @name" ; // WHERE ProjectName = '" + PID + "'";
                         //cmd.Parameters.AddWithValue("@name", name);

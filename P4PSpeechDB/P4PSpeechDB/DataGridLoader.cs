@@ -61,7 +61,7 @@ namespace P4PSpeechDB
 
         private void loadProjects()
         {
-
+            rowP = new ObservableCollection<Row>();
             using (MySqlConnection conn = new DBConnection().getConn())
             using (var cmd = conn.CreateCommand())
             {

@@ -728,52 +728,15 @@ namespace P4PSpeechDB
             // get 2nd substring
             // write in file, track + samples + wav
             // write in file, track + 2nd substring + sfb/sf0
-            List<List<string>> listResults = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
-            string pathName = @"C:\Users\Rodel\Documents\p4p\TemplateStr\";
-            string ext = "tpl";
-            //if (tempName != null)
-            //{
-
+            //List<List<string>> listResults = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
+            //string pathName = @"C:\Users\Rodel\Documents\p4p\TemplateStr\";
+            //string ext = "tpl";
             //    pathName += tempName[0] + "." + ext;
             //    System.Console.WriteLine(pathName);
             //    try
             //    {
             //        string sfbFile = "";
             //        List<String> wordToTrack = new List<string>();
-
-            //        // Delete if file exists. 
-            //        if (File.Exists(pathName))
-            //        {
-            //            File.Delete(pathName);
-            //        }
-
-            //        if (conn.openConn() == true)
-            //        {
-            //            MySqlCommand comm = conn.getCommand();
-            //            comm.CommandText = "SELECT File FROM sfb WHERE ProjectName=@projName";
-            //            comm.Parameters.AddWithValue("@projName", tempName[1]);
-            //            using (MySqlDataReader reader = comm.ExecuteReader())
-            //            {
-            //                while (reader.Read())
-            //                {
-            //                    sfbFile = reader.GetString(0);
-            //                }
-            //            }
-            //            //comm.ExecuteNonQuery();
-            //        }
-            //        conn.closeConn();
-            //        if (sfbFile != null)
-            //        {
-            //            int startText = sfbFile.IndexOf("Column");
-            //            int endText = sfbFile.IndexOf("---");
-            //            string filteredText = sfbFile.Substring(startText, endText);
-            //            string[] splitByColumn = filteredText.Split(new string[] { "Column" }, StringSplitOptions.None);
-            //            for (int i = 1; i < splitByColumn.Length; i++)
-            //            {
-            //                string[] splitBySpace = splitByColumn[i].Split(new char[0]);
-            //                wordToTrack.Add(splitBySpace[1]);
-            //            }
-
             //        }
             //        // Create a new file 
             //        using (FileStream fs = File.Create(pathName))
@@ -795,11 +758,10 @@ namespace P4PSpeechDB
             //            fs.Write(primaryExt, 0, primaryExt.Length);
             //        }
 
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine(ex.ToString());
-            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex.ToString());
             //}
         }
 

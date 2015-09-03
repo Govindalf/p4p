@@ -733,8 +733,6 @@ namespace P4PSpeechDB
             string ext = "tpl";
 
             pathName += listResults.First().First() + "." + ext;
-
-            System.Console.WriteLine(listResults.Count);
             try
             {
                 
@@ -756,7 +754,6 @@ namespace P4PSpeechDB
                         // skip first result list which contain tpl name and project path
                         if(count == 0)
                         {
-                            System.Console.WriteLine("we are here");
                             count += 1;
                             continue;
                         }

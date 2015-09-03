@@ -59,9 +59,9 @@ namespace P4PSpeechDB
 
         }
 
-        private void loadProjects()
+        public void loadProjects()
         {
-
+            rowP.Clear();
             using (MySqlConnection conn = new DBConnection().getConn())
             using (var cmd = conn.CreateCommand())
             {

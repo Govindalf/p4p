@@ -94,5 +94,16 @@ namespace P4PSpeechDB
         {
             return this.conn;
         }
+
+        public void handleException(SqlException e)
+        {
+            switch (e.Number)
+            {
+                case 1586:
+
+                    MessageBox.Show("A file with the same name exists. Insert failed.");
+                    break;
+            }
+        }
     }
 }

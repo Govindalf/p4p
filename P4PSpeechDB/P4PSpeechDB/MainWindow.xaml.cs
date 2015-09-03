@@ -24,6 +24,7 @@ using System.Collections;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Threading;
+using System.Data.SqlClient;
 
 namespace P4PSpeechDB
 {
@@ -130,26 +131,26 @@ namespace P4PSpeechDB
                     //moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
 
                     // Connect to the mysql db if possible
-                    if (conn.openConn() == true)
+                    using ((myConn = new DBConnection().getConn()))
+                    using (MySqlCommand comm = myConn.CreateCommand())
                     {
-                        try
-                        {
-                            MySqlCommand comm = conn.getCommand();
-                            comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, File mediumblob, Speaker varchar(20), ProjectName varchar(100))";
-                            comm.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
+                        myConn.Open();
+                        //try
+                        //{
+                        //    comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, File mediumblob, Speaker varchar(20), ProjectName varchar(100))";
+                        //    comm.ExecuteNonQuery();
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    MessageBox.Show(ex.Message);
 
-                        }
+                        //}
                         executeInsert(filename, ext, dlg, folderName, rawData);
 
-                        conn.closeConn();
                     }
                 }
             }
-            dgl.setUpDataGrids();
+            dgl.loadProjects();
 
         }
 
@@ -165,30 +166,37 @@ namespace P4PSpeechDB
             filename = Path.GetFileName(filename);
             string speaker = Path.GetFileNameWithoutExtension(dlg.SafeFileName).Substring(0, 4);
 
-            try
+            using ((myConn = new DBConnection().getConn()))
+            using (MySqlCommand comm = myConn.CreateCommand())
             {
+                myConn.Open();
 
-                MySqlCommand comm = conn.getCommand();
-                comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID, File, Speaker, ProjectName) VALUES(@ID, @FileAsBlob, @Speaker, @ProjectName)";
-                comm.Parameters.AddWithValue("@ID", filename);
-                comm.Parameters.AddWithValue("@FileAsBlob", rawData);
-                comm.Parameters.AddWithValue("@Speaker", speaker);
-                comm.Parameters.AddWithValue("@ProjectName", folderName);
-                comm.ExecuteNonQuery();
-
-                if (folderName != null)
+                try
                 {
-                    comm.CommandText = "INSERT IGNORE INTO projects(PID) VALUES(@PID)";
-                    comm.Parameters.AddWithValue("@PID", folderName);
+                    comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, File mediumblob, Speaker varchar(20), ProjectName varchar(100))";
                     comm.ExecuteNonQuery();
 
-                }
+                    comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID, File, Speaker, ProjectName) VALUES(@ID, @FileAsBlob, @Speaker, @ProjectName)";
+                    comm.Parameters.AddWithValue("@ID", filename);
+                    comm.Parameters.AddWithValue("@FileAsBlob", rawData);
+                    comm.Parameters.AddWithValue("@Speaker", speaker);
+                    comm.Parameters.AddWithValue("@ProjectName", folderName);
+                    comm.ExecuteNonQuery();
 
+                    if (folderName != null)
+                    {
+                        comm.CommandText = "INSERT IGNORE INTO projects(PID) VALUES(@PID)";
+                        comm.Parameters.AddWithValue("@PID", folderName);
+                        comm.ExecuteNonQuery();
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    //conn.handleException(e);
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+
 
         }
 

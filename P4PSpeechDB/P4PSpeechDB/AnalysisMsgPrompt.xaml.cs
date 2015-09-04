@@ -88,9 +88,9 @@ namespace P4PSpeechDB
 
         private void cbChooseProject_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            
             cbChooseSpeaker.IsEnabled = true;
-
+            rowS.Clear();
             ComboBox cmb = sender as ComboBox;
             dgl.loadSpeakers(cmb.SelectedItem.ToString());
 

@@ -990,19 +990,24 @@ namespace P4PSpeechDB
 
             AnalysisMsgPrompt a = new AnalysisMsgPrompt(dgl, rowP);
 
-            foreach (var elem in rowS)
-                ((dynamic)rowS).Add((SpeakerRow)elem);
+
 
             if (a.ShowDialog() == true)
             {
-                foreach (var dataItem in dataList)
+                dgl.loadSpeakers(a.PID);
+                rowS = dgl.getCollection("S");
+                foreach (var elem in rowS.ToList())
+                    ((dynamic)rowS).Add((SpeakerRow)elem);
+
+
+                using ((myConn = new DBConnection().getConn()))
+                using (MySqlCommand comm = myConn.CreateCommand())
                 {
+                    myConn.Open();
 
-
-                    using ((myConn = new DBConnection().getConn()))
-                    using (MySqlCommand comm = myConn.CreateCommand())
+                    foreach (var dataItem in dataList)
                     {
-                        myConn.Open();
+
 
                         try
                         {
@@ -1025,18 +1030,25 @@ namespace P4PSpeechDB
                             comm.ExecuteNonQuery();
 
                             //Add to the mapping table(to link with speaker)
-                            List<Row> startsWithAge = rowS.Where(s => ((SpeakerRow)s).Age.StartsWith(a.Age)).ToList();
+                            List<Row> startsWithAge = rowS.Where(s => ((SpeakerRow)s).Speaker.StartsWith(a.Age)).ToList();
 
-                            foreach (var row in startsWithAge)
+                            MessageBox.Show(a.Age);
+                            foreach (var row in rowS)
                             {
 
-                                comm.CommandText = "create table if not exists files2analysis (AID varchar(150) primary key, ID varchar(150) primary key,)";
-                                comm.ExecuteNonQuery();
+                                //comm.CommandText = "create table if not exists files2analysis (AID varchar(150) primary key, ID varchar(150) primary key)";
+                                //comm.ExecuteNonQuery();
+                                if (((SpeakerRow)row).Speaker.StartsWith(a.Age))
+                                {
 
-                                comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID, @AID)";
-                                comm.Parameters.AddWithValue("@ID", ((SpeakerRow)row).ID);
-                                comm.Parameters.AddWithValue("@AID", dataItem.Item1);
-                                comm.ExecuteNonQuery();
+
+                                    comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID2, @AID2)";
+                                    comm.Parameters.Clear();
+                                    comm.Parameters.AddWithValue("@ID2", ((SpeakerRow)row).ID);
+                                    comm.Parameters.AddWithValue("@AID2", dataItem.Item1);
+                                    comm.ExecuteNonQuery();
+                                }
+
                             }
                         }
                         catch (Exception)

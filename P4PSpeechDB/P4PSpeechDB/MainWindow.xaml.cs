@@ -81,7 +81,7 @@ namespace P4PSpeechDB
                     }
                 }
             }
-            catch (Exception ex)
+            catch (MySqlException ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -143,7 +143,7 @@ namespace P4PSpeechDB
                             comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, File mediumblob, Speaker varchar(20), ProjectName varchar(100))";
                             comm.ExecuteNonQuery();
                         }
-                        catch (Exception ex)
+                        catch (MySqlException ex)
                         {
                             MessageBox.Show(ex.Message);
 
@@ -182,14 +182,14 @@ namespace P4PSpeechDB
 
                 if (folderName != null)
                 {
-                    comm.CommandText = "INSERT IGNORE INTO projects(PID) VALUES(@PID)";
+                    comm.CommandText = "INSERT IGNORE INTO projects(PID, dateCreated) VALUES(@PID, @dateCreated)";
                     comm.Parameters.AddWithValue("@PID", folderName);
+                    comm.Parameters.AddWithValue("@dateCreated", DateTime.Now.ToString());
                     comm.ExecuteNonQuery();
-
                 }
 
             }
-            catch (Exception ex)
+            catch (MySqlException ex)
             {
                 MessageBox.Show(ex.Message);
             }

@@ -13,7 +13,7 @@ using System.Windows.Data;
 
 namespace P4PSpeechDB
 {
-    class DataGridLoader
+    public class DataGridLoader
     {
         private DBConnection conn;
         ICollectionView collectionP; //projects

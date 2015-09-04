@@ -176,6 +176,7 @@
         
         <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="177,178,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"/>
         <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="458,110,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236"/>
+        <Button Content="Add analysis" HorizontalAlignment="Left" Margin="484,38,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
 
     </Grid>
 

@@ -1,0 +1,17 @@
+﻿<Window x:Class="P4PSpeechDB.AnalysisMsgPrompt"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Choose analysis files" Height="280" Width="300">
+    <StackPanel Margin="5">
+        <TextBlock x:Name="txtCreateFolder" Margin="10,5,5,5" Text="Select a project"/>
+        <ComboBox x:Name="cbChooseProject" Margin="5" Background="#FFE4E0E0" SelectionChanged="cbChooseProject_SelectionChanged"/>
+        <TextBlock x:Name="txtOr" Margin="10,5,5,5" Text="Select a speaker group"/>
+        <ComboBox x:Name="cbChooseSpeaker" Margin="5,5,5.2,5" Background="#FFE4E0E0" IsEnabled="False"/>
+        <TextBlock x:Name="txtOr_Copy" Margin="10,5,5,5" Text="Enter a description"/>
+        <TextBox Height="59" TextWrapping="Wrap" MaxLength="500" x:Name="txtDesc"/>
+        <StackPanel Orientation="Horizontal" Margin="0,5,5.2,5" HorizontalAlignment="Right">
+            <Button Content="Add analyses" IsDefault="True" Margin="5" x:Name="btnAdd" Click="btnAdd_Click" IsEnabled="False"/>
+            <Button Content="_Cancel" IsCancel="True" Margin="5" x:Name="btnCancel" Click="btnCancel_Click" />
+        </StackPanel>
+    </StackPanel>
+</Window>

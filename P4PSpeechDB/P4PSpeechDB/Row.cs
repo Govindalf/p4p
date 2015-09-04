@@ -5,7 +5,7 @@ using System.Text;
 
 namespace P4PSpeechDB
 {
-    interface Row
+    public interface Row
     {
     }
 }

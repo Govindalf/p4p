@@ -168,7 +168,7 @@ namespace P4PSpeechDB
                             // Future works. Need to get only distinct.
                             foreach (ComboBox cb in formCB)
                             {
-                                if (cb.SelectedValue != null)
+                                if (cb.SelectedValue != null && !sfbReturnList.Contains(cb.SelectedValue))
                                     sfbReturnList.Add((string)cb.SelectedValue);
                                 else if (!cb.Text.Equals(defaultValue))
                                     sfbReturnList.Add(cb.Text);
@@ -177,8 +177,9 @@ namespace P4PSpeechDB
 
                         if (sfbReturnList.Count > 0)
                         {
-                            returnList.Add(sfbReturnList);
                             inst.insertToTable(formIdentifier);
+                            sfbReturnList.Add("sfbId");
+                            returnList.Add(sfbReturnList);
                         }
 
                         // For the Pitch track class. if the user selected a pitch track value to add to the template file
@@ -197,7 +198,7 @@ namespace P4PSpeechDB
                         {
                             foreach (ComboBox cb in pitchCB)
                             {
-                                if (cb.SelectedValue != null)
+                                if (cb.SelectedValue != null && !sf0ReturnList.Contains(cb.SelectedValue))
                                     sf0ReturnList.Add((string)cb.SelectedValue);
                                 else if (!cb.Text.Equals(defaultValue))
                                     sf0ReturnList.Add(cb.Text);
@@ -205,8 +206,9 @@ namespace P4PSpeechDB
                         }
                         if (sf0ReturnList.Count > 0)
                         {
-                            returnList.Add(sf0ReturnList);
                             inst.insertToTable(pitchIdentifier);
+                            sf0ReturnList.Add("sf0Id");
+                            returnList.Add(sf0ReturnList);
                         }
                         return returnList;
                     }
@@ -250,7 +252,7 @@ namespace P4PSpeechDB
                     {
                         foreach (string str in distinctList)
                         {
-                            comm.CommandText = "INSERT INTO trackOptions (ID, trackClass) VALUES (@ID, @trackClass)";
+                            comm.CommandText = "INSERT IGNORE INTO trackOptions (ID, trackClass) VALUES (@ID, @trackClass)";
                             comm.Parameters.AddWithValue("@ID", str);
                             comm.Parameters.AddWithValue("@trackClass", trackID);
                             comm.ExecuteNonQuery();

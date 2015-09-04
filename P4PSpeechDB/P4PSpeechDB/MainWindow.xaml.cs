@@ -113,10 +113,10 @@ namespace P4PSpeechDB
 
 
             Nullable<bool> result = dlg.ShowDialog();  // Display OpenFileDialog by calling ShowDialog method 
-            string folderName = "";
+            List<string> folderDetails = new List<string>();
             if (result.HasValue == true && result.Value == true)
             {
-                folderName = getFolderName(); // only prompt for folder once always
+                folderDetails = getFolderName(); // only prompt for folder once always
             }
             byte[] rawData;
 
@@ -148,7 +148,7 @@ namespace P4PSpeechDB
                             MessageBox.Show(ex.Message);
 
                         }
-                        executeInsert(filename, ext, dlg, folderName, rawData);
+                        executeInsert(filename, ext, dlg, folderDetails, rawData);
 
                         conn.closeConn();
                     }
@@ -157,13 +157,13 @@ namespace P4PSpeechDB
             dgl.setUpDataGrids();
         }
 
-        private string getFolderName()
+        private List<string> getFolderName()
         {
             return FolderMsgPrompt.Prompt("Create new folder", "Folder options", inputType: FolderMsgPrompt.InputType.Text);
 
         }
 
-        private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, string folderName, byte[] rawData)
+        private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, List<string> folderDetails, byte[] rawData)
         {
 
             filename = Path.GetFileName(filename);
@@ -177,14 +177,17 @@ namespace P4PSpeechDB
                 comm.Parameters.AddWithValue("@ID", filename);
                 comm.Parameters.AddWithValue("@FileAsBlob", rawData);
                 comm.Parameters.AddWithValue("@Speaker", speaker);
-                comm.Parameters.AddWithValue("@ProjectName", folderName);
+                comm.Parameters.AddWithValue("@ProjectName", folderDetails.First());
                 comm.ExecuteNonQuery();
 
-                if (folderName != null)
+                if (folderDetails != null)
                 {
-                    comm.CommandText = "INSERT IGNORE INTO projects(PID, dateCreated) VALUES(@PID, @dateCreated)";
-                    comm.Parameters.AddWithValue("@PID", folderName);
+                    comm.CommandText = "INSERT IGNORE INTO projects(PID, dateCreated, description) VALUES(@PID, @dateCreated, @description)";
+                    comm.Parameters.AddWithValue("@PID", folderDetails.First());
                     comm.Parameters.AddWithValue("@dateCreated", DateTime.Now.ToString());
+                    if(folderDetails.Count == 2){
+                        comm.Parameters.AddWithValue("@description", folderDetails.Last());
+                    }
                     comm.ExecuteNonQuery();
                 }
 

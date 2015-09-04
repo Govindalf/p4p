@@ -34,6 +34,7 @@ namespace P4PSpeechDB
     {
         //private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
+        private string dirDB = "C:/Users/Govindu/Dropbox/P4P/p4p/TestDB";
         private DBConnection conn;
         MySqlConnection myConn = null;
 
@@ -687,17 +688,19 @@ namespace P4PSpeechDB
         private void ButtonDelete_Click(object sender, RoutedEventArgs e)
         {
             //var listOfItems = dataGridFiles.SelectedItems;
-            //foreach (var i in dataGridFiles.SelectedItems)
+            //var grid = dataGridFiles;
+            //var copyGrid = dataGridFiles;
+            //for(int i = 0; i <= copyGrid.SelectedItems.Count; i++)
             //{
-            //    string tableName = (i as SpeakerRow).tableName;
-            //    string idName = (i as SpeakerRow).ID;
-            //    System.Console.WriteLine(tableName);
-            //    System.Console.WriteLine(idName);
-            //    System.Console.WriteLine(i);
+            //    string tableName = (grid.SelectedItems[i] as SpeakerRow).tableName;
+            //    string idName = (grid.SelectedItems[i] as SpeakerRow).ID;
+            //    //System.Console.WriteLine(tableName);
+            //    //System.Console.WriteLine(idName);
+            //    //System.Console.WriteLine(i);
 
-            //    SpeakerRow dgRow = (from r in rowS where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
+            //    //SpeakerRow dgRow = (from r in rowS where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
 
-            //    //newRow.Remove(dgRow);
+            //    copyGrid.Items.Remove(grid.SelectedItems[i] as Row);
             //    if (conn.openConn() == true)
             //    {
             //        try
@@ -724,16 +727,13 @@ namespace P4PSpeechDB
 
         private void ButtonTemplate_Click(object sender, RoutedEventArgs e)
         {
-
-            // Enter a sf0 and sfb file
-            // Find all lines with columns
-            // Get string and split by space
-            // get 2nd substring
-            // write in file, track + samples + wav
-            // write in file, track + 2nd substring + sfb/sf0
             List<List<string>> listResults = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
             string pathName = @"C:\Users\Rodel\Documents\p4p\TemplateStr\";
             string ext = "tpl";
+            if(listResults == null)
+            {
+                return;
+            }
 
             pathName += listResults.First().First() + "." + ext;
             try
@@ -755,7 +755,7 @@ namespace P4PSpeechDB
                         if(count == 0)
                         {
                             count += 1;
-                            string pathFiles = "C:/Users/Govindu/Dropbox/P4P/p4p/TestDB" + "/" + lStr[1] + "/*";
+                            string pathFiles = dirDB + "\\" + lStr[1] + "\\*";
                             byte[] pathFString = new UTF8Encoding(true).GetBytes("path lab " + pathFiles +
                                 "\n" + "path trg " + pathFiles + "\n" + "path hlb " + pathFiles + "\n" + "path wav " + pathFiles + "\n" + "path sfb " + pathFiles + "\n \n");
                             fs.Write(pathFString, 0, pathFString.Length);
@@ -955,14 +955,15 @@ namespace P4PSpeechDB
                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Background,
                                                       new Action(delegate { }));
             }
-
-
-
         }
 
-
+        private void ButtonConfig_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+            dirDB = dialog.SelectedPath;
+        }
     }
-
 }
 
 

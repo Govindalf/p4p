@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,12 +11,13 @@ using System.Windows;
 
 namespace P4PSpeechDB
 {
-    public class DBConnection:IDisposable
+    public class DBConnection : IDisposable
     {
 
         MySqlConnectionStringBuilder csBuilder;
 
         MySqlConnection conn;
+
 
         public DBConnection()
         {
@@ -39,6 +41,12 @@ namespace P4PSpeechDB
             {
                 System.Diagnostics.Debug.WriteLine(e);
             }
+        }
+
+        public void createDB()
+        {
+            //MySqlScript script = new MySqlScript(conn, File.ReadAllText("schema.sql"));
+            //script.Execute();
         }
 
         public bool openConn()
@@ -80,7 +88,7 @@ namespace P4PSpeechDB
         {
             try
             {
-                if (this.conn != null && this.conn.State == ConnectionState.Closed)
+                if (this.conn != null && this.conn.State == ConnectionState.Open)
                 {
                     this.conn.Close();
                 }
@@ -89,6 +97,21 @@ namespace P4PSpeechDB
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+
+        public DataTable loadIntoGrid(MySqlCommand query)
+        {
+            //openConn();
+
+            query.Connection = conn;
+            var dataSet = new DataSet();
+            var mySQLDataAdapter = new MySqlDataAdapter(query);
+
+            dataSet = new DataSet();
+            mySQLDataAdapter.Fill(dataSet);
+            return dataSet.Tables[0];
+
         }
 
         public MySqlCommand getCommand()

@@ -66,6 +66,8 @@ namespace P4PSpeechDB
             InitializeComponent();
             this.speakerCombo.Text = groupValue;
 
+            new DBConnection().createDB();
+
             try
             {
                 // store all of the tables in the mysql database into a list

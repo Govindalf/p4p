@@ -20,7 +20,7 @@ namespace P4PSpeechDB
         ICollectionView collectionS; //speakers
         ICollectionView collectionA; //analysis
         private List<String> tableNames;
-        private ObservableCollection<Row> rowA; //DAtagrid row item
+        private ObservableCollection<Row> rowA = new ObservableCollection<Row>(); //DAtagrid row item
         private ObservableCollection<Row> rowS; //DAtagrid row item
         private ObservableCollection<Row> rowP = new ObservableCollection<Row>(); //DAtagrid row item
 
@@ -61,55 +61,66 @@ namespace P4PSpeechDB
 
         public void loadProjects()
         {
+            //rowP.Clear();
+            //using (MySqlConnection conn = new DBConnection().getConn())
+            //using (var cmd = conn.CreateCommand())
+            //{
+            //    conn.Open();
+
+
+            //    MySqlDataReader myReader;
+            //    cmd.CommandText = "Select PID, dateCreated from projects";
+
+            //    using (myReader = cmd.ExecuteReader())
+            //    {
+            //        while (myReader.Read())
+            //        {
+            //            string[] dateOnly = myReader.GetString("dateCreated").Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+            //            rowP.Add(new ProjectRow { PID = myReader.GetString("PID"), dateCreated = dateOnly[0] });
+            //        }
+            //    }
+            //    collectionP = new ListCollectionView(rowP);
+
+            //}
+
             rowP.Clear();
-            using (MySqlConnection conn = new DBConnection().getConn())
-            using (var cmd = conn.CreateCommand())
+            using (DBConnection db = new DBConnection())
             {
-                conn.Open();
+                MySqlCommand query = new MySqlCommand("Select PID, dateCreated from projects");
 
-
-                MySqlDataReader myReader;
-                cmd.CommandText = "Select PID, dateCreated from projects";
-
-                using (myReader = cmd.ExecuteReader())
+                var table = db.loadIntoGrid(query);
+                foreach (DataRow dr in table.Rows)
                 {
-                    while (myReader.Read())
-                    {
-                        string[] dateOnly = myReader.GetString("dateCreated").Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
-                        rowP.Add(new ProjectRow { PID = myReader.GetString("PID"), dateCreated = dateOnly[0] });
-                    }
-                }
-                collectionP = new ListCollectionView(rowP);
 
+                    string[] dateOnly = dr["dateCreated"].ToString().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+                    rowP.Add(new ProjectRow { PID =  dr["PID"].ToString(), dateCreated = dateOnly[0] });
+                }
             }
+            collectionP = new ListCollectionView(rowP);
         }
 
         public void loadAnalysis(string fileID)
         {
-
-            using (MySqlConnection conn = new DBConnection().getConn())
-            using (var cmd = conn.CreateCommand())
+            rowA.Clear();
+            using (DBConnection db = new DBConnection())
             {
-                conn.Open();
-
-                MySqlDataReader myReader;
-                rowA = new ObservableCollection<Row>();
+                MySqlCommand cmd = new MySqlCommand("Select PID, dateCreated from projects");
                 cmd.CommandText = @"SELECT a.AID, a.Description FROM analysis a INNER JOIN files2analysis f2a
                                                       ON a.AID = f2a.AID WHERE f2a.ID = @ID";
 
                 cmd.Parameters.AddWithValue("@ID", fileID);
 
-                using (myReader = cmd.ExecuteReader())
+                var table = db.loadIntoGrid(cmd);
+                foreach (DataRow dr in table.Rows)
                 {
-                    while (myReader.Read())
-                    {
-                        rowA.Add(new AnalysisRow { AID = myReader.GetString("AID"), Description = myReader.GetString("Description") });
-
-                    }
+                    rowA.Add(new AnalysisRow { AID = dr["AID"].ToString(), Description = dr["Description"].ToString() });
                 }
-                collectionA = new ListCollectionView(rowA);
-
             }
+
+            collectionA = new ListCollectionView(rowA);
+
+
+
         }
 
         public void loadSpeakers(string PID)

@@ -83,7 +83,7 @@ namespace P4PSpeechDB
                     }
                 }
             }
-            catch (Exception ex)
+            catch (MySqlException ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -115,7 +115,11 @@ namespace P4PSpeechDB
 
 
             Nullable<bool> result = dlg.ShowDialog();  // Display OpenFileDialog by calling ShowDialog method 
-            string folderName = getFolderName(); // only prompt for folder once always
+            List<string> folderDetails = new List<string>();
+            if (result.HasValue == true && result.Value == true)
+            {
+                folderDetails = getFolderName(); // only prompt for folder once always
+            }
             byte[] rawData;
 
             // Add all files selected into the the db. If multiple files added, project destination is the same.
@@ -147,22 +151,23 @@ namespace P4PSpeechDB
                         //    MessageBox.Show(ex.Message);
 
                         //}
-                        executeInsert(filename, ext, dlg, folderName, rawData);
+                        executeInsert(filename, ext, dlg, folderDetails, rawData);
 
                     }
                 }
             }
             dgl.loadProjects();
 
+            //dgl.setUpDataGrids();
         }
 
-        private string getFolderName()
+        private List<string> getFolderName()
         {
             return FolderMsgPrompt.Prompt("Create new folder", "Folder options", inputType: FolderMsgPrompt.InputType.Text);
 
         }
 
-        private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, string folderName, byte[] rawData)
+        private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, List<string> folderDetails, byte[] rawData)
         {
 
             filename = Path.GetFileName(filename);
@@ -182,20 +187,29 @@ namespace P4PSpeechDB
                     comm.Parameters.AddWithValue("@ID", filename);
                     comm.Parameters.AddWithValue("@FileAsBlob", rawData);
                     comm.Parameters.AddWithValue("@Speaker", speaker);
-                    comm.Parameters.AddWithValue("@ProjectName", folderName);
+                    comm.Parameters.AddWithValue("@ProjectName", folderDetails.First());
                     comm.ExecuteNonQuery();
 
-                    if (folderName != null)
+                    if (folderDetails != null)
                     {
-                        comm.CommandText = "INSERT IGNORE INTO projects(PID) VALUES(@PID)";
-                        comm.Parameters.AddWithValue("@PID", folderName);
-                        comm.ExecuteNonQuery();
+                        comm.CommandText = "INSERT IGNORE INTO projects(PID, dateCreated, description) VALUES(@PID, @dateCreated, @description)";
+                        comm.Parameters.AddWithValue("@PID", folderDetails.First());
+                        comm.Parameters.AddWithValue("@dateCreated", DateTime.Now.ToString());
+                        if (folderDetails.Count == 2)
+                        {
+                            comm.Parameters.AddWithValue("@description", folderDetails.Last());
+                        }
+                        else
+                        {
+                            comm.Parameters.AddWithValue("@description", "No description given");
 
+                        }
+                        comm.ExecuteNonQuery();
                     }
                 }
-                catch (Exception e)
+                catch (MySqlException ex)
                 {
-                    //conn.handleException(e);
+                    MessageBox.Show(ex.Message);
                 }
             }
 
@@ -694,17 +708,19 @@ namespace P4PSpeechDB
         private void ButtonDelete_Click(object sender, RoutedEventArgs e)
         {
             //var listOfItems = dataGridFiles.SelectedItems;
-            //foreach (var i in dataGridFiles.SelectedItems)
+            //var grid = dataGridFiles;
+            //var copyGrid = dataGridFiles;
+            //for(int i = 0; i <= copyGrid.SelectedItems.Count; i++)
             //{
-            //    string tableName = (i as SpeakerRow).tableName;
-            //    string idName = (i as SpeakerRow).ID;
-            //    System.Console.WriteLine(tableName);
-            //    System.Console.WriteLine(idName);
-            //    System.Console.WriteLine(i);
+            //    string tableName = (grid.SelectedItems[i] as SpeakerRow).tableName;
+            //    string idName = (grid.SelectedItems[i] as SpeakerRow).ID;
+            //    //System.Console.WriteLine(tableName);
+            //    //System.Console.WriteLine(idName);
+            //    //System.Console.WriteLine(i);
 
-            //    SpeakerRow dgRow = (from r in rowS where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
+            //    //SpeakerRow dgRow = (from r in rowS where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
 
-            //    //newRow.Remove(dgRow);
+            //    copyGrid.Items.Remove(grid.SelectedItems[i] as Row);
             //    if (conn.openConn() == true)
             //    {
             //        try
@@ -731,20 +747,15 @@ namespace P4PSpeechDB
 
         private void ButtonTemplate_Click(object sender, RoutedEventArgs e)
         {
-
-            // Enter a sf0 and sfb file
-            // Find all lines with columns
-            // Get string and split by space
-            // get 2nd substring
-            // write in file, track + samples + wav
-            // write in file, track + 2nd substring + sfb/sf0
             List<List<string>> listResults = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
             string pathName = @"C:\Users\Rodel\Documents\p4p\TemplateStr\";
             string ext = "tpl";
+            if(listResults == null)
+            {
+                return;
+            }
 
             pathName += listResults.First().First() + "." + ext;
-
-            System.Console.WriteLine(listResults.Count);
             try
             {
 
@@ -755,9 +766,6 @@ namespace P4PSpeechDB
                     Byte[] heading = new UTF8Encoding(true).GetBytes("! this file was generated by Cirilla \n \n");
                     fs.Write(heading, 0, heading.Length);
 
-                    byte[] sampleWavString = new UTF8Encoding(true).GetBytes("track samples wav\n");
-                    fs.Write(sampleWavString, 0, sampleWavString.Length);
-
                     int count = 0;
                     //The second list must be sfb tracks and sf0 third.
                     foreach (List<string> lStr in listResults)
@@ -766,8 +774,14 @@ namespace P4PSpeechDB
                         // skip first result list which contain tpl name and project path
                         if (count == 0)
                         {
-                            System.Console.WriteLine("we are here");
                             count += 1;
+                            string pathFiles = testDBRoot + "\\" + lStr[1] + "\\*";
+                            byte[] pathFString = new UTF8Encoding(true).GetBytes("path lab " + pathFiles +
+                                "\n" + "path trg " + pathFiles + "\n" + "path hlb " + pathFiles + "\n" + "path wav " + pathFiles + "\n" + "path sfb " + pathFiles + "\n \n");
+                            fs.Write(pathFString, 0, pathFString.Length);
+
+                            byte[] sampleWavString = new UTF8Encoding(true).GetBytes("track samples wav\n");
+                            fs.Write(sampleWavString, 0, sampleWavString.Length);
                             continue;
                         }
                         if (lStr.LastOrDefault().Equals("sf0Id"))
@@ -961,10 +975,8 @@ namespace P4PSpeechDB
                 Application.Current.Dispatcher.Invoke(DispatcherPriority.Background,
                                                       new Action(delegate { }));
             }
-
-
-
         }
+
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -1064,8 +1076,15 @@ namespace P4PSpeechDB
         }
 
 
-    }
 
+        private void ButtonConfig_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+            testDBRoot = dialog.SelectedPath;
+        }
+
+    }
 }
 
 

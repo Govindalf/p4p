@@ -19,3 +19,4 @@ C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\P4PSpeechDB.e
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\P4PSpeechDB.pdb
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.exe
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.pdb
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\App.config

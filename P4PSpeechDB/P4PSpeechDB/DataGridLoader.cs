@@ -69,13 +69,14 @@ namespace P4PSpeechDB
 
 
                 MySqlDataReader myReader;
-                cmd.CommandText = "Select PID from projects";
+                cmd.CommandText = "Select PID, dateCreated from projects";
 
                 using (myReader = cmd.ExecuteReader())
                 {
                     while (myReader.Read())
                     {
-                        rowP.Add(new ProjectRow { PID = myReader.GetString("PID") });
+                        string[] dateOnly = myReader.GetString("dateCreated").Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+                        rowP.Add(new ProjectRow { PID = myReader.GetString("PID"), dateCreated = dateOnly[0] });
                     }
                 }
                 collectionP = new ListCollectionView(rowP);

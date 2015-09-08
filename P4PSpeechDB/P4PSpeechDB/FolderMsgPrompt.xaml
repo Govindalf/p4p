@@ -1,10 +1,12 @@
 ﻿<Window x:Class="P4PSpeechDB.FolderMsgPrompt"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="FolderMsgPrompt" Height="220" Width="300">
+        Title="FolderMsgPrompt" Height="320" Width="300">
     <StackPanel Margin="5">
         <TextBlock Name="txtCreateFolder" Margin="5"/>
         <TextBox Name="txtFolderName" Margin="5,5,5.2,5" Background="#FFE4E0E0"/>
+        <TextBlock Name="txtCreateDesc" Margin="5" Text="Description"/>
+        <TextBox Name="txtFolderDesc" Margin="5,5,5.2,5" Background="#FFE4E0E0" Height="70"/>
         <TextBlock Name="txtOr" Margin="128,5,5.2,5" Text="or"/>
         <ComboBox Name="cbChooseFolder" Margin="5,5,5.2,5" Background="#FFE4E0E0"/>
         <StackPanel Orientation="Horizontal" Margin="0,5,5.2,5" HorizontalAlignment="Right">

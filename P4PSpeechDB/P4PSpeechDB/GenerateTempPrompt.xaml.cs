@@ -169,9 +169,13 @@ namespace P4PSpeechDB
                             foreach (ComboBox cb in formCB)
                             {
                                 if (cb.SelectedValue != null && !sfbReturnList.Contains(cb.SelectedValue))
+                                {
                                     sfbReturnList.Add((string)cb.SelectedValue);
-                                else if (!cb.Text.Equals(defaultValue))
+                                }
+                                else if (!cb.Text.Equals(defaultValue) && !sfbReturnList.Contains(cb.Text))
+                                {
                                     sfbReturnList.Add(cb.Text);
+                                }
                             }
                         }
 
@@ -200,7 +204,7 @@ namespace P4PSpeechDB
                             {
                                 if (cb.SelectedValue != null && !sf0ReturnList.Contains(cb.SelectedValue))
                                     sf0ReturnList.Add((string)cb.SelectedValue);
-                                else if (!cb.Text.Equals(defaultValue))
+                                else if (!cb.Text.Equals(defaultValue) && !sf0ReturnList.Contains(cb.Text))
                                     sf0ReturnList.Add(cb.Text);
                             }
                         }

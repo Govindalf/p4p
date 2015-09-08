@@ -41,6 +41,7 @@ namespace P4PSpeechDB
             txtCreateFolder.Text = question;
             Title = title;
             txtFolderName.Text = defaultValue;
+            txtFolderDesc.Text = defaultValue;
             txtFolderName.Visibility = Visibility.Visible;
         }
 
@@ -74,9 +75,10 @@ namespace P4PSpeechDB
             }
         }
 
-        public static string Prompt(string question, string title, string defaultValue = "", InputType inputType = InputType.Text)
+        public static List<string> Prompt(string question, string title, string defaultValue = "", InputType inputType = InputType.Text)
         {
             FolderMsgPrompt inst = new FolderMsgPrompt(question, title, defaultValue, inputType);
+            List<string> folderDetails = new List<string>();
             inst.ShowDialog();
 
             if (inst.DialogResult == true)
@@ -84,17 +86,24 @@ namespace P4PSpeechDB
                 // if the user choose to create a new folder
                 if (inst.txtFolderName.Text != defaultValue && inst.cbChooseFolder.SelectedValue == null)
                 {
-                    return inst.txtFolderName.Text;
+                    folderDetails.Add(inst.txtFolderName.Text);
+                    if (inst.txtFolderDesc.Text != defaultValue)
+                    {
+                        folderDetails.Add(inst.txtFolderDesc.Text);
+                    }
+                    return folderDetails;
                 }
                 // if the user choose to use an existing folder
                 else if (inst.cbChooseFolder.SelectedValue != null)
                 {
-                    return (string) inst.cbChooseFolder.SelectedValue;
+                    folderDetails.Add((string)inst.cbChooseFolder.SelectedValue);
+                    return folderDetails;
                 }
                 // if the user didn't choose any, should throw exception
                 else
                 {
-                    return defaultValue;
+                    folderDetails.Add(defaultValue);
+                    return folderDetails;
                 }
             }
             //System.Console.WriteLine();

@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace P4PSpeechDB
 {
-    public class DBConnection
+    public class DBConnection:IDisposable
     {
 
         MySqlConnectionStringBuilder csBuilder;
@@ -32,7 +32,7 @@ namespace P4PSpeechDB
                 csBuilder.Password = "Cirilla_2015";
                 csBuilder.Port = 3306;
                 csBuilder.CharacterSet = "utf8";
-                conn = new MySqlConnection(csBuilder.ToString());
+                this.conn = new MySqlConnection(csBuilder.ToString());
 
             }
             catch (Exception e)
@@ -71,17 +71,23 @@ namespace P4PSpeechDB
             }
         }
 
-        public bool closeConn()
+        public void Dispose()
+        {
+            closeConn();
+        }
+
+        public void closeConn()
         {
             try
             {
-                this.conn.Close();
-                return true;
+                if (this.conn != null && this.conn.State == ConnectionState.Closed)
+                {
+                    this.conn.Close();
+                }
             }
             catch (MySqlException ex)
             {
                 MessageBox.Show(ex.Message);
-                return false;
             }
         }
 

@@ -67,9 +67,9 @@ namespace P4PSpeechDB
         // fill in the values of each project name in the combobox
         private void fillCombo() 
         {
-            string queryProject = "SELECT * FROM SpeechDB.projects";
-            string querySf0 = "SELECT * FROM SpeechDB.trackOptions WHERE trackClass='sf0'";
-            string querySfb = "SELECT * FROM SpeechDB.trackOptions WHERE trackClass='sfb'";
+            string queryProject = "SELECT * FROM SpeechDB.Project";
+            string querySf0 = "SELECT * FROM SpeechDB.Track WHERE class='sf0'";
+            string querySfb = "SELECT * FROM SpeechDB.Track WHERE class='sfb'";
 
             MySqlDataReader myReader;
             MySqlCommand cmdProject = new MySqlCommand(queryProject, conn.getConn());
@@ -93,7 +93,7 @@ namespace P4PSpeechDB
                     myReader = cmdSf0.ExecuteReader();
                     while (myReader.Read())
                     {
-                        sf0Name = myReader.GetString("ID");
+                        sf0Name = myReader.GetString("TID");
                         pitchOptions.Add(sf0Name);
                         pitchTrack1.Items.Add(sf0Name);
                         
@@ -103,7 +103,7 @@ namespace P4PSpeechDB
                     myReader = cmdSfb.ExecuteReader();
                     while (myReader.Read())
                     {
-                        sfbName = myReader.GetString("ID");
+                        sfbName = myReader.GetString("TID");
                         formOptions.Add(sfbName);
                         formTrack1.Items.Add(sfbName);
                     }
@@ -256,7 +256,7 @@ namespace P4PSpeechDB
                     {
                         foreach (string str in distinctList)
                         {
-                            comm.CommandText = "INSERT IGNORE INTO trackOptions (ID, trackClass) VALUES (@ID, @trackClass)";
+                            comm.CommandText = "INSERT IGNORE INTO Track (TID, class) VALUES (@ID, @trackClass)";
                             comm.Parameters.AddWithValue("@ID", str);
                             comm.Parameters.AddWithValue("@trackClass", trackID);
                             comm.ExecuteNonQuery();

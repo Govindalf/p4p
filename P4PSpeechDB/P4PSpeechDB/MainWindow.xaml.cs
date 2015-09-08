@@ -38,8 +38,6 @@ namespace P4PSpeechDB
         private DBConnection conn;
         MySqlConnection myConn = null;
 
-
-
         private List<String> tableNames = new List<String>();
         private ObservableCollection<Row> rowS; //DAtagrid row item
         private ObservableCollection<Row> rowA; //DAtagrid row item
@@ -62,6 +60,7 @@ namespace P4PSpeechDB
             rowS = dgl.getCollection("S");
 
             InitializeComponent();
+            WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             this.speakerCombo.Text = groupValue;
 
             try

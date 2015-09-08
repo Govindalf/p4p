@@ -8,9 +8,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type GroupItem}">
-                        <Expander x:Name="exp" IsExpanded="{Binding Path=Items[0].IsExpanded, Mode=TwoWay}"
-                                      Background="White"
-                                      Foreground="Black">
+                        <Expander x:Name="exp" Background="White" Foreground="Black">
+                            <!--Items[0].IsExpanded-->
 
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
@@ -19,7 +18,8 @@
                                             <Setter Property="Margin" Value="5,0,0,0"/>
                                         </Style>
                                     </StackPanel.Resources>
-                                    <CheckBox IsChecked="{Binding IsHeaderSelected}" MaxHeight="15" MaxWidth="15"/>
+                                    <CheckBox MaxHeight="15" MaxWidth="15"/>
+                                    <!--IsChecked="{Binding IsHeaderSelected}"-->
                                     <TextBlock Text="{Binding Name}" />
                                     <!--<TextBlock Text="{Binding Path =ItemCount}" />-->
                                 </StackPanel>
@@ -35,7 +35,7 @@
         </Style>
     </Window.Resources>
 
-    <Grid Height="680" Width="900" Margin="0,0,17,-21" VerticalAlignment="Top" >
+    <Grid Height="680" Width="900" Margin="0,-20,-4.8,-17.2" VerticalAlignment="Top" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
@@ -45,7 +45,8 @@
 
 
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" Margin="251,228,0,0" x:Name="dataGridFiles"  
-    		HorizontalAlignment="Left" Width="300" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+    		HorizontalAlignment="Left" Width="300" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" >
 
 
             <DataGrid.Columns>
@@ -141,7 +142,7 @@
             <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0">
                 <StackPanel>
                     <Image Source="pack://application:,,,/Icons/label.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Generate Template"/>
+                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="WebMaus"/>
                 </StackPanel>
             </Button>
             <Button Content="Stop Audio" HorizontalAlignment="Center" VerticalAlignment="Top"  BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="Button_Click_1"/>
@@ -150,7 +151,10 @@
         <ComboBox HorizontalAlignment="Left" Margin="739,192,0,0" VerticalAlignment="Top" Width="120"/>
         <TextBlock HorizontalAlignment="Left" Margin="696,192,0,0" TextWrapping="Wrap" Text="Sort By" VerticalAlignment="Top"/>
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" Margin="560,228,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="300" HeadersVisibility="Column" CanUserAddRows="False">
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" 
+                  Margin="560,228,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="300" 
+                  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                  HeadersVisibility="Column" CanUserAddRows="False">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding AID}" Header="Analysis ID" Width="120" IsReadOnly="True" SortDirection="Ascending"/>
@@ -180,8 +184,9 @@
 
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="371" Margin="10,197,0,0" 
                   x:Name="dataGridProjects" HorizontalAlignment="Left" Width="226" 
-                  HeadersVisibility="Column" CanUserAddRows="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
-                  IsSynchronizedWithCurrentItem="False">
+                  HeadersVisibility="Column" CanUserAddRows="False" IsSynchronizedWithCurrentItem="False"
+                  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
 
             <DataGrid.ContextMenu>
                 <ContextMenu >

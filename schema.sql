@@ -16,7 +16,7 @@ CREATE TABLE Analysis (
 
 -- Table File
 CREATE TABLE File (
-    FID int    NOT NULL ,
+    FID int    NOT NULL AUTO_INCREMENT,
     PID varchar(255)    NOT NULL ,
     Name varchar(255)    NOT NULL ,
     FileType varchar(255)    NOT NULL ,

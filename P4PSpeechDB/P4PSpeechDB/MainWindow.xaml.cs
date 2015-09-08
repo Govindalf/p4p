@@ -37,9 +37,7 @@ namespace P4PSpeechDB
         private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
         private DBConnection conn;
         MySqlConnection myConn = null;
-
-
-
+        
         private List<String> tableNames = new List<String>();
         private ObservableCollection<Row> rowS; //DAtagrid row item
         private ObservableCollection<Row> rowA; //DAtagrid row item
@@ -56,7 +54,7 @@ namespace P4PSpeechDB
             IsExpanded = false;
             this.DataContext = this;
             conn = new DBConnection();
-
+            //conn.createDB();
             //Loads all datagrid with relevant data
             dgl = new DataGridLoader(conn, tableNames);
             dgl.setUpDataGrids();
@@ -65,8 +63,6 @@ namespace P4PSpeechDB
 
             InitializeComponent();
             this.speakerCombo.Text = groupValue;
-
-            new DBConnection().createDB();
 
             try
             {
@@ -347,9 +343,9 @@ namespace P4PSpeechDB
 
                 if (item != null)
                 {
-                    string fileType = item.tableName.ToString();
+                    string fileType = item.FileType.ToString();
                     string fileName = item.ID.ToString();
-                    string projectName = item.ProjectName.ToString();
+                    string projectName = item.PID.ToString();
 
 
                     //Check if file exists locally, if not open from db
@@ -530,92 +526,84 @@ namespace P4PSpeechDB
         //Loads all the data in the target folder into the db
         private void loadAllButton_Click(object sender, RoutedEventArgs e)
         {
-            using ((myConn = new DBConnection().getConn()))
-            using (MySqlCommand cmd = myConn.CreateCommand())
+            using (DBConnection db = new DBConnection())
             {
-                myConn.Open();
                 DirectoryInfo[] dirs = new DirectoryInfo(testDBRoot).GetDirectories();
                 byte[] rawData;
                 //Adds all files selected into folders to the db
 
-                try
+
+                foreach (DirectoryInfo dir in dirs)
                 {
-                    foreach (DirectoryInfo dir in dirs)
+
+
+                    FileInfo[] files = new DirectoryInfo(dir.FullName).GetFiles("*.*", SearchOption.AllDirectories);
+
+                    //If analysis table exists, add them separately
+                    if (dir.Name.Equals("ANALYSIS"))
+                    {
+
+                        foreach (FileInfo file in files)
+                        {
+                            string fileName = Path.GetFileNameWithoutExtension(file.FullName);
+                            rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
+
+                            var cmd = new MySqlCommand();
+                            cmd.CommandText = "INSERT INTO Analysis (AID, FileData, Description, FileType) VALUES (@AID, @fileAsBlob, @desc, @type)";
+                            cmd.Parameters.AddWithValue("@AID", fileName);
+                            cmd.Parameters.AddWithValue("@fileAsBlob", rawData);
+                            cmd.Parameters.AddWithValue("@desc", "No description");
+                            cmd.Parameters.AddWithValue("@type", file.Extension);
+                            db.insertIntoDB(cmd);
+
+                        }
+
+                    }
+                    else
                     {
 
 
-                        FileInfo[] files = new DirectoryInfo(dir.FullName).GetFiles("*.*", SearchOption.AllDirectories);
+                        //Create projects table
+                        var cmd = new MySqlCommand();
+                        cmd.CommandText = "INSERT IGNORE INTO Project (PID, DateCreated, Description) VALUES (@PID, @date, @desc)"; //ignore = Dont insert dups
 
-                        //If analysis table exists, add them separately
-                        if (dir.Name.Equals("ANALYSIS"))
-                        {
-                            //Create analysis table
-                            cmd.CommandText = "CREATE TABLE IF NOT EXISTS analysis (AID varchar(150) primary key, File mediumblob, Description varchar(500), FileType varchar(20))";
-                            cmd.ExecuteNonQuery();
+                        cmd.Parameters.AddWithValue("@PID", dir);
+                        cmd.Parameters.AddWithValue("@date", DateTime.Today);
+                        cmd.Parameters.AddWithValue("@desc", "None");
+                        db.insertIntoDB(cmd);
 
-                            foreach (FileInfo file in files)
-                            {
-                                string fileName = Path.GetFileNameWithoutExtension(file.FullName);
-                                rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
-
-                                cmd.CommandText = "INSERT INTO analysis (AID, File, Description, FileType) VALUES (@AID, @fileAsBlob, @desc, @type)";
-                                cmd.Parameters.AddWithValue("@AID", fileName);
-                                cmd.Parameters.AddWithValue("@fileAsBlob", rawData);
-                                cmd.Parameters.AddWithValue("@desc", "No description");
-                                cmd.Parameters.AddWithValue("@type", file.Extension);
-                                cmd.ExecuteNonQuery();
-
-                            }
-
-                        }
-                        else
+                        foreach (FileInfo file in files)
                         {
 
+                            string fileName = Path.GetFileNameWithoutExtension(file.FullName);
 
-                            //Create projects table
+                            string ext = Path.GetExtension(file.Name).Replace(".", "");
+                            rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
+                            string speaker = fileName.Substring(0, 4);
 
-                            cmd.CommandText = "CREATE TABLE IF NOT EXISTS projects (PID varchar(150) primary key)";
-                            cmd.ExecuteNonQuery();
+                            //Add file paths to the above table
+                            cmd = new MySqlCommand();
+                            cmd.CommandText = "INSERT INTO File (Name, Speaker, PID, FileType) VALUES (@Name, @speaker, @projectName, @type)";
+                            cmd.Parameters.AddWithValue("@Name", fileName);
+                            cmd.Parameters.AddWithValue("@speaker", speaker);
+                            cmd.Parameters.AddWithValue("@projectName", dir);
+                            cmd.Parameters.AddWithValue("@type", file.Extension);
+                            db.insertIntoDB(cmd);
 
+                            //Add file data
+                            cmd = new MySqlCommand();
+                            cmd.CommandText = "INSERT INTO FileData (FID, FileData) VALUES (LAST_INSERT_ID(), @data)";
+                            cmd.Parameters.AddWithValue("@data", rawData);
+                            db.insertIntoDB(cmd);
 
-                            cmd.CommandText = "INSERT IGNORE INTO projects (PID) VALUES (@PID)"; //ignore = Dont insert dups
-                            MessageBox.Show(dir.ToString());
-                            cmd.Parameters.AddWithValue("@PID", dir);
-                            cmd.ExecuteNonQuery();
-
-                            foreach (FileInfo file in files)
-                            {
-
-                                string fileName = Path.GetFileNameWithoutExtension(file.FullName);
-
-                                string ext = Path.GetExtension(file.Name).Replace(".", "");
-                                rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
-                                string speaker = fileName.Substring(0, 4);
-
-                                //Create tables if they dont already exist
-                                cmd.CommandText = "CREATE TABLE IF NOT EXISTS " + ext + "(ID varchar(150) primary key, File mediumblob, Speaker varchar(20), ProjectName varchar(100))";
-                                cmd.ExecuteNonQuery();
-
-                                //Add file paths to the above table
-                                cmd.CommandText = "INSERT INTO " + ext + " (ID, File, Speaker, ProjectName) VALUES (@ID, @fileAsBlob, @speaker, @projectName)";
-                                cmd.Parameters.AddWithValue("@ID", fileName);
-                                cmd.Parameters.AddWithValue("@fileAsBlob", rawData);
-                                cmd.Parameters.AddWithValue("@speaker", speaker);
-                                cmd.Parameters.AddWithValue("@projectName", dir);
-                                cmd.ExecuteNonQuery();
-
-
-                            }
                         }
                     }
                 }
-                catch (MySqlException ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-                MessageBox.Show("ALL DONE");
+
             }
+            MessageBox.Show("ALL DONE");
         }
+
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
@@ -752,7 +740,7 @@ namespace P4PSpeechDB
             List<List<string>> listResults = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
             string pathName = @"C:\Users\Rodel\Documents\p4p\TemplateStr\";
             string ext = "tpl";
-            if(listResults == null)
+            if (listResults == null)
             {
                 return;
             }

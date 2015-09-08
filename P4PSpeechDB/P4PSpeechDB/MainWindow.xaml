@@ -97,7 +97,7 @@
             </TextBox.Style>
         </TextBox>
 
-        <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="656,332,0,0" VerticalAlignment="Top" Width="330" Click="loadAllButton_Click"/>
+        <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="145,26,0,0" VerticalAlignment="Top" Width="330" Click="loadAllButton_Click"/>
 
         <StackPanel HorizontalAlignment="Left" Height="227" Margin="10,260,0,0" VerticalAlignment="Top" Width="150" Background="LightSlateGray">
             <Button Content="Add File" HorizontalAlignment="Left" VerticalAlignment="Top" Width="131" Height="28" Click="ButtonBrowse_Click" Margin="10,10,0,0"/>

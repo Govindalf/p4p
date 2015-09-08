@@ -61,59 +61,41 @@ namespace P4PSpeechDB
 
         public void loadProjects()
         {
-            //rowP.Clear();
-            //using (MySqlConnection conn = new DBConnection().getConn())
-            //using (var cmd = conn.CreateCommand())
-            //{
-            //    conn.Open();
 
-
-            //    MySqlDataReader myReader;
-            //    cmd.CommandText = "Select PID, dateCreated from projects";
-
-            //    using (myReader = cmd.ExecuteReader())
-            //    {
-            //        while (myReader.Read())
-            //        {
-            //            string[] dateOnly = myReader.GetString("dateCreated").Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
-            //            rowP.Add(new ProjectRow { PID = myReader.GetString("PID"), dateCreated = dateOnly[0] });
-            //        }
-            //    }
-            //    collectionP = new ListCollectionView(rowP);
-
-            //}
 
             rowP.Clear();
             using (DBConnection db = new DBConnection())
             {
-                MySqlCommand query = new MySqlCommand("Select PID, dateCreated from projects");
+                MySqlCommand query = new MySqlCommand("SELECT PID, DateCreated, Description FROM Project");
 
-                var table = db.loadIntoGrid(query);
+                var table = db.getFromDB(query);
                 foreach (DataRow dr in table.Rows)
                 {
 
                     string[] dateOnly = dr["dateCreated"].ToString().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
-                    rowP.Add(new ProjectRow { PID =  dr["PID"].ToString(), dateCreated = dateOnly[0] });
+                    rowP.Add(new ProjectRow { PID = dr["PID"].ToString(), DateCreated = dateOnly[0], Description = dr["Description"].ToString() });
                 }
             }
             collectionP = new ListCollectionView(rowP);
         }
 
-        public void loadAnalysis(string fileID)
+        public void loadAnalysis(string fileName)
         {
             rowA.Clear();
             using (DBConnection db = new DBConnection())
             {
-                MySqlCommand cmd = new MySqlCommand("Select PID, dateCreated from projects");
-                cmd.CommandText = @"SELECT a.AID, a.Description FROM analysis a INNER JOIN files2analysis f2a
-                                                      ON a.AID = f2a.AID WHERE f2a.ID = @ID";
+                MySqlCommand cmd = new MySqlCommand();
+                cmd.CommandText = @"SELECT a.AID, a.Description, a.FileType FROM Analysis a 
+                                                INNER JOIN File2Analysis f2a ON a.AID = f2a.Analysis_AID
+                                                INNER JOIN File f ON f.FID = f2a.File_FID
+                                                WHERE f.Name = @ID";
 
-                cmd.Parameters.AddWithValue("@ID", fileID);
+                cmd.Parameters.AddWithValue("@ID", fileName);
 
-                var table = db.loadIntoGrid(cmd);
+                var table = db.getFromDB(cmd);
                 foreach (DataRow dr in table.Rows)
                 {
-                    rowA.Add(new AnalysisRow { AID = dr["AID"].ToString(), Description = dr["Description"].ToString() });
+                    rowA.Add(new AnalysisRow { AID = dr["AID"].ToString(), Description = dr["Description"].ToString(), FileType = dr["FileType"].ToString() });
                 }
             }
 
@@ -125,64 +107,38 @@ namespace P4PSpeechDB
 
         public void loadSpeakers(string PID)
         {
-
-            if (PID == null)
-            {
-                PID = "DefaultProject";
-            }
-
-            MySqlDataReader myReader;
+            
             rowS = new ObservableCollection<Row>();
-            try
+            //if (PID == null)
+            //{
+            //    PID = "DefaultProject";
+            //}
+            
+            using (DBConnection db = new DBConnection())
             {
+                MySqlCommand cmd = new MySqlCommand();
 
-                //Get number of tables in database, for all tables, do the following
-                DataSet ds = new DataSet();
-                foreach (string name in tableNames)
+
+
+                cmd.CommandText = "SELECT * FROM File WHERE PID = @pName"; // @name" ; // WHERE ProjectName = '" + PID + "'";
+                //cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@pName", PID);
+
+                var table = db.getFromDB(cmd);
+                foreach (DataRow dr in table.Rows)
                 {
-                    //Exclude the projects table
-                    if (ignoreTables.Contains(name))
-                    {
-                        continue;
-                    }
+                    var speaker = dr["Speaker"].ToString();
+                    rowS.Add(new SpeakerRow { ID = dr["FID"].ToString(), Name = dr["Name"].ToString(), PID = dr["PID"].ToString(), Speaker = speaker, FileType = dr["FileType"].ToString(), Age = speaker[0].ToString() });
 
-                    using (MySqlConnection conn = new DBConnection().getConn())
-                    using (var cmd = conn.CreateCommand())
-                    {
-                        conn.Open();
-                        //Exclude the projects table
-                        if (name.Equals("projects") || name.Equals("analysis") || name.Equals("files2analysis") || name.Equals("trackOptions"))
-                        {
-                            continue;
-                        }
-
-                        cmd.CommandText = "SELECT ID, ProjectName, Speaker FROM " + name + " WHERE ProjectName = @pName"; // @name" ; // WHERE ProjectName = '" + PID + "'";
-                        //cmd.Parameters.AddWithValue("@name", name);
-                        cmd.Parameters.AddWithValue("@pName", PID);
-
-                        using (myReader = cmd.ExecuteReader())
-                        {
-                            while (myReader.Read())
-                            {
-                                string projectName = "default";
-                                if (myReader.GetValue(1).ToString() != "")
-                                {
-                                    projectName = myReader.GetValue(1).ToString();
-                                }
-                                rowS.Add(new SpeakerRow { ID = myReader.GetString("ID"), ProjectName = projectName, Speaker = myReader.GetString("Speaker"), tableName = name, Age = (myReader.GetString("Speaker"))[0].ToString() });
-
-                            }
-                        }
-                    }
                 }
 
-                //Pass in the collection made of the datagrid rows
-                collectionS = new ListCollectionView(rowS);
             }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
+
+
+
+            //Pass in the collection made of the datagrid rows
+            collectionS = new ListCollectionView(rowS);
+
         }
 
 

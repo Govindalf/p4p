@@ -45,8 +45,8 @@ namespace P4PSpeechDB
 
         public void createDB()
         {
-            //MySqlScript script = new MySqlScript(conn, File.ReadAllText("schema.sql"));
-            //script.Execute();
+            MySqlScript script = new MySqlScript(conn, File.ReadAllText(@"C:\Users\Govindu\Dropbox\P4P\p4p\schema.sql"));
+            script.Execute();
         }
 
         public bool openConn()
@@ -100,7 +100,7 @@ namespace P4PSpeechDB
         }
 
 
-        public DataTable loadIntoGrid(MySqlCommand query)
+        public DataTable getFromDB(MySqlCommand query)
         {
             //openConn();
 
@@ -113,6 +113,24 @@ namespace P4PSpeechDB
             return dataSet.Tables[0];
 
         }
+
+        public Boolean insertIntoDB(MySqlCommand cmd)
+        {
+            openConn();
+            cmd.Connection = conn;
+            try
+            {
+                cmd.ExecuteNonQuery();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
+
 
         public MySqlCommand getCommand()
         {

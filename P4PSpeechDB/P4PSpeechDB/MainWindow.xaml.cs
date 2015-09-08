@@ -34,7 +34,6 @@ namespace P4PSpeechDB
     {
         //private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
         private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
-        private string dirDB = "C:/Users/Govindu/Dropbox/P4P/p4p/TestDB";
         private DBConnection conn;
         MySqlConnection myConn = null;
 
@@ -185,8 +184,14 @@ namespace P4PSpeechDB
                     comm.CommandText = "INSERT IGNORE INTO projects(PID, dateCreated, description) VALUES(@PID, @dateCreated, @description)";
                     comm.Parameters.AddWithValue("@PID", folderDetails.First());
                     comm.Parameters.AddWithValue("@dateCreated", DateTime.Now.ToString());
-                    if(folderDetails.Count == 2){
+                    if (folderDetails.Count == 2)
+                    {
                         comm.Parameters.AddWithValue("@description", folderDetails.Last());
+                    }
+                    else 
+                    {
+                        comm.Parameters.AddWithValue("@description", "No description given");
+
                     }
                     comm.ExecuteNonQuery();
                 }
@@ -758,7 +763,7 @@ namespace P4PSpeechDB
                         if(count == 0)
                         {
                             count += 1;
-                            string pathFiles = dirDB + "\\" + lStr[1] + "\\*";
+                            string pathFiles = testDBRoot + "\\" + lStr[1] + "\\*";
                             byte[] pathFString = new UTF8Encoding(true).GetBytes("path lab " + pathFiles +
                                 "\n" + "path trg " + pathFiles + "\n" + "path hlb " + pathFiles + "\n" + "path wav " + pathFiles + "\n" + "path sfb " + pathFiles + "\n \n");
                             fs.Write(pathFString, 0, pathFString.Length);
@@ -964,7 +969,7 @@ namespace P4PSpeechDB
         {
             System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
             System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-            dirDB = dialog.SelectedPath;
+            testDBRoot = dialog.SelectedPath;
         }
     }
 }

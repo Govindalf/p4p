@@ -9,5 +9,7 @@ namespace P4PSpeechDB
     class ProjectRow : Row
     {
         public string PID { get; set; }
+        public string dateCreated { get; set; }
+
     }
 }

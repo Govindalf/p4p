@@ -156,6 +156,7 @@
             
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding PID}" Header="Project" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
+                <DataGridTextColumn Binding="{Binding dateCreated}" Header="Date created" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
             </DataGrid.Columns>
 
             <DataGrid.RowStyle>

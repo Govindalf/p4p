@@ -50,8 +50,8 @@
 
 
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding ID}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
-                <DataGridTextColumn Binding="{Binding tableName}" Header="FileType" Width="*" IsReadOnly="True" />
+                <DataGridTextColumn Binding="{Binding Name}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
+                <DataGridTextColumn Binding="{Binding FileType}" Header="FileType" Width="*" IsReadOnly="True" />
             </DataGrid.Columns>
 
             <DataGrid.RowStyle>

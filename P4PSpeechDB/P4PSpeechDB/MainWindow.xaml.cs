@@ -269,7 +269,7 @@ namespace P4PSpeechDB
 
                 if (item != null)
                 {
-                    string ID = item.ID;
+                    string ID = item.Name;
                     dgl.loadAnalysis(ID);
                     rowA = dgl.getCollection("A");
                     dataGridAnalysis.ItemsSource = new ListCollectionView(rowA);
@@ -470,57 +470,45 @@ namespace P4PSpeechDB
         //Testing, randomly macthes analysis to files
         private void randomlyMatchAnalysis()
         {
-            using ((myConn = new DBConnection().getConn()))
-            using (MySqlCommand cmd = myConn.CreateCommand())
+
+            using (DBConnection db = new DBConnection())
             {
-                myConn.Open();
-                MySqlDataReader myReader;
-                List<string> IDlist = new List<string>();
-                List<string> AIDlist = new List<string>();
-                cmd.CommandText = @"(SELECT ID FROM WAV) UNION (SELECT ID FROM hlb) UNION (SELECT ID FROM sf0) UNION
-                                                        (SELECT ID FROM lab) UNION
-                                                        (SELECT ID FROM sfb) UNION
-                                                        (SELECT ID FROM wav) UNION
-                                                        (SELECT ID FROM trg) ";
+                var cmd = new MySqlCommand();
+                cmd.CommandText = @"SELECT FID FROM File";
 
-                using (myReader = cmd.ExecuteReader())
+                var tableF = db.getFromDB(cmd);
+                cmd = new MySqlCommand();
+
+                cmd.CommandText = @"SELECT AID FROM Analysis";
+                var tableA = db.getFromDB(cmd);
+
+                MessageBox.Show(tableA.Rows.Count.ToString());
+                foreach (DataRow dr in tableF.Rows)
                 {
-                    while (myReader.Read())
+                    foreach (DataRow drA in tableA.Rows)
                     {
-                        IDlist.Add(myReader.GetString("ID"));
-                    }
-                    MessageBox.Show(IDlist.Count.ToString());
-
-                    cmd.CommandText = "SELECT AID FROM analysis";
-                    using (myReader = cmd.ExecuteReader())
-                    {
-                        while (myReader.Read())
-                        {
-                            AIDlist.Add(myReader.GetString("AID"));
-                        }
-                    }
-                    foreach (string ID in IDlist)
-                    {
-
 
                         Random random = new Random();
                         int randomNumber = random.Next(0, 10);
-                        for (int i = 0; i < randomNumber; i++)
-                        {
-                            cmd.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID, @AID)";
-                            cmd.Parameters.AddWithValue("@ID", ID);
-                            cmd.Parameters.AddWithValue("@AID", AIDlist[random.Next(0, AIDlist.Count - 1)]);
-                            cmd.ExecuteNonQuery();
+                        System.Diagnostics.Debug.WriteLine(randomNumber);
+                        if (randomNumber < 2) {
+                            cmd = new MySqlCommand();
+                            cmd.CommandText = "INSERT IGNORE INTO File2Analysis (File_FID, Analysis_AID) VALUES (@FID2, @AID)";
+                            cmd.Parameters.AddWithValue("@FID2", dr["FID"].ToString());
+                            cmd.Parameters.AddWithValue("@AID", drA["AID"].ToString());
+                            db.insertIntoDB(cmd);
 
                         }
-
                     }
-
                 }
 
             }
 
+            MessageBox.Show("DONE");
+
         }
+
+
 
 
         //Loads all the data in the target folder into the db
@@ -688,7 +676,7 @@ namespace P4PSpeechDB
             var obj = e.Item as SpeakerRow;
             if (obj != null)
             {
-                if (System.Text.RegularExpressions.Regex.IsMatch(obj.ID, searchBox.Text))
+                if (System.Text.RegularExpressions.Regex.IsMatch(obj.Name, searchBox.Text))
                     e.Accepted = true;
                 else
                     e.Accepted = false;

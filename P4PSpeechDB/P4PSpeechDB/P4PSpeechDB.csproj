@@ -129,7 +129,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="App1.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -141,6 +140,25 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\add_analysis.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\add_folder_white.png" />
+    <Resource Include="Icons\document2_delete.png" />
+    <Resource Include="Icons\document_add.png" />
+    <Resource Include="Icons\document_delete.png" />
+    <Resource Include="Icons\file_add.png" />
+    <Resource Include="Icons\folder_add.png" />
+    <Resource Include="Icons\folder_add_blue.png" />
+    <Resource Include="Icons\folder_add_green.png" />
+    <Resource Include="Icons\label.png" />
+    <Resource Include="Icons\settings1.png" />
+    <Resource Include="Icons\settings2.png" />
+    <Resource Include="Icons\settings3.png" />
+    <Resource Include="Icons\templates.png" />
+    <Resource Include="Icons\wform.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

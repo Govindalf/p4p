@@ -30,18 +30,22 @@ namespace P4PSpeechDB
         private string folderNameCB;
         private static string formIdentifier = "sfb";
         private static string pitchIdentifier = "sf0";
+        private static string otherIdentifier = "other";
         private string sf0Name;
         private string sfbName;
-        private int countForm = 1;
-        private int countPitch = 1;
+        //private int countForm = 1;
+        //private int countPitch = 1;
         private int moveDownForm = 27;
         private int moveDownPitch = 27;
+        private int moveDownOther = 27;
 
         private static List<String> pitchOptions = new List<String>();
         private static List<String> formOptions = new List<String>();
+        private static List<String> otherOptions = new List<String>();
+
         private static List<ComboBox> pitchCB = new List<ComboBox>();
         private static List<ComboBox> formCB = new List<ComboBox>();
-        private static List<ComboBox> otherCB = new List<ComboBox>();
+        private static List<TextBox> otherCB = new List<TextBox>();
 
         private static List<List<string>> returnList = new List<List<string>>();
         private static List<string> nonTrackList = new List<string>();
@@ -61,6 +65,7 @@ namespace P4PSpeechDB
             txtCreateFolder.Text = question;
             Title = title;
             txtFolderName.Text = defaultValue;
+            txtTrackOther.Text = defaultValue;
             txtFolderName.Visibility = Visibility.Visible;
         }
 
@@ -299,7 +304,7 @@ namespace P4PSpeechDB
             
             if (trackId.Equals(formIdentifier))
             {
-                cbox.Name = "formTrack" + countForm;
+                //cbox.Name = "formTrack" + countForm;
                 foreach (string str in formOptions)
                 {
                     cbox.Items.Add(str);
@@ -309,13 +314,23 @@ namespace P4PSpeechDB
             }
             else if (trackId.Equals(pitchIdentifier))
             {
-                cbox.Name = "pitchTrack" + countPitch;
+                //cbox.Name = "pitchTrack" + countPitch;
                 foreach (string str in pitchOptions)
                 {
                     cbox.Items.Add(str);
                 }
                 cbPitch.Children.Add(cbox);
                 pitchCB.Add(cbox);
+            }
+            else if (trackId.Equals(otherIdentifier))
+            {
+                TextBox tbox = new TextBox();
+                tbox.Width = 78;
+                tbox.Height = 25;
+                tbox.Margin = new Thickness(60, 5 + moveDown, 5.2, 5);
+                cbOther.Children.Add(tbox);
+                //cbox.Name = "otherTrack" + countOther;
+                otherCB.Add(tbox);
             }
 
         }
@@ -338,6 +353,14 @@ namespace P4PSpeechDB
             CreateWPFComboBox(pitchIdentifier, moveDownPitch);
             this.SizeToContent = SizeToContent.Height;
             moveDownPitch += 32;
+        }
+
+        private void ButtonForOther_Click(object sender, RoutedEventArgs e)
+        {
+            btOther.Margin = new Thickness(0, moveDownOther, 5.2, 5);
+            CreateWPFComboBox(otherIdentifier, moveDownOther);
+            this.SizeToContent = SizeToContent.Height;
+            moveDownOther += 32;
         }
     }
 

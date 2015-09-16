@@ -218,8 +218,8 @@ namespace P4PSpeechDB
         }
 
 
-        //When a row in the projects grid is selected
-
+        /*When a row in the projects grid is selected, load the relevent speech data into the
+         * speech datagrid, and do so efficiently.*/
         private void dataGridProjects_GotCellFocus(object sender, RoutedEventArgs e)
         {
             this.emptyGrid.Visibility = System.Windows.Visibility.Hidden;
@@ -263,7 +263,7 @@ namespace P4PSpeechDB
             }
         }
 
-
+        /*When analysis datagrid item clicked, opens the selected item. */
         private void analysisDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (sender != null)
@@ -294,31 +294,24 @@ namespace P4PSpeechDB
                     }
                     else
                     {
-                        using ((myConn = new DBConnection().getConn()))
-                        using (MySqlCommand cmd = myConn.CreateCommand())
+                        using (DBConnection db = new DBConnection())
                         {
-                            try
-                            {
-                                myConn.Open();
-                                cmd.CommandText = "SELECT File FROM analysis where AID = '" + fileName + "'";
 
-                                openOrPlayFile(cmd, fileName, fileType, "ANALYSIS", item);
+                            var cmd = new MySqlCommand();
+                            cmd.CommandText = "SELECT FileData FROM Analysis where AID = @fileName";
+                            cmd.Parameters.AddWithValue("@fileName", fileName);
 
-                            }
-                            catch (MySqlException ex)
-                            {
-                                MessageBox.Show(ex.ToString());
-                            }
+                            //call the download and save method
+                            openOrPlayFile(cmd, fileName, fileType, "ANALYSIS", item);
+
 
                         }
                     }
-
                 }
-
             }
         }
 
-        //On datagrid row click, opens the file
+        /*When speech file datagrid item clicked, opens the file. */
         private void resultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (sender != null)
@@ -348,8 +341,6 @@ namespace P4PSpeechDB
 
                         openOrPlayFile(cmd, fileName, fileType, projectName, item);
 
-
-
                     }
 
                 }
@@ -363,7 +354,7 @@ namespace P4PSpeechDB
             Process.Start(filePath);
         }
 
-        //Opens the selected file, or plays it if its a .wav(audio)
+        /*Downlaods and opens the file selected, or plays it if its a .wav(audio) */
         private void openOrPlayFile(MySqlCommand cmd, string fileName, string fileType, string projectName, Row row)
         {
             using (DBConnection db = new DBConnection())
@@ -386,7 +377,7 @@ namespace P4PSpeechDB
                 }
 
                 var table = db.getFromDB(cmd);
-                      foreach (DataRow dr in table.Rows)
+                foreach (DataRow dr in table.Rows)
                 {
 
                     rawData = (byte[])dr["FileData"]; // convert successfully to byte[]
@@ -403,7 +394,7 @@ namespace P4PSpeechDB
 
                     // close file stream
                     fs.Close();
-                          
+
                 }
 
 

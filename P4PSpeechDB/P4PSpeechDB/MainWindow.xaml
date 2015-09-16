@@ -44,7 +44,7 @@
               UnloadedBehavior="Stop" />
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" Margin="251,228,0,0" x:Name="dataGridFiles"  
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="353" Margin="251,275,0,0" x:Name="dataGridFiles"  
     		HorizontalAlignment="Left" Width="300" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" >
 
@@ -73,7 +73,7 @@
             </DataGrid.GroupStyle>
         </DataGrid>
 
-        <TextBox x:Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="251,161,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300" FontStyle="Italic" Foreground="LightGray" KeyDown="TextBox_KeyDown" Background="WhiteSmoke">
+        <TextBox x:Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="251,223,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300" FontStyle="Italic" Foreground="LightGray" KeyDown="TextBox_KeyDown" Background="WhiteSmoke">
 
             <TextBox.Style>
                 <Style xmlns:sys="clr-namespace:System;assembly=mscorlib" TargetType="{x:Type TextBox}">
@@ -99,11 +99,11 @@
             </TextBox.Style>
         </TextBox>
         <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="655,332,-85,0" VerticalAlignment="Top" Width="330" Click="loadAllButton_Click"/>
-        <StackPanel Orientation ="Horizontal" HorizontalAlignment="Left" Height="90" Margin="10,34,0,0" VerticalAlignment="Top" Width="226" Background="AliceBlue">
+        <StackPanel Orientation ="Horizontal" HorizontalAlignment="Left" Height="90" Margin="0,34,0,0" VerticalAlignment="Top" Width="254" Background="WhiteSmoke">
             <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="Transparent" VerticalAlignment="Top" Width="80" Height="70" Click="ButtonConfig_Click" BorderBrush="Transparent">
                 <StackPanel>
                     <Image Source="pack://application:,,,/Icons/settings2.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Settings"/>
+                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Path Settings"/>
                 </StackPanel>
             </Button>
             <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="Transparent" VerticalAlignment="Top" Width="80" Height="70" BorderBrush="Transparent">
@@ -113,7 +113,7 @@
                 </StackPanel>
             </Button>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="90" Margin="269,34,40,0" VerticalAlignment="Top" Width="591" Background="LightSteelBlue">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="90" Margin="251,34,6,0" VerticalAlignment="Top" Width="643" Background="WhiteSmoke">
             <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Click="ButtonBrowse_Click" Margin="10,10,0,0">
                 <StackPanel>
                     <Image Source="pack://application:,,,/Icons/document_add.png"  Height="30"/>
@@ -155,11 +155,11 @@
             <Button Visibility="Hidden" Content="Stop Audio" HorizontalAlignment="Center" VerticalAlignment="Top"  BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="Button_Click_1"/>
 
         </StackPanel>
-        <ComboBox HorizontalAlignment="Left" Margin="739,192,0,0" VerticalAlignment="Top" Width="120"/>
-        <TextBlock HorizontalAlignment="Left" Margin="696,192,0,0" TextWrapping="Wrap" Text="Sort By" VerticalAlignment="Top"/>
+        <ComboBox HorizontalAlignment="Left" Margin="740,248,0,0" VerticalAlignment="Top" Width="120"/>
+        <TextBlock HorizontalAlignment="Left" Margin="697,248,0,0" TextWrapping="Wrap" Text="Sort By" VerticalAlignment="Top"/>
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" 
-                  Margin="560,228,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="300" 
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="353" 
+                  Margin="560,275,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="300" 
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
                   HeadersVisibility="Column" CanUserAddRows="False">
 
@@ -189,11 +189,12 @@
 
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="371" Margin="10,197,0,0" 
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="490" Margin="10,138,0,0" 
                   x:Name="dataGridProjects" HorizontalAlignment="Left" Width="226" 
                   HeadersVisibility="Column" CanUserAddRows="False" IsSynchronizedWithCurrentItem="False"
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" AlternationCount="2">
+
 
             <DataGrid.ContextMenu>
                 <ContextMenu >
@@ -212,22 +213,39 @@
 
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
+                    <Style.Triggers>
+                        <Trigger Property="AlternationIndex" Value="0">
+                            <Setter Property="Background" Value="White" />
+                        </Trigger>
+                        <Trigger Property="AlternationIndex" Value="1">
+                            <Setter Property="Background" Value="WhiteSmoke" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding Path=Selectable}" Value="False">
+                            <DataTrigger.Setters>
+                                <Setter Property="Background" Value="LightGray" />
+                            </DataTrigger.Setters>
+                        </DataTrigger>
+                    </Style.Triggers>
                     <EventSetter Event="UIElement.GotFocus" Handler="dataGridProjects_GotCellFocus"/>
                 </Style>
             </DataGrid.RowStyle>
 
         </DataGrid>
 
-        <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="431,192,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="speakerCombo_SelectionChanged" SelectedValuePath="Content">
+        <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="431,248,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="speakerCombo_SelectionChanged" SelectedValuePath="Content">
             <ComboBoxItem Name="Speaker">Speaker</ComboBoxItem>
             <ComboBoxItem Name="tableName">File Type</ComboBoxItem>
             <ComboBoxItem Name="Age">Age</ComboBoxItem>
 
         </ComboBox>
-        <TextBlock HorizontalAlignment="Left" Margin="377,192,0,0" TextWrapping="Wrap" Text="Group By" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="377,248,0,0" TextWrapping="Wrap" Text="Group By" VerticalAlignment="Top"/>
 
-        <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="269,259,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"/>
-        <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="578,259,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236"/>
+        <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="260,311,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"/>
+        <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="569,311,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236"/>
+        <GroupBox Header="Description" HorizontalAlignment="Left" Margin="251,138,0,0" VerticalAlignment="Top" Height="80" Width="609">
+            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="42" Width="577"/>
+
+        </GroupBox>
 
 
     </Grid>

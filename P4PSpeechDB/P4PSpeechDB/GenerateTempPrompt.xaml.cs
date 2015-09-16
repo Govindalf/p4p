@@ -45,7 +45,7 @@ namespace P4PSpeechDB
 
         private static List<ComboBox> pitchCB = new List<ComboBox>();
         private static List<ComboBox> formCB = new List<ComboBox>();
-        private static List<TextBox> otherCB = new List<TextBox>();
+        private static List<TextBox> otherTB = new List<TextBox>();
 
         private static List<List<string>> returnList = new List<List<string>>();
         private static List<string> nonTrackList = new List<string>();
@@ -219,6 +219,27 @@ namespace P4PSpeechDB
                             sf0ReturnList.Add("sf0Id");
                             returnList.Add(sf0ReturnList);
                         }
+
+                        // For other type of extension. add to the template file
+                        if (!inst.otherTrack1.Text.Equals(defaultValue))
+                        {
+                            otherTrackList.Add(inst.otherTrack1.Text);
+
+                        }
+                        // when the user has added more comboboxes for sf0, check to see if more track values were selected
+                        if (otherTB.Count >= 1)
+                        {
+                            foreach (TextBox tb in otherTB)
+                            {
+                                if (!tb.Text.Equals(defaultValue) && !otherTrackList.Contains(tb.Text))
+                                    otherTrackList.Add(tb.Text);
+                            }
+                        }
+                        if (otherTrackList.Count > 0)
+                        {
+                            otherTrackList.Add(inst.txtTrackOther.Text);
+                            returnList.Add(otherTrackList);
+                        }
                         return returnList;
                     }
                     else {
@@ -330,7 +351,7 @@ namespace P4PSpeechDB
                 tbox.Margin = new Thickness(60, 5 + moveDown, 5.2, 5);
                 cbOther.Children.Add(tbox);
                 //cbox.Name = "otherTrack" + countOther;
-                otherCB.Add(tbox);
+                otherTB.Add(tbox);
             }
 
         }

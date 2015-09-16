@@ -46,33 +46,23 @@ namespace P4PSpeechDB
         }
 
         // fill in the values of each project name in the combobox
-        private void fillCombo() 
+        private void fillCombo()
         {
-            string query = "SELECT * FROM SpeechDB.projects";
-            MySqlDataReader myReader;
-            MySqlCommand cmd = new MySqlCommand(query, conn.getConn());
-            try
+            using (DBConnection db = new DBConnection())
             {
-                if (conn.openConn() == true)
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM Project");
+                var table = db.getFromDB(cmd);
+                foreach (DataRow dr in table.Rows)
                 {
-                    myReader = cmd.ExecuteReader();
-                    while (myReader.Read())
-                    {
-                        string projectName = myReader.GetString("PID");
-                        cbChooseFolder.Items.Add(projectName);
-                        folderNameCB = (string) cbChooseFolder.SelectedValue;
-                    }
-                    myReader.Close();
+
+                    string projectName = dr["PID"].ToString();
+                    cbChooseFolder.Items.Add(projectName);
+                    folderNameCB = (string)cbChooseFolder.SelectedValue;
                 }
+
+
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            } 
-            finally 
-            {
-                conn.closeConn();
-            }
+
         }
 
         public static List<string> Prompt(string question, string title, string defaultValue = "", InputType inputType = InputType.Text)

@@ -134,24 +134,9 @@ namespace P4PSpeechDB
                     //Stores file in appropriate place in file system
                     //moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
 
-                    // Connect to the mysql db if possible
-                    using ((myConn = new DBConnection().getConn()))
-                    using (MySqlCommand comm = myConn.CreateCommand())
-                    {
-                        myConn.Open();
-                        //try
-                        //{
-                        //    comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, File mediumblob, Speaker varchar(20), ProjectName varchar(100))";
-                        //    comm.ExecuteNonQuery();
-                        //}
-                        //catch (Exception ex)
-                        //{
-                        //    MessageBox.Show(ex.Message);
+                    executeInsert(filename, ext, dlg, folderDetails, rawData);
 
-                        //}
-                        executeInsert(filename, ext, dlg, folderDetails, rawData);
-
-                    }
+                    
                 }
             }
             dgl.loadProjects();
@@ -167,48 +152,48 @@ namespace P4PSpeechDB
 
         private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, List<string> folderDetails, byte[] rawData)
         {
-
+            var path = Path.GetExtension(filename);
             filename = Path.GetFileName(filename);
             string speaker = Path.GetFileNameWithoutExtension(dlg.SafeFileName).Substring(0, 4);
 
-            using ((myConn = new DBConnection().getConn()))
-            using (MySqlCommand comm = myConn.CreateCommand())
+            using (DBConnection db = new DBConnection())
             {
-                myConn.Open();
 
-                try
+
+
+                MySqlCommand comm = new MySqlCommand();
+                comm.CommandText = "INSERT INTO File (PID, Name, FileType, Speaker) VALUES(@PID, @Name, @Type, @Speaker)";
+                comm.Parameters.AddWithValue("@Name", filename);
+                comm.Parameters.AddWithValue("@Type", path);
+                comm.Parameters.AddWithValue("@Speaker", speaker);
+                comm.Parameters.AddWithValue("@PID", folderDetails.First());
+                db.insertIntoDB(comm);
+
+                comm = new MySqlCommand();
+
+                comm.CommandText = "INSERT INTO FileData (FID, FileData) VALUES (LAST_INSERT_ID(), @FileData)";
+                comm.Parameters.AddWithValue("@FileData", rawData);
+                db.insertIntoDB(comm);
+
+                if (folderDetails != null)
                 {
-                    comm.CommandText = "create table if not exists " + ext.Substring(1) + "(ID varchar(150) primary key, File mediumblob, Speaker varchar(20), ProjectName varchar(100))";
-                    comm.ExecuteNonQuery();
 
-                    comm.CommandText = "INSERT INTO " + ext.Substring(1) + "(ID, File, Speaker, ProjectName) VALUES(@ID, @FileAsBlob, @Speaker, @ProjectName)";
-                    comm.Parameters.AddWithValue("@ID", filename);
-                    comm.Parameters.AddWithValue("@FileAsBlob", rawData);
-                    comm.Parameters.AddWithValue("@Speaker", speaker);
-                    comm.Parameters.AddWithValue("@ProjectName", folderDetails.First());
-                    comm.ExecuteNonQuery();
-
-                    if (folderDetails != null)
+                    comm = new MySqlCommand();
+                    comm.CommandText = "INSERT IGNORE INTO Project (PID, DateCreated, Description) VALUES(@PID, @dateCreated, @description)";
+                    comm.Parameters.AddWithValue("@PID", folderDetails.First());
+                    comm.Parameters.AddWithValue("@dateCreated", DateTime.Now.ToString());
+                    if (folderDetails.Count == 2)
                     {
-                        comm.CommandText = "INSERT IGNORE INTO projects(PID, dateCreated, description) VALUES(@PID, @dateCreated, @description)";
-                        comm.Parameters.AddWithValue("@PID", folderDetails.First());
-                        comm.Parameters.AddWithValue("@dateCreated", DateTime.Now.ToString());
-                        if (folderDetails.Count == 2)
-                        {
-                            comm.Parameters.AddWithValue("@description", folderDetails.Last());
-                        }
-                        else
-                        {
-                            comm.Parameters.AddWithValue("@description", "No description given");
-
-                        }
-                        comm.ExecuteNonQuery();
+                        comm.Parameters.AddWithValue("@description", folderDetails.Last());
                     }
+                    else
+                    {
+                        comm.Parameters.AddWithValue("@description", "No description given");
+
+                    }
+                    db.insertIntoDB(comm);
                 }
-                catch (MySqlException ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+
             }
 
 
@@ -491,7 +476,8 @@ namespace P4PSpeechDB
                         Random random = new Random();
                         int randomNumber = random.Next(0, 10);
                         System.Diagnostics.Debug.WriteLine(randomNumber);
-                        if (randomNumber < 2) {
+                        if (randomNumber < 2)
+                        {
                             cmd = new MySqlCommand();
                             cmd.CommandText = "INSERT IGNORE INTO File2Analysis (File_FID, Analysis_AID) VALUES (@FID2, @AID)";
                             cmd.Parameters.AddWithValue("@FID2", dr["FID"].ToString());

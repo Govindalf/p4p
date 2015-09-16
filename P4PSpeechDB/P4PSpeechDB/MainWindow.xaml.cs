@@ -136,7 +136,7 @@ namespace P4PSpeechDB
 
                     executeInsert(filename, ext, dlg, folderDetails, rawData);
 
-                    
+
                 }
             }
             dgl.loadProjects();
@@ -329,7 +329,7 @@ namespace P4PSpeechDB
                 if (item != null)
                 {
                     string fileType = item.FileType.ToString();
-                    string fileName = item.ID.ToString();
+                    string fileName = item.Name.ToString();
                     string projectName = item.PID.ToString();
 
 
@@ -340,24 +340,16 @@ namespace P4PSpeechDB
                     }
                     else
                     {
-                        using ((myConn = new DBConnection().getConn()))
-                        using (MySqlCommand cmd = myConn.CreateCommand())
-                        {
-                            myConn.Open();
-                            try
-                            {
-                                cmd.CommandText = "SELECT File FROM " + fileType + " where ID = '" + fileName + "'";
-                                //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
-                                //cmd.Parameters.AddWithValue("@fName", fileName);
 
-                                openOrPlayFile(cmd, fileName, fileType, projectName, item);
+                        var cmd = new MySqlCommand();
+                        cmd.CommandText = @"SELECT f.FileData FROM FileData f INNER JOIN File fi ON fi.FID = f.FID WHERE fi.Name= '" + fileName + "' AND fi.FileType = @Type";
+                        //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
+                        cmd.Parameters.AddWithValue("@Type", fileType);
 
-                            }
-                            catch (MySqlException ex)
-                            {
-                                MessageBox.Show(ex.ToString());
-                            }
-                        }
+                        openOrPlayFile(cmd, fileName, fileType, projectName, item);
+
+
+
                     }
 
                 }
@@ -371,62 +363,49 @@ namespace P4PSpeechDB
             Process.Start(filePath);
         }
 
+        //Opens the selected file, or plays it if its a .wav(audio)
         private void openOrPlayFile(MySqlCommand cmd, string fileName, string fileType, string projectName, Row row)
         {
-            using (MySqlDataReader reader = cmd.ExecuteReader())
+            using (DBConnection db = new DBConnection())
             {
 
-                int bufferSize; //mediumblob buffer size
                 byte[] rawData;
                 FileStream fs;
                 string filePath = "";
 
-                if (!reader.HasRows)
-                    throw new Exception("There are no blobs to save");
-
-                while (reader.Read())
+                //Checks for the file type (speaker or analysis) and then puts it in the correct folder location
+                if (row is AnalysisRow)
                 {
-                    //Checks for the file and then puts it in the corect folder location
-                    if (row is AnalysisRow)
-                    {
-                        Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\ANALYSIS");
-                        fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + fileName + "." + fileType, FileMode.OpenOrCreate, FileAccess.Write);
-                    }
-                    else
-                    {
-                        Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + ((SpeakerRow)row).Speaker);
-                        fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + ((SpeakerRow)row).Speaker + "\\" + fileName + "." + fileType, FileMode.OpenOrCreate, FileAccess.Write);
-                    }
-
-
-
-
-                    int ndx = reader.GetOrdinal("File");
-                    bufferSize = (int)reader.GetBytes(ndx, 0, null, 0, 0);  //get the length of data
-                    rawData = new byte[bufferSize];
-
-                    filePath = fs.Name;
-                    BinaryWriter bw = new BinaryWriter(fs);
-
-                    // Reset the starting byte for the new BLOB.
-                    int startIndex = 0;
-                    int bytesRead = 0;
-
-                    while (startIndex < bufferSize)
-                    {
-                        bytesRead = (int)reader.GetBytes(ndx, startIndex,
-                           rawData, startIndex, bufferSize - startIndex);
-                        bw.Write(rawData);
-                        bw.Flush();
-                        startIndex += bytesRead;
-                    }
-
-
+                    Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\ANALYSIS");
+                    fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+                }
+                else
+                {
+                    Directory.CreateDirectory(@"..\..\..\..\testOutput\" + projectName + "\\" + ((SpeakerRow)row).Speaker);
+                    fs = new FileStream(@"..\..\..\..\testOutput\" + projectName + "\\" + ((SpeakerRow)row).Speaker + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
                 }
 
+                var table = db.getFromDB(cmd);
+                      foreach (DataRow dr in table.Rows)
+                {
 
-                //Fixed access denied error
-                File.SetAttributes(filePath, FileAttributes.Normal);
+                    rawData = (byte[])dr["FileData"]; // convert successfully to byte[]
+
+
+                    filePath = fs.Name;
+
+                    //Fixed access denied error
+                    File.SetAttributes(filePath, FileAttributes.Normal);
+
+                    // Writes a block of bytes to this stream using data from
+                    // a byte array.
+                    fs.Write(rawData, 0, rawData.Length);
+
+                    // close file stream
+                    fs.Close();
+                          
+                }
+
 
                 // Filter audio, images etc. to open appropriate program
                 if (fileType.Equals("wav") || fileType.Equals("WAV"))

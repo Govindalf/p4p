@@ -791,6 +791,7 @@ namespace P4PSpeechDB
         }
 
 
+        /* Downloads a selected project on a background thread. */
         private void backgroundWorker_DoWork(
             object sender,
             DoWorkEventArgs e)
@@ -804,76 +805,53 @@ namespace P4PSpeechDB
                 prog.Show();
             }));
 
-            int bufferSize;//mediumblob buffer size
+
             byte[] rawData;
             FileStream fs;
             string filePath = "";
 
-            using (MySqlConnection tempConn = new DBConnection().getConn())
-            using (var cmd = tempConn.CreateCommand())
+            /* Get file data for every file in project and save it in the correct folder structure. */
+            using (DBConnection db = new DBConnection())
             {
-                tempConn.Open();
-                foreach (string table in tableNames)
+                var cmd = new MySqlCommand();
+                cmd.CommandText = "SELECT f.Name, f.Speaker, f.FileType, fd.FileData FROM FileData fd INNER JOIN File f ON f.FID = fd.FID WHERE f.PID = @PID";
+                cmd.Parameters.AddWithValue("@PID", PID);
+
+                var table = db.getFromDB(cmd);
+                foreach (DataRow dr in table.Rows)
                 {
-                    if (!dgl.ignoreTables.Contains(table)) //Only the file tables
-                    {
 
-                        cmd.Connection = tempConn;
-                        cmd.CommandText = "SELECT * FROM " + table + " WHERE ProjectName='" + PID + "'";
-                        //cmd.Parameters.AddWithValue("@table", table);
-                        //cmd.Parameters.AddWithValue("@PID", PID);
+                    rawData = (byte[])dr["FileData"];
 
-                        using (MySqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
+                    Directory.CreateDirectory(path + PID + @"\" + dr["Speaker"].ToString());
+                    fs = new FileStream(path + PID + @"\" + dr["Speaker"].ToString() + @"\" + dr["Name"].ToString() + dr["FileType"].ToString(), FileMode.OpenOrCreate, FileAccess.Write);
 
-                                int ndx = reader.GetOrdinal("File");
-                                bufferSize = (int)reader.GetBytes(ndx, 0, null, 0, 0);  //get the length of data
-                                rawData = new byte[bufferSize];
+                    filePath = fs.Name;
 
-                                Directory.CreateDirectory(path + PID + @"\" + reader.GetString("Speaker"));
-                                fs = new FileStream(path + PID + @"\" + reader.GetString("Speaker") + @"\" + reader.GetString("ID") + "." + table, FileMode.OpenOrCreate, FileAccess.Write);
-                                filePath = fs.Name;
-                                BinaryWriter bw = new BinaryWriter(fs);
+                    //Fixed access denied error
+                    File.SetAttributes(filePath, FileAttributes.Normal);
 
-                                // Reset the starting byte for the new BLOB.
-                                int startIndex = 0;
-                                int bytesRead = 0;
+                    // Writes a block of bytes to this stream using data from
+                    // a byte array.
+                    fs.Write(rawData, 0, rawData.Length);
 
-                                while (startIndex < bufferSize)
-                                {
-                                    bytesRead = (int)reader.GetBytes(ndx, startIndex,
-                                       rawData, startIndex, bufferSize - startIndex);
-                                    bw.Write(rawData);
-                                    bw.Flush();
-                                    startIndex += bytesRead;
-                                }
-
-                                // Write the remaining buffer.
-                                bw.Write(rawData, 0, (int)bytesRead);
-                                bw.Flush();
-
-                                // Close the output file.
-                                bw.Close();
-                                fs.Close();
-                            }
-
-                        }
-                    }
+                    // close file stream
+                    fs.Close();
                 }
+
             }
         }
 
 
+        /* Called when the background thread completes. */
         private void backgroundWorker_RunWorkerCompleted(
             object sender,
             RunWorkerCompletedEventArgs e)
         {
-
             prog.Close();
         }
 
+        /* Downloads projects on a different thread to UI thread, so user can do other tasks while downloading. */
         private void downloadProject(string path, string PID)
         {
 

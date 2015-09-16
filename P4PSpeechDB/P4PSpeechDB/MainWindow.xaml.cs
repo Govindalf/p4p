@@ -7,6 +7,7 @@ using System.Data;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -238,6 +239,7 @@ namespace P4PSpeechDB
         private void dataGridProjects_GotCellFocus(object sender, RoutedEventArgs e)
         {
             this.emptyGrid.Visibility = System.Windows.Visibility.Hidden;
+            string projectName = "";
 
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
             {
@@ -246,11 +248,37 @@ namespace P4PSpeechDB
 
                 if (item != null)
                 {
-                    string projectName = item.PID.ToString();
+                    projectName = item.PID.ToString();
                     dgl.loadSpeakers(projectName);
                     rowS = dgl.getCollection("S");
 
                     buildDatagridGroups(new ListCollectionView(rowS));
+                }
+
+            }
+
+            using ((myConn = new DBConnection().getConn()))
+            using (MySqlCommand cmd = myConn.CreateCommand())
+            {
+                try
+                {
+                    myConn.Open();
+                    if (!projectName.Equals(""))
+                    {
+                        cmd.CommandText = "SELECT Description FROM Project WHERE PID = '" + projectName + "'";
+                    }
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            descTextBlock.Text = reader.GetString(0);
+                        }
+                    }
+
+                }
+                catch (MySqlException ex)
+                {
+                    MessageBox.Show(ex.ToString());
                 }
 
             }
@@ -676,7 +704,7 @@ namespace P4PSpeechDB
             var obj = e.Item as SpeakerRow;
             if (obj != null)
             {
-                if (System.Text.RegularExpressions.Regex.IsMatch(obj.Name, searchBox.Text))
+                if (Regex.IsMatch(obj.Name, searchBox.Text, RegexOptions.IgnoreCase))
                     e.Accepted = true;
                 else
                     e.Accepted = false;
@@ -1060,6 +1088,11 @@ namespace P4PSpeechDB
             System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
             System.Windows.Forms.DialogResult result = dialog.ShowDialog();
             testDBRoot = dialog.SelectedPath;
+        }
+
+        private void ButtonWebMaus_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://clarin.phonetik.uni-muenchen.de/BASWebServices/#/services/WebMAUSGeneral");
         }
 
     }

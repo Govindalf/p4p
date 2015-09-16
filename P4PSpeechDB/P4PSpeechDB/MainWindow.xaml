@@ -1,10 +1,9 @@
 ﻿<Window x:Class="P4PSpeechDB.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="EMU 2.0" Height="670" Width="900" Background="Gainsboro">
+        Title="EMU 2.0" Height="670" Width="880" Background="#E5E4E2">
     <Window.Resources>
         <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
-
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type GroupItem}">
@@ -99,60 +98,65 @@
             </TextBox.Style>
         </TextBox>
         <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="655,332,-85,0" VerticalAlignment="Top" Width="330" Click="loadAllButton_Click"/>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="90" Margin="10,29,10,0" VerticalAlignment="Top" Width="880" Background="WhiteSmoke">
-            <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="Transparent" VerticalAlignment="Top" Width="80" Height="70" Click="ButtonConfig_Click" BorderBrush="Transparent">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/settings2.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Path Settings"/>
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="Transparent" VerticalAlignment="Top" Width="80" Height="70" BorderBrush="Transparent">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/folder_add_blue.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Folder(s)"/>
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Click="ButtonBrowse_Click" Margin="10,10,0,0">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/document_add.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add File(s)"/>
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Click="ButtonDelete_Click" Margin="10,10,0,0">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/document_delete.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Delete File(s)"/>
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Margin="10,10,0,0">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/wform.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="   GFW Extraction"/>
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Margin="10,10,0,0" Click="ButtonTemplate_Click">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/templates.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Generate Template"/>
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="ButtonWebMaus_Click">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/label.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="WebMaus"/>
-                </StackPanel>
-            </Button>
-            <Button BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top"  Click="Button_Click" Height="70" Width="80" Margin="10,10,0,0">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/add_analysis.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Analysis"/>
-                </StackPanel>
-            </Button>
+        
+        <Grid HorizontalAlignment="Left" Height="90" Margin="0,29,0,0" VerticalAlignment="Top" Width="875">
+            <Border BorderThickness="1" BorderBrush="Gray">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="90" VerticalAlignment="Top" Width="875" Background="WhiteSmoke">
+                    <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="Transparent" VerticalAlignment="Top" Width="80" Height="70" Click="ButtonConfig_Click" BorderBrush="Transparent">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/settings2.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Path Settings"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="Transparent" VerticalAlignment="Top" Width="80" Height="70" BorderBrush="Transparent">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/folder_add_blue.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Folder(s)"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Click="ButtonBrowse_Click" Margin="10,10,0,0">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/document_add.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add File(s)"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Click="ButtonDelete_Click" Margin="10,10,0,0">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/document_delete.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Delete File(s)"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Margin="10,10,0,0">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/wform.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="   GFW Extraction"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Margin="10,10,0,0" Click="ButtonTemplate_Click">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/templates.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Generate Template"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="ButtonWebMaus_Click">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/label.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="WebMaus"/>
+                        </StackPanel>
+                    </Button>
+                    <Button BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top"  Click="Button_Click" Height="70" Width="80" Margin="10,10,0,0">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/add_analysis.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Analysis"/>
+                        </StackPanel>
+                    </Button>
 
 
-            <Button Visibility="Hidden" Content="Stop Audio" HorizontalAlignment="Center" VerticalAlignment="Top"  BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="Button_Click_1"/>
+                    <Button Visibility="Hidden" Content="Stop Audio" HorizontalAlignment="Center" VerticalAlignment="Top"  BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="Button_Click_1"/>
 
-        </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
         <ComboBox HorizontalAlignment="Left" Margin="740,248,0,0" VerticalAlignment="Top" Width="120"/>
         <TextBlock HorizontalAlignment="Left" Margin="697,248,0,0" TextWrapping="Wrap" Text="Sort By" VerticalAlignment="Top"/>
 
@@ -167,6 +171,14 @@
             </DataGrid.Columns>
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
+                    <Style.Triggers>
+                        <Trigger Property="AlternationIndex" Value="0">
+                            <Setter Property="Background" Value="White" />
+                        </Trigger>
+                        <Trigger Property="AlternationIndex" Value="1">
+                            <Setter Property="Background" Value="WhiteSmoke" />
+                        </Trigger>
+                    </Style.Triggers>
                     <EventSetter Event="Control.MouseDoubleClick" Handler="analysisDataGrid_MouseDoubleClick"/>
                 </Style>
 
@@ -218,11 +230,6 @@
                         <Trigger Property="AlternationIndex" Value="1">
                             <Setter Property="Background" Value="WhiteSmoke" />
                         </Trigger>
-                        <DataTrigger Binding="{Binding Path=Selectable}" Value="False">
-                            <DataTrigger.Setters>
-                                <Setter Property="Background" Value="LightGray" />
-                            </DataTrigger.Setters>
-                        </DataTrigger>
                     </Style.Triggers>
                     <EventSetter Event="UIElement.GotFocus" Handler="dataGridProjects_GotCellFocus"/>
                 </Style>
@@ -240,12 +247,12 @@
 
         <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="260,311,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"/>
         <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="569,311,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236"/>
-        <GroupBox Header="Description" HorizontalAlignment="Left" Margin="251,138,0,0" VerticalAlignment="Top" Height="80" Width="609">
-            <TextBlock x:Name="descTextBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="42" Width="577"/>
-
-        </GroupBox>
-
-
+        
+        <StackPanel HorizontalAlignment="Left" Height="80" Margin="251,138,0,0" VerticalAlignment="Top" Width="609">
+            <GroupBox Header="Description" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" Width="609" BorderBrush="Gray">
+                <TextBlock x:Name="descTextBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="42" Width="577" Background="WhiteSmoke"/>
+            </GroupBox>
+        </StackPanel>
     </Grid>
 
 </Window>

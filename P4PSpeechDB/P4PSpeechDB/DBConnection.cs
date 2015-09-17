@@ -34,6 +34,7 @@ namespace P4PSpeechDB
                 csBuilder.Password = "Cirilla_2015";
                 csBuilder.Port = 3306;
                 csBuilder.CharacterSet = "utf8";
+                csBuilder.ConvertZeroDateTime=true;
                 this.conn = new MySqlConnection(csBuilder.ToString());
 
             }

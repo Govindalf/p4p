@@ -47,6 +47,7 @@ namespace P4PSpeechDB
 
         public Boolean IsExpanded { get; set; }
         private string groupValue = "Speaker"; //Default grouping on this value
+        string projectSelectedName = "";
 
         public MainWindow()
         {
@@ -141,6 +142,12 @@ namespace P4PSpeechDB
                 }
             }
             dgl.loadProjects();
+            if(!projectSelectedName.Equals("")){
+                dgl.loadSpeakers(projectSelectedName);
+                rowS = dgl.getCollection("S");
+
+                buildDatagridGroups(new ListCollectionView(rowS));
+            }
 
             //dgl.setUpDataGrids();
         }
@@ -171,27 +178,15 @@ namespace P4PSpeechDB
 
                 if (folderDetails != null)
                 {
-
                     MySqlCommand comm = new MySqlCommand();
-                    comm.CommandText = "INSERT INTO File (PID, Name, FileType, Speaker) VALUES(@PID, @Name, @Type, @Speaker)";
-                    comm.Parameters.AddWithValue("@Name", filename);
-                    comm.Parameters.AddWithValue("@Type", path);
-                    comm.Parameters.AddWithValue("@Speaker", speaker);
-                    comm.Parameters.AddWithValue("@PID", folderDetails.First());
-                    db.insertIntoDB(comm);
-
-                    comm = new MySqlCommand();
-
-                    comm.CommandText = "INSERT INTO FileData (FID, FileData) VALUES (LAST_INSERT_ID(), @FileData)";
-                    comm.Parameters.AddWithValue("@FileData", rawData);
-                    db.insertIntoDB(comm);
-
                     comm = new MySqlCommand();
                     comm.CommandText = "INSERT IGNORE INTO Project (PID, DateCreated, Description) VALUES(@PID, @dateCreated, @description)";
                     comm.Parameters.AddWithValue("@PID", folderDetails.First());
                     comm.Parameters.AddWithValue("@dateCreated", DateTime.Now.ToString());
+
                     if (folderDetails.Count == 2)
                     {
+
                         comm.Parameters.AddWithValue("@description", folderDetails.Last());
                     }
                     else
@@ -199,6 +194,20 @@ namespace P4PSpeechDB
                         comm.Parameters.AddWithValue("@description", "No description given");
 
                     }
+                    db.insertIntoDB(comm);
+
+                    System.Console.WriteLine(folderDetails.First() + " . " + filename);
+                    comm.CommandText = "INSERT INTO File (PID, Name, FileType, Speaker) VALUES(@fPID, @Name, @Type, @Speaker)";
+                    comm.Parameters.AddWithValue("@fPID", folderDetails.First());
+                    comm.Parameters.AddWithValue("@Name", Path.GetFileNameWithoutExtension(filename));
+                    comm.Parameters.AddWithValue("@Type", path);
+                    comm.Parameters.AddWithValue("@Speaker", speaker);
+                    db.insertIntoDB(comm);
+
+                    comm = new MySqlCommand();
+
+                    comm.CommandText = "INSERT INTO FileData (FID, FileData) VALUES (LAST_INSERT_ID(), @FileData)";
+                    comm.Parameters.AddWithValue("@FileData", rawData);
                     db.insertIntoDB(comm);
                 }
 
@@ -231,7 +240,6 @@ namespace P4PSpeechDB
         private void dataGridProjects_GotCellFocus(object sender, RoutedEventArgs e)
         {
             this.emptyGrid.Visibility = System.Windows.Visibility.Hidden;
-            string projectName = "";
 
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
             {
@@ -240,8 +248,8 @@ namespace P4PSpeechDB
 
                 if (item != null)
                 {
-                    projectName = item.PID.ToString();
-                    dgl.loadSpeakers(projectName);
+                    projectSelectedName = item.PID.ToString();
+                    dgl.loadSpeakers(projectSelectedName);
                     rowS = dgl.getCollection("S");
 
                     buildDatagridGroups(new ListCollectionView(rowS));
@@ -255,9 +263,9 @@ namespace P4PSpeechDB
                 try
                 {
                     myConn.Open();
-                    if (!projectName.Equals(""))
+                    if (!projectSelectedName.Equals(""))
                     {
-                        cmd.CommandText = "SELECT Description FROM Project WHERE PID = '" + projectName + "'";
+                        cmd.CommandText = "SELECT Description FROM Project WHERE PID = '" + projectSelectedName + "'";
                     }
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -753,6 +761,13 @@ namespace P4PSpeechDB
                 }
                 byte[] rawData = File.ReadAllBytes(pathName);
                 executeInsert(pathName, ext, null, projN, rawData);
+                if (!projectSelectedName.Equals(""))
+                {
+                    dgl.loadSpeakers(projectSelectedName);
+                    rowS = dgl.getCollection("S");
+
+                    buildDatagridGroups(new ListCollectionView(rowS));
+                }
 
 
             }

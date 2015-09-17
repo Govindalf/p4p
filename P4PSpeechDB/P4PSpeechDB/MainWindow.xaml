@@ -154,9 +154,13 @@
                             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Analysis"/>
                         </StackPanel>
                     </Button>
-
-
-                    <Button Visibility="Hidden" Content="Stop Audio" HorizontalAlignment="Center" VerticalAlignment="Top"  BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="Button_Click_1"/>
+                    <Button BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top"  Click="Button_Click_1" Height="70" Width="80" Margin="10,10,0,0">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/close.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Stop Audio"/>
+                        </StackPanel>
+                    </Button>
+                    <!--<Button Visibility="Hidden" Content="Stop Audio" HorizontalAlignment="Center" VerticalAlignment="Top"  BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="Button_Click_1"/>-->
 
                 </StackPanel>
             </Border>

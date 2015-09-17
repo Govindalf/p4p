@@ -1,7 +1,7 @@
 ﻿<Window x:Class="P4PSpeechDB.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="EMU 2.0" Height="670" Width="880" Background="#E5E4E2">
+        Title="Moa" Height="670" Width="880" Background="#E5E4E2">
     <Window.Resources>
         <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
             <Setter Property="Template">
@@ -43,8 +43,8 @@
               UnloadedBehavior="Stop" />
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="353" Margin="251,275,0,0" x:Name="dataGridFiles"  
-    		HorizontalAlignment="Left" Width="300" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" Margin="246,275,0,0" x:Name="dataGridFiles"  
+    		HorizontalAlignment="Left" Width="305" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" >
 
 
@@ -97,8 +97,8 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="655,332,-85,0" VerticalAlignment="Top" Width="330" Click="loadAllButton_Click"/>
-        
+        <Button Visibility="Visible" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="551,223,0,0" VerticalAlignment="Top" Width="324" Click="loadAllButton_Click"/>
+
         <Grid HorizontalAlignment="Left" Height="90" Margin="0,29,0,0" VerticalAlignment="Top" Width="875">
             <Border BorderThickness="1" BorderBrush="Gray">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="90" VerticalAlignment="Top" Width="875" Background="WhiteSmoke">
@@ -108,7 +108,7 @@
                             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Path Settings"/>
                         </StackPanel>
                     </Button>
-                    <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="Transparent" VerticalAlignment="Top" Width="80" Height="70" BorderBrush="Transparent">
+                    <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="Transparent" VerticalAlignment="Top" Width="80" Height="70" BorderBrush="Transparent" Click="ButtonAddFolder_Click">
                         <StackPanel>
                             <Image Source="pack://application:,,,/Icons/folder_add_blue.png"  Height="30"/>
                             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Folder(s)"/>
@@ -160,8 +160,8 @@
         <ComboBox HorizontalAlignment="Left" Margin="740,248,0,0" VerticalAlignment="Top" Width="120"/>
         <TextBlock HorizontalAlignment="Left" Margin="697,248,0,0" TextWrapping="Wrap" Text="Sort By" VerticalAlignment="Top"/>
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="353" 
-                  Margin="560,275,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="300" 
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" 
+                  Margin="551,275,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="309" 
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
                   HeadersVisibility="Column" CanUserAddRows="False">
 
@@ -199,8 +199,8 @@
 
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="490" Margin="10,138,0,0" 
-                  x:Name="dataGridProjects" HorizontalAlignment="Left" Width="226" 
+        <DataGrid AutoGenerateColumns ="False" GridLinesVisibility="None" Margin="0,119,0,19" 
+                  x:Name="dataGridProjects" HorizontalAlignment="Left" Width="246" 
                   HeadersVisibility="Column" CanUserAddRows="False" IsSynchronizedWithCurrentItem="False"
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" AlternationCount="2">
@@ -247,7 +247,7 @@
 
         <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="260,311,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"/>
         <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="569,311,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236"/>
-        
+
         <StackPanel HorizontalAlignment="Left" Height="80" Margin="251,138,0,0" VerticalAlignment="Top" Width="609">
             <GroupBox Header="Description" HorizontalAlignment="Left" VerticalAlignment="Top" Height="80" Width="609" BorderBrush="Gray">
                 <TextBlock x:Name="descTextBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="42" Width="577" Background="WhiteSmoke"/>

@@ -26,8 +26,10 @@ namespace P4PSpeechDB
 
         public List<string> ignoreTables = new List<string>();
 
-        public DataGridLoader()
+        public DataGridLoader(DBConnection conn, List<String> tableNames)
         {
+            this.conn = conn;
+            this.tableNames = tableNames;
 
             ignoreTables.Add("projects");
             ignoreTables.Add("analysis");

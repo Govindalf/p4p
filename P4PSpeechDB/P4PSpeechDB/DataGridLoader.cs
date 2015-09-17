@@ -22,15 +22,12 @@ namespace P4PSpeechDB
         private List<String> tableNames;
         private ObservableCollection<Row> rowA = new ObservableCollection<Row>(); //DAtagrid row item
         private ObservableCollection<Row> rowS; //DAtagrid row item
-        private ObservableCollection<Row> rowP = new ObservableCollection<Row>(); //DAtagrid row item
+        private ObservableCollection<ProjectViewModel> projects = new ObservableCollection<ProjectViewModel>(); //DAtagrid row item
 
         public List<string> ignoreTables = new List<string>();
 
-        public DataGridLoader(DBConnection conn, List<String> tableNames)
+        public DataGridLoader()
         {
-            this.conn = conn;
-            this.tableNames = tableNames;
-
             ignoreTables.Add("projects");
             ignoreTables.Add("analysis");
             ignoreTables.Add("files2analysis");
@@ -47,8 +44,7 @@ namespace P4PSpeechDB
         {
             switch (type)
             {
-                case "P":
-                    return this.rowP;
+
                 case "S":
                     return this.rowS;
                 case "A":
@@ -59,11 +55,16 @@ namespace P4PSpeechDB
 
         }
 
-        public void loadProjects()
+        public ObservableCollection<ProjectViewModel> getProjects
+        {
+            get { return loadProjects(); }
+        }
+
+        public ObservableCollection<ProjectViewModel> loadProjects()
         {
 
 
-            rowP.Clear();
+            projects.Clear();
             using (DBConnection db = new DBConnection())
             {
                 MySqlCommand query = new MySqlCommand("SELECT PID, DateCreated, Description FROM Project");
@@ -73,10 +74,13 @@ namespace P4PSpeechDB
                 {
 
                     string[] dateOnly = dr["dateCreated"].ToString().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
-                    rowP.Add(new ProjectRow { PID = dr["PID"].ToString(), DateCreated = dateOnly[0], Description = dr["Description"].ToString() });
+                    projects.Add(new ProjectViewModel { Project = new Project { PID = dr["PID"].ToString(), DateCreated = dateOnly[0], Description = dr["Description"].ToString() }});
                 }
             }
-            collectionP = new ListCollectionView(rowP);
+
+            return this.projects;
+
+            
         }
 
         public void loadAnalysis(string fileName)

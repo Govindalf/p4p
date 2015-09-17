@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace P4PSpeechDB
 {
-    public class ProjectRow : Row
+    public class Project : Row
     {
         public string PID { get; set; }
         public string DateCreated { get; set; }

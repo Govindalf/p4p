@@ -67,6 +67,8 @@
     <Compile Include="AnalysisMsgPrompt.xaml.cs">
       <DependentUpon>AnalysisMsgPrompt.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ProjectViewModel.cs" />
+    <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Progressbar.xaml.cs">
       <DependentUpon>Progressbar.xaml</DependentUpon>
     </Compile>
@@ -92,7 +94,7 @@
     </Compile>
     <Compile Include="DataGridLoader.cs" />
     <Compile Include="AnalysisRow.cs" />
-    <Compile Include="ProjectRow.cs" />
+    <Compile Include="Project.cs" />
     <Compile Include="DBConnection.cs" />
     <Compile Include="Row.cs" />
     <Compile Include="SpeakerRow.cs" />
@@ -159,6 +161,12 @@
     <Resource Include="Icons\settings3.png" />
     <Resource Include="Icons\templates.png" />
     <Resource Include="Icons\wform.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MicroMvvm\MicroMvvm.csproj">
+      <Project>{9efe6cbd-df21-436e-9f81-e258bab0b653}</Project>
+      <Name>MicroMvvm</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

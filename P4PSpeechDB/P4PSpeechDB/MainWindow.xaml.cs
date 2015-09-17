@@ -40,7 +40,7 @@ namespace P4PSpeechDB
         private List<String> tableNames = new List<String>();
         private ObservableCollection<Row> rowS; //DAtagrid row item
         private ObservableCollection<Row> rowA; //DAtagrid row item
-        private ObservableCollection<Row> rowP; //DAtagrid row item
+        private ObservableCollection<ProjectViewModel> projects; //DAtagrid row item
         DataGridLoader dgl;
         ProgressBar prog = null;
 
@@ -50,46 +50,20 @@ namespace P4PSpeechDB
         public MainWindow()
         {
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnApplicationExit);
-            IsExpanded = false;
-            this.DataContext = this;
-            conn = new DBConnection();
-            //conn.createDB();
+            //IsExpanded = false;
+            //this.DataContext = this;
+
             //Loads all datagrid with relevant data
-            dgl = new DataGridLoader(conn, tableNames);
-            dgl.setUpDataGrids();
-            rowS = dgl.getCollection("S");
-            rowP = dgl.getCollection("P");
+
 
             InitializeComponent();
             WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-            this.speakerCombo.Text = groupValue;
+            //this.speakerCombo.Text = groupValue;
 
-            try
-            {
-                // store all of the tables in the mysql database into a list
-                using ((myConn = new DBConnection().getConn()))
-                using (MySqlCommand comm = myConn.CreateCommand())
-                {
-                    myConn.Open();
-                    comm.CommandText = "show tables from SpeechDB";
-                    using (MySqlDataReader reader = comm.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            tableNames.Add(reader.GetString(0));
-                        }
-                    }
-                }
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            //randomlyMatchAnalysis();
 
-            buildDatagridGroups(new ListCollectionView(rowS));
+            //buildDatagridGroups(new ListCollectionView(rowS));
 
-            dataGridProjects.ItemsSource = rowP;
+            //dataGridProjects.ItemsSource = projects;
 
         }
 
@@ -227,7 +201,7 @@ namespace P4PSpeechDB
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as ProjectRow;
+                var item = dgr.DataContext as Project;
 
                 if (item != null)
                 {
@@ -763,7 +737,7 @@ namespace P4PSpeechDB
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ProjectRow pr = dataGridProjects.SelectedValue as ProjectRow;
+            Project pr = dataGridProjects.SelectedValue as Project;
             MenuItem mi = sender as MenuItem;
 
 
@@ -912,7 +886,7 @@ namespace P4PSpeechDB
                 }
             }
 
-            AnalysisMsgPrompt a = new AnalysisMsgPrompt(dgl, rowP);
+            AnalysisMsgPrompt a = new AnalysisMsgPrompt(new DataGridLoader(), null);
 
 
 

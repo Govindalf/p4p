@@ -26,7 +26,7 @@ namespace P4PSpeechDB
 
         private ObservableCollection<SpeakerRow> rowS = new ObservableCollection<SpeakerRow>();
 
-        private ObservableCollection<ProjectRow> rowP = new ObservableCollection<ProjectRow>();
+        private ObservableCollection<Project> rowP = new ObservableCollection<Project>();
         private DataGridLoader dgl;
 
 
@@ -36,7 +36,7 @@ namespace P4PSpeechDB
             this.dgl = dgl;
 
             foreach (var elem in rowP)
-                ((ObservableCollection<ProjectRow>)this.rowP).Add((dynamic)elem);
+                ((ObservableCollection<Project>)this.rowP).Add((dynamic)elem);
 
             fillCombos();
             this.Loaded += new RoutedEventHandler(PromptDialog_Loaded);

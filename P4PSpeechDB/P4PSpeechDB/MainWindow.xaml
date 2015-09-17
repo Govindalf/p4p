@@ -15,6 +15,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Foreground" Value="#565051" />
                                             <Setter Property="Margin" Value="5,0,0,0"/>
                                         </Style>
                                     </StackPanel.Resources>
@@ -56,6 +57,8 @@
 
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
+                    <Setter Property="Foreground" Value="#565051" />
+
                     <EventSetter Event="Control.MouseDoubleClick" Handler="resultDataGrid_MouseDoubleClick"/>
                     <EventSetter Event="UIElement.GotFocus" Handler="dataGridFiles_GotCellFocus"/>
                 </Style>
@@ -80,7 +83,7 @@
                     <Style.Resources>
                         <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                             <VisualBrush.Visual>
-                                <Label Content="Search for a file" Foreground="LightGray" />
+                                <Label Content="Search for a file" Foreground="Black" />
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </Style.Resources>
@@ -174,12 +177,15 @@
                 <DataGridTextColumn Binding="{Binding Description}" Header="Description" Width="*" IsReadOnly="True" />
             </DataGrid.Columns>
             <DataGrid.RowStyle>
+                
                 <Style TargetType="{x:Type DataGridRow}">
                     <Style.Triggers>
                         <Trigger Property="AlternationIndex" Value="0">
+                            <Setter Property="Foreground" Value="#565051" />
                             <Setter Property="Background" Value="White" />
                         </Trigger>
                         <Trigger Property="AlternationIndex" Value="1">
+                            <Setter Property="Foreground" Value="#565051" />
                             <Setter Property="Background" Value="WhiteSmoke" />
                         </Trigger>
                     </Style.Triggers>
@@ -237,11 +243,13 @@
                             <Setter Property="Background" Value="White" />
                             <Setter Property="Height" Value="30" />
                             <Setter Property="FontSize" Value="14" />
+                            <Setter Property="Foreground" Value="#565051" />
                         </Trigger>
                         <Trigger Property="AlternationIndex" Value="1">
                             <Setter Property="Background" Value="WhiteSmoke" />
                             <Setter Property="Height" Value="30" />
                             <Setter Property="FontSize" Value="14" />
+                            <Setter Property="Foreground" Value="#565051" />
                         </Trigger>
                     </Style.Triggers>
                     <EventSetter Event="UIElement.GotFocus" Handler="dataGridProjects_GotCellFocus"/>

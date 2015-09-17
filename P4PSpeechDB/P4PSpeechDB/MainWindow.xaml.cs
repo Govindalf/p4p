@@ -937,8 +937,10 @@ namespace P4PSpeechDB
             {
                 dgl.loadSpeakers(a.PID);
                 rowS = dgl.getCollection("S");
-                foreach (var elem in rowS.ToList())
+                foreach (var elem in rowS.ToList()) {
                     ((dynamic)rowS).Add((SpeakerRow)elem);
+            }
+
 
 
                 using ((myConn = new DBConnection().getConn()))
@@ -953,7 +955,6 @@ namespace P4PSpeechDB
                         try
                         {
                             filename = Path.GetFileName(dataItem.Item1);
-                            System.Console.WriteLine(filename);
                             //Add to analysis table
                             comm.CommandText = "create table if not exists Analysis (AID varchar(150) primary key, Description varchar(500), File mediumblob, FileType varchar(50))";
                             comm.ExecuteNonQuery();
@@ -978,20 +979,27 @@ namespace P4PSpeechDB
                             List<Row> startsWithAge = rowS.Where(s => ((SpeakerRow)s).Speaker.StartsWith(a.Age)).ToList();
 
                             MessageBox.Show(a.Age);
+                            HashSet<Tuple<String, String>> uniqueAnalysis = new HashSet<Tuple<String, String>>();
+                            HashSet<Tuple<String, String>> uniqueRowName = new HashSet<Tuple<String, String>>();
+                            string previous = "";
                             foreach (var row in rowS)
                             {
-
-                                //comm.CommandText = "create table if not exists files2analysis (AID varchar(150) primary key, ID varchar(150) primary key)";
-                                //comm.ExecuteNonQuery();
-                                if (((SpeakerRow)row).Speaker.StartsWith(a.Age))
+                                if (!((SpeakerRow)row).Name.Equals(previous)){
+                                    previous = ((SpeakerRow)row).Name;
+                                    uniqueAnalysis.Add(Tuple.Create(((SpeakerRow)row).Name, ((SpeakerRow)row).ID));
+                                }
+                            }
+                            foreach(var uRow in uniqueAnalysis)
+                            {
+                                comm.CommandText = "create table if not exists Files2Analysis (File_FID varchar(150) primary key, Analysis_AID varchar(150) primary key)";
+                                if ((uRow.Item1.StartsWith(a.Age)))
                                 {
                                     comm.CommandText = "INSERT IGNORE INTO File2Analysis (File_FID, Analysis_AID) VALUES (@FileID, @AID)";
                                     comm.Parameters.Clear();
-                                    comm.Parameters.AddWithValue("@FileID", ((SpeakerRow)row).ID);
+                                    comm.Parameters.AddWithValue("@FileID", uRow.Item2);
                                     comm.Parameters.AddWithValue("@AID", filename);
                                     comm.ExecuteNonQuery();
                                 }
-
                             }
                         }
                         catch (Exception)

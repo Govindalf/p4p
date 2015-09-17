@@ -19,7 +19,6 @@ namespace P4PSpeechDB
         ICollectionView collectionP; //projects
         ICollectionView collectionS; //speakers
         ICollectionView collectionA; //analysis
-        private List<String> tableNames;
         private ObservableCollection<Row> rowA = new ObservableCollection<Row>(); //DAtagrid row item
         private ObservableCollection<Row> rowS; //DAtagrid row item
         private ObservableCollection<Row> rowP = new ObservableCollection<Row>(); //DAtagrid row item

@@ -615,47 +615,41 @@ namespace P4PSpeechDB
 
         private void ButtonDelete_Click(object sender, RoutedEventArgs e)
         {
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Are you sure?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.No)
+            {
+                return;
+            }
             var listOfItems = dataGridFiles.SelectedItems;
+            //Delete each selected file and its related records
             foreach (var item in listOfItems)
             {
+                var speakerID = (item as SpeakerRow).ID;
 
+                using (DBConnection db = new DBConnection())
+                {
+                    MySqlCommand comm = new MySqlCommand();
+                    comm.CommandText = "DELETE FROM FileData WHERE FID=@speakerID";
+                    comm.Parameters.AddWithValue("@speakerID", speakerID);
+                    db.insertIntoDB(comm);
+
+                    comm = new MySqlCommand();
+                    comm.CommandText = "DELETE FROM File WHERE FID=@speakerID";
+                    comm.Parameters.AddWithValue("@speakerID", speakerID);
+                    db.insertIntoDB(comm);
+
+                    comm = new MySqlCommand();
+                    comm.CommandText = "DELETE FROM File2Analysis WHERE File_FID=@speakerID";
+                    comm.Parameters.AddWithValue("@speakerID", speakerID);
+                    db.insertIntoDB(comm);
+                }
 
             }
 
-            
-            var grid = dataGridFiles;
-            var copyGrid = dataGridFiles;
-            for (int i = 0; i <= copyGrid.SelectedItems.Count; i++)
-            {
-                string idName = (grid.SelectedItems[i] as SpeakerRow).ID;
-                //System.Console.WriteLine(tableName);
-                //System.Console.WriteLine(idName);
-                //System.Console.WriteLine(i);
-
-                SpeakerRow dgRow = (SpeakerRow)(from r in rowS where ((r as SpeakerRow).ID == idName) select r).SingleOrDefault();
-                System.Console.WriteLine(dgRow.ID);
-                //copyGrid.Items.Remove(grid.SelectedItems[i] as Row);
-                //if (conn.openConn() == true)
-                //{
-                //    try
-                //    {
-                //        //Create tables if they dont already exist
-                //        MySqlCommand comm = conn.getCommand();
-                //        comm.CommandText = "DELETE FROM File WHERE ID=@idName";
-                //        comm.Parameters.AddWithValue("@idName", idName);
-                //        comm.ExecuteNonQuery();
-                //    }
-                //    catch (MySqlException ex)
-                //    {
-                //        MessageBox.Show(ex.ToString());
-                //    }
-                //    conn.closeConn();
-                //}
-            }
-
-
-            //ListCollectionView collection = new ListCollectionView(rowS);
-            //buildDatagridGroups(collection);
+            //Reload grid (DOES SAVE EXPANSION STATE)
+            dgl.loadSpeakers((listOfItems[1] as SpeakerRow).PID);
+            dataGridFiles.ItemsSource = new ListCollectionView(dgl.getCollection("S"));
+            buildDatagridGroups(new ListCollectionView(dgl.getCollection("S")));
 
         }
 
@@ -929,9 +923,6 @@ namespace P4PSpeechDB
                     ((dynamic)rowS).Add((SpeakerRow)elem);
                 }
 
-
-
-
                 foreach (var dataItem in dataList)
                 {
                     var comm = new MySqlCommand();
@@ -1016,13 +1007,6 @@ namespace P4PSpeechDB
         {
             System.Diagnostics.Process.Start("https://clarin.phonetik.uni-muenchen.de/BASWebServices/#/services/WebMAUSGeneral");
         }
-
-
-
-
-
-
-
 
 
         /* Downloads a selected project on a background thread. */

@@ -43,9 +43,6 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <MediaElement x:Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="433,307,0,0" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual"
-              UnloadedBehavior="Stop" />
-
 
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" Margin="246,275,0,0" x:Name="dataGridFiles"  
     		HorizontalAlignment="Left" Width="329" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -154,12 +151,7 @@
                             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Analysis"/>
                         </StackPanel>
                     </Button>
-                    <Button BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top"  Click="Button_Click_1" Height="70" Width="80" Margin="10,10,0,0">
-                        <StackPanel>
-                            <Image Source="pack://application:,,,/Icons/close.png"  Height="30"/>
-                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Stop Audio"/>
-                        </StackPanel>
-                    </Button>
+
                     <!--<Button Visibility="Hidden" Content="Stop Audio" HorizontalAlignment="Center" VerticalAlignment="Top"  BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="Button_Click_1"/>-->
 
                 </StackPanel>

@@ -352,10 +352,10 @@ namespace P4PSpeechDB
                     {
 
                         var cmd = new MySqlCommand();
-                        cmd.CommandText = @"SELECT f.FileData FROM FileData f INNER JOIN File fi ON fi.FID = f.FID WHERE fi.Name= '" + fileName + "' AND fi.FileType = @Type";
+                        cmd.CommandText = @"SELECT f.FileData FROM FileData f INNER JOIN File fi ON fi.FID = f.FID WHERE fi.Name= '" + fileName + "' AND fi.FileType = @Type AND fi.PID = @PID";
                         //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
                         cmd.Parameters.AddWithValue("@Type", fileType);
-
+                        cmd.Parameters.AddWithValue("@PID", projectName);
                         openOrPlayFile(cmd, fileName, fileType, projectName, item);
 
                     }
@@ -416,19 +416,19 @@ namespace P4PSpeechDB
 
 
                 // Filter audio, images etc. to open appropriate program
-                if (fileType.Equals("wav") || fileType.Equals("WAV"))
+                if (fileType.Equals(".wav") || fileType.Equals(".WAV"))
                 {
-                    mediaElement.Source = new Uri(filePath, UriKind.RelativeOrAbsolute);
-                    mediaElement.LoadedBehavior = MediaState.Manual;
-                    //mediaElement.UnloadedBehavior = MediaState.Stop;
-                    mediaElement.Play();
+                    var audio = new AudioWindow(filePath);
+                    audio.Show();
+
                 }
                 else
                 {
-                    //Process.Start("notepad++.exe", path);
+                    
                     try
                     {
-                        Process.Start(filePath);
+                        Process.Start("notepad++.exe", filePath);
+                        //Process.Start(filePath);
                     }
                     catch
                     {
@@ -532,15 +532,6 @@ namespace P4PSpeechDB
         }
 
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            mediaElement.Stop();
-        }
-
-        private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
-        {
-            mediaElement.Close();
-        }
 
         //On exit, removes the temp dir
         private void OnApplicationExit(object sender, EventArgs e)

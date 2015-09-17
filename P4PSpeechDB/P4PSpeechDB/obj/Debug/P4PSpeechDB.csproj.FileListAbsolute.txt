@@ -2,7 +2,6 @@ C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\App.config
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\P4PSpeechDB.exe.config
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\P4PSpeechDB.exe
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\P4PSpeechDB.pdb
-C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csprojResolveAssemblyReference.cache
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\AnalysisMsgPrompt.baml
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\FolderMsgPrompt.baml
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\GenerateTempPrompt.baml
@@ -20,28 +19,6 @@ C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.P
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csproj.GenerateResource.Cache
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.exe
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.pdb
-<<<<<<< HEAD
-=======
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\P4PSpeechDB.exe.config
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.exe
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.pdb
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\App.config
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\P4PSpeechDB.exe
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\P4PSpeechDB.pdb
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csprojResolveAssemblyReference.cache
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\AnalysisMsgPrompt.baml
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\FolderMsgPrompt.baml
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\GenerateTempPrompt.baml
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\MainWindow.baml
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\Progressbar.baml
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\AnalysisMsgPrompt.g.cs
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\FolderMsgPrompt.g.cs
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\GenerateTempPrompt.g.cs
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\MainWindow.g.cs
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\Progressbar.g.cs
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\App.g.cs
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB_MarkupCompile.cache
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.g.resources
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.Properties.Resources.resources
-C:\Users\Rodel\Documents\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csproj.GenerateResource.Cache
->>>>>>> origin/master
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csprojResolveAssemblyReference.cache
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\Audio.baml
+C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\Audio.g.cs

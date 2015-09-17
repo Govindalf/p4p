@@ -89,11 +89,13 @@ namespace P4PSpeechDB
                     folderDetails.Add((string)inst.cbChooseFolder.SelectedValue);
                     return folderDetails;
                 }
-                // if the user didn't choose any, should throw exception
+                // if the user didn't choose any
                 else
                 {
-                    folderDetails.Add(defaultValue);
-                    return folderDetails;
+                    MessageBox.Show("Please enter a name for the template file.");
+                    Prompt(question, title, defaultValue, inputType);
+                    //folderDetails.Add(defaultValue);
+                    //return folderDetails;
                 }
             }
             //System.Console.WriteLine();

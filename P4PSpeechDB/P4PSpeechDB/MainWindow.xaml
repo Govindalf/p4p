@@ -161,8 +161,6 @@
                 </StackPanel>
             </Border>
         </Grid>
-        <ComboBox HorizontalAlignment="Left" Margin="769,248,0,0" VerticalAlignment="Top" Width="120"/>
-        <TextBlock HorizontalAlignment="Left" Margin="726,248,0,0" TextWrapping="Wrap" Text="Sort By" VerticalAlignment="Top"/>
 
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" 
                   Margin="575,275,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="344" 
@@ -243,7 +241,7 @@
 
         <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="431,248,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="speakerCombo_SelectionChanged" SelectedValuePath="Content">
             <ComboBoxItem Name="Speaker">Speaker</ComboBoxItem>
-            <ComboBoxItem Name="tableName">File Type</ComboBoxItem>
+            <ComboBoxItem Name="FileType">File Type</ComboBoxItem>
             <ComboBoxItem Name="Age">Age</ComboBoxItem>
 
         </ComboBox>

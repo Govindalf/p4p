@@ -35,10 +35,10 @@ namespace P4PSpeechDB
     public partial class MainWindow : Window
     {
         //private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
-        private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
+        private string testDBRoot;
+        private string tempPath;
         private DBConnection conn;
         MySqlConnection myConn = null;
-        private List<String> tableNames = new List<String>();
         private ObservableCollection<Row> rowS; //DAtagrid row item
         private ObservableCollection<Row> rowA; //DAtagrid row item
         private ObservableCollection<Row> rowP; //DAtagrid row item
@@ -51,13 +51,14 @@ namespace P4PSpeechDB
 
         public MainWindow()
         {
+            testDBRoot = P4PSpeechDB.Properties.Settings.Default.Path;
+
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnApplicationExit);
-            IsExpanded = false;
+
             this.DataContext = this;
-            conn = new DBConnection();
-            //conn.createDB();
+
             //Loads all datagrid with relevant data
-            dgl = new DataGridLoader(conn, tableNames);
+            dgl = new DataGridLoader();
             dgl.setUpDataGrids();
             rowS = dgl.getCollection("S");
             rowP = dgl.getCollection("P");
@@ -66,27 +67,6 @@ namespace P4PSpeechDB
             WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             this.speakerCombo.Text = groupValue;
 
-            try
-            {
-                // store all of the tables in the mysql database into a list
-                using ((myConn = new DBConnection().getConn()))
-                using (MySqlCommand comm = myConn.CreateCommand())
-                {
-                    myConn.Open();
-                    comm.CommandText = "show tables from SpeechDB";
-                    using (MySqlDataReader reader = comm.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            tableNames.Add(reader.GetString(0));
-                        }
-                    }
-                }
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
             //randomlyMatchAnalysis();
 
             buildDatagridGroups(new ListCollectionView(rowS));
@@ -142,7 +122,8 @@ namespace P4PSpeechDB
                 }
             }
             dgl.loadProjects();
-            if(!projectSelectedName.Equals("")){
+            if (!projectSelectedName.Equals(""))
+            {
                 dgl.loadSpeakers(projectSelectedName);
                 rowS = dgl.getCollection("S");
 
@@ -257,31 +238,24 @@ namespace P4PSpeechDB
 
             }
 
-            using ((myConn = new DBConnection().getConn()))
-            using (MySqlCommand cmd = myConn.CreateCommand())
+            using (DBConnection db = new DBConnection())
             {
-                try
-                {
-                    myConn.Open();
-                    if (!projectSelectedName.Equals(""))
-                    {
-                        cmd.CommandText = "SELECT Description FROM Project WHERE PID = '" + projectSelectedName + "'";
-                    }
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            descTextBlock.Text = reader.GetString(0);
-                        }
-                    }
+                var cmd = new MySqlCommand();
 
-                }
-                catch (MySqlException ex)
+                if (!projectSelectedName.Equals(""))
                 {
-                    MessageBox.Show(ex.ToString());
+                    cmd.CommandText = "SELECT Description FROM Project WHERE PID = '" + projectSelectedName + "'";
                 }
-
+                var table = db.getFromDB(cmd);
+                foreach (DataRow dr in table.Rows)
+                {
+                    descTextBlock.Text = dr["Description"].ToString();
+                }
             }
+
+
+
+
         }
 
         //When a row in the analysis grid is selected
@@ -370,9 +344,9 @@ namespace P4PSpeechDB
 
 
                     //Check if file exists locally, if not open from db
-                    if (File.Exists("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.Speaker + "\\" + fileName + "." + fileType))
+                    if (File.Exists(testDBRoot + "\\" + projectName + "\\" + item.Speaker + "\\" + fileName + "." + fileType))
                     {
-                        openOrPlayLocalFile("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.Speaker + "\\" + fileName + "." + fileType);
+                        openOrPlayLocalFile(testDBRoot + "\\" + projectName + "\\" + item.Speaker + "\\" + fileName + "." + fileType);
                     }
                     else
                     {
@@ -410,13 +384,13 @@ namespace P4PSpeechDB
                 //Checks for the file type (speaker or analysis) and then puts it in the correct folder location
                 if (row is AnalysisRow)
                 {
-                    Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\ANALYSIS");
-                    fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+                    Directory.CreateDirectory(testDBRoot + "\\ANALYSIS");
+                    fs = new FileStream(testDBRoot + "\\testOutput\\" + projectName + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
                 }
                 else
                 {
-                    Directory.CreateDirectory(@"..\..\..\..\testOutput\" + projectName + "\\" + ((SpeakerRow)row).Speaker);
-                    fs = new FileStream(@"..\..\..\..\testOutput\" + projectName + "\\" + ((SpeakerRow)row).Speaker + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+                    Directory.CreateDirectory(testDBRoot + @"\" + projectName + "\\" + ((SpeakerRow)row).Speaker);
+                    fs = new FileStream(testDBRoot + @"\" + projectName + "\\" + ((SpeakerRow)row).Speaker + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
                 }
 
                 var table = db.getFromDB(cmd);
@@ -515,7 +489,7 @@ namespace P4PSpeechDB
         {
         }
 
-        private void addIndividualFile(DirectoryInfo dir, List<String> projectDetails, string projDescription, DBConnection db) 
+        private void addIndividualFile(DirectoryInfo dir, List<String> projectDetails, string projDescription, DBConnection db)
         {
             byte[] rawData;
 
@@ -660,7 +634,7 @@ namespace P4PSpeechDB
                 //System.Console.WriteLine(idName);
                 //System.Console.WriteLine(i);
 
-                SpeakerRow dgRow = (SpeakerRow) (from r in rowS where ((r as SpeakerRow).ID == idName) select r).SingleOrDefault();
+                SpeakerRow dgRow = (SpeakerRow)(from r in rowS where ((r as SpeakerRow).ID == idName) select r).SingleOrDefault();
                 System.Console.WriteLine(dgRow.ID);
                 //copyGrid.Items.Remove(grid.SelectedItems[i] as Row);
                 //if (conn.openConn() == true)
@@ -690,7 +664,7 @@ namespace P4PSpeechDB
         private void ButtonTemplate_Click(object sender, RoutedEventArgs e)
         {
             List<List<string>> listResults = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
-            string pathName = @"C:\Users\Rodel\Documents\p4p\TemplateStr\";
+            string pathName = testDBRoot + @"\TemplateStr\";
             string ext = "tpl";
             List<string> projN = new List<string>();
             if (listResults == null)
@@ -813,7 +787,7 @@ namespace P4PSpeechDB
                     break;
 
                 case "menuDownload":
-                    downloadProject(parentDir + @"\testOutput\", pr.PID);
+                    downloadProject(testDBRoot + "\\", pr.PID);
                     break;
             }
         }
@@ -952,9 +926,10 @@ namespace P4PSpeechDB
             {
                 dgl.loadSpeakers(a.PID);
                 rowS = dgl.getCollection("S");
-                foreach (var elem in rowS.ToList()) {
+                foreach (var elem in rowS.ToList())
+                {
                     ((dynamic)rowS).Add((SpeakerRow)elem);
-            }
+                }
 
 
 
@@ -970,9 +945,6 @@ namespace P4PSpeechDB
                         try
                         {
                             filename = Path.GetFileName(dataItem.Item1);
-                            //Add to analysis table
-                            comm.CommandText = "create table if not exists Analysis (AID varchar(150) primary key, Description varchar(500), File mediumblob, FileType varchar(50))";
-                            comm.ExecuteNonQuery();
 
                             comm.CommandText = "INSERT INTO Analysis (AID, Description, FileData, FileType) VALUES(@AID, @Desc, @FileAsBlob, @FileType)";
                             comm.Parameters.AddWithValue("@AID", filename);
@@ -999,12 +971,13 @@ namespace P4PSpeechDB
                             string previous = "";
                             foreach (var row in rowS)
                             {
-                                if (!((SpeakerRow)row).Name.Equals(previous)){
+                                if (!((SpeakerRow)row).Name.Equals(previous))
+                                {
                                     previous = ((SpeakerRow)row).Name;
                                     uniqueAnalysis.Add(Tuple.Create(((SpeakerRow)row).Name, ((SpeakerRow)row).ID));
                                 }
                             }
-                            foreach(var uRow in uniqueAnalysis)
+                            foreach (var uRow in uniqueAnalysis)
                             {
                                 comm.CommandText = "create table if not exists Files2Analysis (File_FID varchar(150) primary key, Analysis_AID varchar(150) primary key)";
                                 if ((uRow.Item1.StartsWith(a.Age)))
@@ -1033,14 +1006,19 @@ namespace P4PSpeechDB
 
         private void ButtonConfig_Click(object sender, RoutedEventArgs e)
         {
-            promptForFolder();
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+
+            P4PSpeechDB.Properties.Settings.Default.Path = dialog.SelectedPath;
+            P4PSpeechDB.Properties.Settings.Default.Save();
+            testDBRoot = dialog.SelectedPath;
         }
 
         private System.Windows.Forms.DialogResult promptForFolder()
         {
             System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
             System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-            testDBRoot = dialog.SelectedPath;
+            tempPath = dialog.SelectedPath;
             return result;
         }
 
@@ -1049,46 +1027,115 @@ namespace P4PSpeechDB
             System.Diagnostics.Process.Start("https://clarin.phonetik.uni-muenchen.de/BASWebServices/#/services/WebMAUSGeneral");
         }
 
+
+
+
+
+
+
+
+
+        /* Downloads a selected project on a background thread. */
+        private void backgroundWorker_DoUploadWork(
+            object sender,
+            DoWorkEventArgs e)
+        {
+            //string[] parameters = e.Argument as string[];
+            //string PID = parameters[1];
+            //string path = parameters[0];
+            List<String> projectDetails = null;
+            this.Dispatcher.Invoke((Action)(() =>
+            {
+                projectDetails = getFolderName();
+                prog.Show();
+            }));
+
+
+            using (DBConnection db = new DBConnection())
+            {
+                //testDBRoot = "C:\\Users\\Rodel\\Documents\\p4p\\P4Ptestfiles";
+                DirectoryInfo dirN = null;
+                DirectoryInfo[] dirs = new DirectoryInfo(tempPath).GetDirectories();
+                string projDescription = "None";
+
+                // If there are no directories inside the chosen path.
+                if (dirs == null || dirs.Length == 0)
+                {
+                    dirN = new DirectoryInfo(tempPath);
+                }
+
+                if (projectDetails != null && dirN == null)
+                {
+                    if (projectDetails.Count > 1)
+                    {
+                        projDescription = projectDetails.Last();
+                    }
+                    foreach (DirectoryInfo dir in dirs)
+                    {
+                        addIndividualFile(dir, projectDetails, projDescription, db);
+                    }
+                }
+                else if (dirN != null)
+                {
+                    addIndividualFile(dirN, projectDetails, projDescription, db);
+                }
+
+            }
+
+
+
+        }
+
+
+
+        /* Downloads projects on a different thread to UI thread, so user can do other tasks while downloading. */
+        private void uploadProject()
+        {
+
+            BackgroundWorker backgroundWorker;
+
+            // Instantiate BackgroundWorker and attach handlers to its 
+            // DowWork and RunWorkerCompleted events.
+            backgroundWorker = new System.ComponentModel.BackgroundWorker();
+            backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(backgroundWorker_DoUploadWork);
+            backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
+
+            //string[] parameters = new string[] { path, PID };
+
+            prog = new ProgressBar();
+            // Start the download operation in the background. 
+            backgroundWorker.RunWorkerAsync();
+
+            // Once you have started the background thread you  
+            // can exit the handler and the application will  
+            // wait until the RunWorkerCompleted event is raised. 
+
+            // Or if you want to do something else in the main thread, 
+            // such as update a progress bar, you can do so in a loop  
+            // while checking IsBusy to see if the background task is 
+            // still running. 
+
+            while (backgroundWorker.IsBusy)
+            {
+
+                // Keep UI messages moving, so the form remains  
+                // responsive during the asynchronous operation.
+
+                Application.Current.Dispatcher.Invoke(DispatcherPriority.Background,
+                                                      new Action(delegate { }));
+            }
+        }
+
+
+
         private void ButtonAddFolder_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.DialogResult result = promptForFolder();
             if (!result.ToString().Equals("Cancel"))
             {
-                using (DBConnection db = new DBConnection())
-                {
-                    //testDBRoot = "C:\\Users\\Rodel\\Documents\\p4p\\P4Ptestfiles";
-                    DirectoryInfo dirN = null;
-                    DirectoryInfo[] dirs = new DirectoryInfo(testDBRoot).GetDirectories();
-                    string projDescription = "None";
-
-                    // If there are no directories inside the chosen path.
-                    if (dirs == null || dirs.Length == 0)
-                    {
-                        dirN = new DirectoryInfo(testDBRoot);
-                    }
-
-                    List<String> projectDetails = getFolderName();
-                    if (projectDetails != null && dirN == null)
-                    {
-                        if (projectDetails.Count > 1)
-                        {
-                            projDescription = projectDetails.Last();
-                        }
-                        foreach (DirectoryInfo dir in dirs)
-                        {
-                            addIndividualFile(dir, projectDetails, projDescription, db);
-                        }
-                    }
-                    else if (dirN != null)
-                    {
-                        addIndividualFile(dirN, projectDetails, projDescription, db);
-                    }
-
-                }
-                MessageBox.Show("ALL DONE");
+                uploadProject();
             }
         }
-
     }
 }
 

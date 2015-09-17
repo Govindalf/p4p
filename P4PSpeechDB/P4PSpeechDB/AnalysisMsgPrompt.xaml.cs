@@ -24,7 +24,7 @@ namespace P4PSpeechDB
     public partial class AnalysisMsgPrompt : Window
     {
 
-        private ObservableCollection<SpeakerRow> rowS = new ObservableCollection<SpeakerRow>();
+        private ObservableCollection<Speaker> rowS = new ObservableCollection<Speaker>();
 
         private ObservableCollection<Project> rowP = new ObservableCollection<Project>();
         private DataGridLoader dgl;
@@ -95,7 +95,7 @@ namespace P4PSpeechDB
             dgl.loadSpeakers(cmb.SelectedItem.ToString());
 
             foreach (var elem in dgl.getCollection("S"))
-                ((ObservableCollection<SpeakerRow>)this.rowS).Add((dynamic)elem);
+                ((ObservableCollection<Speaker>)this.rowS).Add((dynamic)elem);
 
 
             var rowSAgeList = rowS.Select(s => s.Age).Distinct().ToList();

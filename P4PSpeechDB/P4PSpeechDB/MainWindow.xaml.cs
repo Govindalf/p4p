@@ -223,7 +223,7 @@ namespace P4PSpeechDB
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as SpeakerRow;
+                var item = dgr.DataContext as Speaker;
 
 
                 if (item != null)
@@ -291,7 +291,7 @@ namespace P4PSpeechDB
             if (sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as SpeakerRow;
+                var item = dgr.DataContext as Speaker;
 
                 if (item != null)
                 {
@@ -301,9 +301,9 @@ namespace P4PSpeechDB
 
 
                     //Check if file exists locally, if not open from db
-                    if (File.Exists("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.Speaker + "\\" + fileName + "." + fileType))
+                    if (File.Exists("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.SpeakerName + "\\" + fileName + "." + fileType))
                     {
-                        openOrPlayLocalFile("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.Speaker + "\\" + fileName + "." + fileType);
+                        openOrPlayLocalFile("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.SpeakerName + "\\" + fileName + "." + fileType);
                     }
                     else
                     {
@@ -329,7 +329,7 @@ namespace P4PSpeechDB
         }
 
         /*Downlaods and opens the file selected, or plays it if its a .wav(audio) */
-        private void openOrPlayFile(MySqlCommand cmd, string fileName, string fileType, string projectName, Row row)
+        private void openOrPlayFile(MySqlCommand cmd, string fileName, string fileType, string projectName, Object row)
         {
             using (DBConnection db = new DBConnection())
             {
@@ -346,8 +346,8 @@ namespace P4PSpeechDB
                 }
                 else
                 {
-                    Directory.CreateDirectory(@"..\..\..\..\testOutput\" + projectName + "\\" + ((SpeakerRow)row).Speaker);
-                    fs = new FileStream(@"..\..\..\..\testOutput\" + projectName + "\\" + ((SpeakerRow)row).Speaker + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+                    Directory.CreateDirectory(@"..\..\..\..\testOutput\" + projectName + "\\" + ((Speaker)row).SpeakerName);
+                    fs = new FileStream(@"..\..\..\..\testOutput\" + projectName + "\\" + ((Speaker)row).SpeakerName + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
                 }
 
                 var table = db.getFromDB(cmd);
@@ -603,7 +603,7 @@ namespace P4PSpeechDB
         //Regex filter
         private void searchFilter(object sender, FilterEventArgs e)
         {
-            var obj = e.Item as SpeakerRow;
+            var obj = e.Item as Speaker;
             if (obj != null)
             {
                 if (System.Text.RegularExpressions.Regex.IsMatch(obj.Name, searchBox.Text))
@@ -895,7 +895,7 @@ namespace P4PSpeechDB
                 dgl.loadSpeakers(a.PID);
                 rowS = dgl.getCollection("S");
                 foreach (var elem in rowS.ToList())
-                    ((dynamic)rowS).Add((SpeakerRow)elem);
+                    ((dynamic)rowS).Add((Speaker)elem);
 
 
                 using ((myConn = new DBConnection().getConn()))
@@ -928,7 +928,7 @@ namespace P4PSpeechDB
                             comm.ExecuteNonQuery();
 
                             //Add to the mapping table(to link with speaker)
-                            List<Row> startsWithAge = rowS.Where(s => ((SpeakerRow)s).Speaker.StartsWith(a.Age)).ToList();
+                            List<Row> startsWithAge = rowS.Where(s => ((Speaker)s).SpeakerName.StartsWith(a.Age)).ToList();
 
                             MessageBox.Show(a.Age);
                             foreach (var row in rowS)
@@ -936,13 +936,13 @@ namespace P4PSpeechDB
 
                                 //comm.CommandText = "create table if not exists files2analysis (AID varchar(150) primary key, ID varchar(150) primary key)";
                                 //comm.ExecuteNonQuery();
-                                if (((SpeakerRow)row).Speaker.StartsWith(a.Age))
+                                if (((Speaker)row).SpeakerName.StartsWith(a.Age))
                                 {
 
 
                                     comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID2, @AID2)";
                                     comm.Parameters.Clear();
-                                    comm.Parameters.AddWithValue("@ID2", ((SpeakerRow)row).ID);
+                                    comm.Parameters.AddWithValue("@ID2", ((Speaker)row).ID);
                                     comm.Parameters.AddWithValue("@AID2", dataItem.Item1);
                                     comm.ExecuteNonQuery();
                                 }

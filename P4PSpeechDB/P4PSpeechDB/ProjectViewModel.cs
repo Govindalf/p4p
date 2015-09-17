@@ -18,6 +18,7 @@ namespace P4PSpeechDB
             set { project = value; }
         }
 
+        #region Properties
         public string PID
         {
             get { return Project.PID; }
@@ -55,7 +56,8 @@ namespace P4PSpeechDB
                     RaisePropertyChanged("Description");
                 }
             }
-        } 
+        }
+        #endregion
 
     }
 

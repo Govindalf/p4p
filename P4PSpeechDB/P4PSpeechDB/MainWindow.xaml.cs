@@ -656,15 +656,16 @@ namespace P4PSpeechDB
         private void ButtonTemplate_Click(object sender, RoutedEventArgs e)
         {
             List<List<string>> listResults = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
-            string pathName = testDBRoot + @"\TemplateStr\";
+            string pathName = testDBRoot;
             string ext = "tpl";
+            string tempName = listResults.First().First() + "." + ext;
             List<string> projN = new List<string>();
             if (listResults == null)
             {
                 return;
             }
 
-            pathName += listResults.First().First() + "." + ext;
+            pathName += "\\" + listResults.First().First() + "." + ext;
             try
             {
 
@@ -685,7 +686,7 @@ namespace P4PSpeechDB
                         {
                             projN.Add(lStr[1]);
                             count += 1;
-                            string pathFiles = testDBRoot + "\\" + projN + "\\*";
+                            string pathFiles = testDBRoot + "\\" + lStr[1] + "\\*";
                             byte[] pathFString = new UTF8Encoding(true).GetBytes("path lab " + pathFiles +
                                 "\n" + "path trg " + pathFiles + "\n" + "path hlb " + pathFiles + "\n" + "path wav " + pathFiles + "\n" + "path sfb " + pathFiles + "\n \n");
                             fs.Write(pathFString, 0, pathFString.Length);

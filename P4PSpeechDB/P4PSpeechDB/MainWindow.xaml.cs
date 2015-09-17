@@ -1051,6 +1051,10 @@ namespace P4PSpeechDB
                 }
                 else if (dirN != null)
                 {
+                    if (projectDetails.Count > 1)
+                    {
+                        projDescription = projectDetails.Last();
+                    }
                     addIndividualFile(dirN, projectDetails, projDescription, db);
                 }
 
@@ -1108,6 +1112,7 @@ namespace P4PSpeechDB
             if (!result.ToString().Equals("Cancel"))
             {
                 uploadProject();
+                dgl.loadProjects();
             }
         }
     }

@@ -28,6 +28,7 @@ CREATE TABLE File (
 CREATE TABLE File2Analysis (
     File_FID int    NOT NULL ,
     Analysis_AID varchar(255)    NOT NULL ,
+	
     CONSTRAINT File2Analysis_pk PRIMARY KEY (File_FID,Analysis_AID)
 );
 
@@ -50,29 +51,4 @@ CREATE TABLE Project (
 
 
 
--- foreign keys
--- Reference:  File2Analysis_Analysis (table: File2Analysis)
-
-
-ALTER TABLE File2Analysis ADD CONSTRAINT File2Analysis_Analysis FOREIGN KEY File2Analysis_Analysis (Analysis_AID)
-    REFERENCES Analysis (AID);
--- Reference:  File2Analysis_File (table: File2Analysis)
-
-
-ALTER TABLE File2Analysis ADD CONSTRAINT File2Analysis_File FOREIGN KEY File2Analysis_File (File_FID)
-    REFERENCES File (FID);
--- Reference:  FileData_File (table: FileData)
-
-
-ALTER TABLE FileData ADD CONSTRAINT FileData_File FOREIGN KEY FileData_File (FID)
-    REFERENCES File (FID);
--- Reference:  File_Project (table: File)
-
-
-ALTER TABLE File ADD CONSTRAINT File_Project FOREIGN KEY File_Project (PID)
-    REFERENCES Project (PID);
-
-
-
--- End of file.
 

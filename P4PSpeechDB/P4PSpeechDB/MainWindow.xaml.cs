@@ -305,9 +305,9 @@ namespace P4PSpeechDB
 
 
                     //Check if file exists locally, if not open from db
-                    if (File.Exists("..\\..\\..\\..\\testOutput\\ANALYSIS\\" + fileName + "." + fileType))
+                    if (File.Exists(testDBRoot + "\\ANALYSIS\\" + fileName + fileType))
                     {
-                        openOrPlayLocalFile("..\\..\\..\\..\\testOutput\\ANALYSIS\\" + fileName + "." + fileType);
+                        openOrPlayLocalFile(testDBRoot + "\\ANALYSIS\\" + fileName + fileType);
                     }
                     else
                     {
@@ -385,7 +385,7 @@ namespace P4PSpeechDB
                 if (row is AnalysisRow)
                 {
                     Directory.CreateDirectory(testDBRoot + "\\ANALYSIS");
-                    fs = new FileStream(testDBRoot + "\\testOutput\\" + projectName + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+                    fs = new FileStream(testDBRoot + "\\ANALYSIS\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
                 }
                 else
                 {
@@ -424,7 +424,7 @@ namespace P4PSpeechDB
                 }
                 else
                 {
-                    
+
                     try
                     {
                         Process.Start("notepad++.exe", filePath);
@@ -616,6 +616,13 @@ namespace P4PSpeechDB
         private void ButtonDelete_Click(object sender, RoutedEventArgs e)
         {
             var listOfItems = dataGridFiles.SelectedItems;
+            foreach (var item in listOfItems)
+            {
+
+
+            }
+
+            
             var grid = dataGridFiles;
             var copyGrid = dataGridFiles;
             for (int i = 0; i <= copyGrid.SelectedItems.Count; i++)
@@ -924,69 +931,61 @@ namespace P4PSpeechDB
 
 
 
-                using ((myConn = new DBConnection().getConn()))
-                using (MySqlCommand comm = myConn.CreateCommand())
-                {
-                    myConn.Open();
 
-                    foreach (var dataItem in dataList)
+                foreach (var dataItem in dataList)
+                {
+                    var comm = new MySqlCommand();
+                    filename = Path.GetFileName(dataItem.Item1);
+
+                    using (DBConnection db = new DBConnection())
                     {
 
-
-                        try
+                        comm.CommandText = "INSERT INTO Analysis (AID, Description, FileData, FileType) VALUES(@AID, @Desc, @FileAsBlob, @FileType)";
+                        comm.Parameters.AddWithValue("@AID", filename);
+                        if (a.Desc.Equals(""))
                         {
-                            filename = Path.GetFileName(dataItem.Item1);
-
-                            comm.CommandText = "INSERT INTO Analysis (AID, Description, FileData, FileType) VALUES(@AID, @Desc, @FileAsBlob, @FileType)";
-                            comm.Parameters.AddWithValue("@AID", filename);
-                            if (a.Desc.Equals(""))
-                            {
-                                comm.Parameters.AddWithValue("@Desc", "No description");
-                            }
-                            else
-                            {
-
-                                comm.Parameters.AddWithValue("@Desc", a.Desc);
-                            }
-                            comm.Parameters.AddWithValue("@FileAsBlob", dataItem.Item2);
-                            comm.Parameters.AddWithValue("@FileType", "." + ext);
-
-                            comm.ExecuteNonQuery();
-
-                            //Add to the mapping table(to link with speaker)
-                            List<Row> startsWithAge = rowS.Where(s => ((SpeakerRow)s).Speaker.StartsWith(a.Age)).ToList();
-
-                            MessageBox.Show(a.Age);
-                            HashSet<Tuple<String, String>> uniqueAnalysis = new HashSet<Tuple<String, String>>();
-                            HashSet<Tuple<String, String>> uniqueRowName = new HashSet<Tuple<String, String>>();
-                            string previous = "";
-                            foreach (var row in rowS)
-                            {
-                                if (!((SpeakerRow)row).Name.Equals(previous))
-                                {
-                                    previous = ((SpeakerRow)row).Name;
-                                    uniqueAnalysis.Add(Tuple.Create(((SpeakerRow)row).Name, ((SpeakerRow)row).ID));
-                                }
-                            }
-                            foreach (var uRow in uniqueAnalysis)
-                            {
-                                comm.CommandText = "create table if not exists Files2Analysis (File_FID varchar(150) primary key, Analysis_AID varchar(150) primary key)";
-                                if ((uRow.Item1.StartsWith(a.Age)))
-                                {
-                                    comm.CommandText = "INSERT IGNORE INTO File2Analysis (File_FID, Analysis_AID) VALUES (@FileID, @AID)";
-                                    comm.Parameters.Clear();
-                                    comm.Parameters.AddWithValue("@FileID", uRow.Item2);
-                                    comm.Parameters.AddWithValue("@AID", filename);
-                                    comm.ExecuteNonQuery();
-                                }
-                            }
+                            comm.Parameters.AddWithValue("@Desc", "No description");
                         }
-                        catch (Exception)
+                        else
                         {
-                            //conn.handleException(e);
+
+                            comm.Parameters.AddWithValue("@Desc", a.Desc);
+                        }
+                        comm.Parameters.AddWithValue("@FileAsBlob", dataItem.Item2);
+                        comm.Parameters.AddWithValue("@FileType", "." + ext);
+
+                        db.insertIntoDB(comm);
+                    }
+                    //Add to the mapping table(to link with speaker)
+                    List<Row> startsWithAge = rowS.Where(s => ((SpeakerRow)s).Speaker.StartsWith(a.Age)).ToList();
+
+
+                    HashSet<Tuple<String, String>> uniqueAnalysis = new HashSet<Tuple<String, String>>();
+                    HashSet<Tuple<String, String>> uniqueRowName = new HashSet<Tuple<String, String>>();
+                    string previous = "";
+                    foreach (var row in rowS)
+                    {
+                        if (!((SpeakerRow)row).Name.Equals(previous))
+                        {
+                            previous = ((SpeakerRow)row).Name;
+                            uniqueAnalysis.Add(Tuple.Create(((SpeakerRow)row).Name, ((SpeakerRow)row).ID));
                         }
                     }
+                    foreach (var uRow in uniqueAnalysis)
+                    {
+                        if ((uRow.Item1.StartsWith(a.Age)))
+                        {
+                            using (DBConnection db = new DBConnection())
+                            {
 
+                                comm.CommandText = "INSERT IGNORE INTO File2Analysis (File_FID, Analysis_AID) VALUES (@FileID, @AID)";
+                                comm.Parameters.Clear();
+                                comm.Parameters.AddWithValue("@FileID", uRow.Item2);
+                                comm.Parameters.AddWithValue("@AID", filename);
+                                db.insertIntoDB(comm);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -1129,6 +1128,4 @@ namespace P4PSpeechDB
         }
     }
 }
-
-
 

@@ -131,8 +131,6 @@ namespace P4PSpeechDB
         }
 
 
-
-
         public MySqlCommand getCommand()
         {
             return this.conn.CreateCommand();

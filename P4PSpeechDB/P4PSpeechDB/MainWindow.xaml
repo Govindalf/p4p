@@ -43,9 +43,6 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <MediaElement x:Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="433,307,0,0" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual"
-              UnloadedBehavior="Stop" />
-
 
         <DataGrid AutoGenerateColumns ="False" BorderBrush="Silver" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" Margin="246,275,0,0" x:Name="dataGridFiles"  
     		HorizontalAlignment="Left" Width="329" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
@@ -154,19 +151,18 @@
                             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Analysis"/>
                         </StackPanel>
                     </Button>
-                    <Button BorderBrush="#6890E7" Background="#6890E7" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top"  Click="Button_Click_1" Height="70" Width="90" Margin="10,10,0,0">
+                    <!--<Button BorderBrush="#6890E7" Background="#6890E7" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top"  Click="Button_Click_1" Height="70" Width="90" Margin="10,10,0,0">
                         <StackPanel>
                             <Image Source="pack://application:,,,/Icons/close.png"  Height="30"/>
                             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Stop Audio"/>
                         </StackPanel>
-                    </Button>
+                    </Button>-->
+
                     <!--<Button Visibility="Hidden" Content="Stop Audio" HorizontalAlignment="Center" VerticalAlignment="Top"  BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="Button_Click_1"/>-->
 
                 </StackPanel>
             </Border>
         </Grid>
-        <ComboBox HorizontalAlignment="Left" Margin="769,248,0,0" VerticalAlignment="Top" Width="120"/>
-        <TextBlock HorizontalAlignment="Left" Margin="726,248,0,0" TextWrapping="Wrap" Text="Sort By" VerticalAlignment="Top"/>
 
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" 
                   Margin="575,275,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="344" 
@@ -255,7 +251,7 @@
 
         <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="431,248,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="speakerCombo_SelectionChanged" SelectedValuePath="Content">
             <ComboBoxItem Name="Speaker">Speaker</ComboBoxItem>
-            <ComboBoxItem Name="tableName">File Type</ComboBoxItem>
+            <ComboBoxItem Name="FileType">File Type</ComboBoxItem>
             <ComboBoxItem Name="Age">Age</ComboBoxItem>
 
         </ComboBox>

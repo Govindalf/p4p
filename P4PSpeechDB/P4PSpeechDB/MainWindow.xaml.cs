@@ -505,42 +505,6 @@ namespace P4PSpeechDB
         //Loads all the data in the target folder into the db
         private void loadAllButton_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.DialogResult result = promptForFolder();
-            if (!result.ToString().Equals("Cancel"))
-            {
-                using (DBConnection db = new DBConnection())
-                {
-                    //testDBRoot = "C:\\Users\\Rodel\\Documents\\p4p\\P4Ptestfiles";
-                    DirectoryInfo dirN = null;
-                    DirectoryInfo[] dirs = new DirectoryInfo(testDBRoot).GetDirectories();
-                    string projDescription = "None";
-
-                    // If there are no directories inside the chosen path.
-                    if (dirs == null || dirs.Length == 0)
-                    {
-                        dirN = new DirectoryInfo(testDBRoot);
-                    }
-
-                    List<String> projectDetails = getFolderName();
-                    if (projectDetails != null && dirN == null)
-                    {
-                        if (projectDetails.Count > 1)
-                        {
-                            projDescription = projectDetails.Last();
-                        }
-                        foreach (DirectoryInfo dir in dirs)
-                        {
-                            addIndividualFile(dir, projectDetails, projDescription, db);
-                        }
-                    }
-                    else if (dirN != null)
-                    {
-                        addIndividualFile(dirN, projectDetails, projDescription, db);
-                    }
-
-                }
-                MessageBox.Show("ALL DONE");
-            }
         }
 
         private void addIndividualFile(DirectoryInfo dir, List<String> projectDetails, string projDescription, DBConnection db) 
@@ -949,6 +913,8 @@ namespace P4PSpeechDB
             Nullable<bool> result = dlg.ShowDialog();  // Display OpenFileDialog by calling ShowDialog method 
             byte[] rawData;
             List<Tuple<string, byte[]>> dataList = new List<Tuple<string, byte[]>>();
+            string ext = "";
+            string filename = "";
 
             // Add all files selected into the the db. If multiple files added, project destination is the same.
             foreach (String file in dlg.FileNames)
@@ -958,6 +924,8 @@ namespace P4PSpeechDB
                 {
                     rawData = File.ReadAllBytes(file);
                     dataList.Add(Tuple.Create(file, rawData));
+                    ext = Path.GetExtension(file);
+                    filename = file;
                 }
             }
 
@@ -984,13 +952,14 @@ namespace P4PSpeechDB
 
                         try
                         {
+                            filename = Path.GetFileName(dataItem.Item1);
+                            System.Console.WriteLine(filename);
                             //Add to analysis table
-                            comm.CommandText = "create table if not exists analysis (AID varchar(150) primary key, File mediumblob, Description varchar(500))";
+                            comm.CommandText = "create table if not exists Analysis (AID varchar(150) primary key, Description varchar(500), File mediumblob, FileType varchar(50))";
                             comm.ExecuteNonQuery();
 
-                            comm.CommandText = "INSERT INTO analysis (AID, File, Description) VALUES(@AID, @FileAsBlob, @Desc)";
-                            comm.Parameters.AddWithValue("@AID", dataItem.Item1);
-                            comm.Parameters.AddWithValue("@FileAsBlob", dataItem.Item2);
+                            comm.CommandText = "INSERT INTO Analysis (AID, Description, FileData, FileType) VALUES(@AID, @Desc, @FileAsBlob, @FileType)";
+                            comm.Parameters.AddWithValue("@AID", filename);
                             if (a.Desc.Equals(""))
                             {
                                 comm.Parameters.AddWithValue("@Desc", "No description");
@@ -1000,6 +969,9 @@ namespace P4PSpeechDB
 
                                 comm.Parameters.AddWithValue("@Desc", a.Desc);
                             }
+                            comm.Parameters.AddWithValue("@FileAsBlob", dataItem.Item2);
+                            comm.Parameters.AddWithValue("@FileType", "." + ext);
+
                             comm.ExecuteNonQuery();
 
                             //Add to the mapping table(to link with speaker)
@@ -1013,12 +985,10 @@ namespace P4PSpeechDB
                                 //comm.ExecuteNonQuery();
                                 if (((SpeakerRow)row).Speaker.StartsWith(a.Age))
                                 {
-
-
-                                    comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID2, @AID2)";
+                                    comm.CommandText = "INSERT IGNORE INTO File2Analysis (File_FID, Analysis_AID) VALUES (@FileID, @AID)";
                                     comm.Parameters.Clear();
-                                    comm.Parameters.AddWithValue("@ID2", ((SpeakerRow)row).ID);
-                                    comm.Parameters.AddWithValue("@AID2", dataItem.Item1);
+                                    comm.Parameters.AddWithValue("@FileID", ((SpeakerRow)row).ID);
+                                    comm.Parameters.AddWithValue("@AID", filename);
                                     comm.ExecuteNonQuery();
                                 }
 
@@ -1058,7 +1028,42 @@ namespace P4PSpeechDB
 
         private void ButtonAddFolder_Click(object sender, RoutedEventArgs e)
         {
+            System.Windows.Forms.DialogResult result = promptForFolder();
+            if (!result.ToString().Equals("Cancel"))
+            {
+                using (DBConnection db = new DBConnection())
+                {
+                    //testDBRoot = "C:\\Users\\Rodel\\Documents\\p4p\\P4Ptestfiles";
+                    DirectoryInfo dirN = null;
+                    DirectoryInfo[] dirs = new DirectoryInfo(testDBRoot).GetDirectories();
+                    string projDescription = "None";
 
+                    // If there are no directories inside the chosen path.
+                    if (dirs == null || dirs.Length == 0)
+                    {
+                        dirN = new DirectoryInfo(testDBRoot);
+                    }
+
+                    List<String> projectDetails = getFolderName();
+                    if (projectDetails != null && dirN == null)
+                    {
+                        if (projectDetails.Count > 1)
+                        {
+                            projDescription = projectDetails.Last();
+                        }
+                        foreach (DirectoryInfo dir in dirs)
+                        {
+                            addIndividualFile(dir, projectDetails, projDescription, db);
+                        }
+                    }
+                    else if (dirN != null)
+                    {
+                        addIndividualFile(dirN, projectDetails, projDescription, db);
+                    }
+
+                }
+                MessageBox.Show("ALL DONE");
+            }
         }
 
     }

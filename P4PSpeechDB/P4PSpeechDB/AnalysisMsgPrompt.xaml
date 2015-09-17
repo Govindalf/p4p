@@ -10,7 +10,7 @@
         <TextBlock x:Name="txtOr_Copy" Margin="10,5,5,5" Text="Enter a description"/>
         <TextBox Height="59" TextWrapping="Wrap" MaxLength="500" x:Name="txtDesc"/>
         <StackPanel Orientation="Horizontal" Margin="0,5,5.2,5" HorizontalAlignment="Right">
-            <Button Content="Add analyses" IsDefault="True" Margin="5" x:Name="btnAdd" Click="btnAdd_Click" IsEnabled="False"/>
+            <Button Content="Add analysis" IsDefault="True" Margin="5" x:Name="btnAdd" Click="btnAdd_Click" IsEnabled="False"/>
             <Button Content="_Cancel" IsCancel="True" Margin="5" x:Name="btnCancel" Click="btnCancel_Click" />
         </StackPanel>
     </StackPanel>

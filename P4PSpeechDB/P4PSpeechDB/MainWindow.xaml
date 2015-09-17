@@ -97,7 +97,7 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <Button Visibility="Visible" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="551,223,0,0" VerticalAlignment="Top" Width="324" Click="loadAllButton_Click"/>
+        <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="551,223,0,0" VerticalAlignment="Top" Width="324" Click="loadAllButton_Click"/>
 
         <Grid HorizontalAlignment="Left" Height="90" Margin="0,29,0,0" VerticalAlignment="Top" Width="875">
             <Border BorderThickness="1" BorderBrush="Gray">

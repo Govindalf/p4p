@@ -2,10 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace P4PSpeechDB
@@ -24,6 +26,10 @@ namespace P4PSpeechDB
         public MainWindowViewModel()
         {
             projects = dgl.getProjects();
+
+
+            ICollectionView speak = CollectionViewSource.GetDefaultView(speakers);
+            speak.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
         }
 
         public ObservableCollection<ProjectViewModel> Projects

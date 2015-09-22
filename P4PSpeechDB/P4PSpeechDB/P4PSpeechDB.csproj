@@ -84,9 +84,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Analysis.cs" />
     <Compile Include="AnalysisMsgPrompt.xaml.cs">
       <DependentUpon>AnalysisMsgPrompt.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AnalysisViewModel.cs" />
     <Compile Include="SpeakerViewModel.cs" />
     <Compile Include="ProjectViewModel.cs" />
     <Compile Include="MainWindowViewModel.cs" />
@@ -116,7 +118,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataGridLoader.cs" />
-    <Compile Include="AnalysisRow.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="DBConnection.cs" />
     <Compile Include="Row.cs" />

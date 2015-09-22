@@ -41,6 +41,11 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 </Setter.Value>
             </Setter>
         </Style>
+        <CollectionViewSource x:Key="speak" Source="{Binding Path=Speakers}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Name" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
     </Window.Resources>
 
     <Grid Height="680" Width="900" Margin="0,-20,-4.8,-17.2" VerticalAlignment="Top" >
@@ -55,7 +60,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" Margin="251,228,0,0" x:Name="dataGridFiles"  
     		HorizontalAlignment="Left" Width="300" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                  ItemsSource="{Binding Speakers}" SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
+               ItemsSource="{Binding Speakers}" SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
 
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonUp">
@@ -63,27 +68,27 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                     <Command:EventToCommand Command="{Binding SpeakerSelected}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-            
+
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
                 <DataGridTextColumn Binding="{Binding FileType}" Header="FileType" Width="*" IsReadOnly="True" />
             </DataGrid.Columns>
 
-            <DataGrid.RowStyle>
+            <!--<DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <EventSetter Event="Control.MouseDoubleClick" Handler="resultDataGrid_MouseDoubleClick"/>
                     <EventSetter Event="UIElement.GotFocus" Handler="dataGridFiles_GotCellFocus"/>
-                </Style>
+                </Style>-->
 
-            </DataGrid.RowStyle>
+            <!--</DataGrid.RowStyle>-->
 
             <DataGrid.GroupStyle>
-                <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
-                    <GroupStyle.Panel>
-                        <ItemsPanelTemplate>
-                            <DataGridRowsPresenter/>
-                        </ItemsPanelTemplate>
-                    </GroupStyle.Panel>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Name}"/>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
                 </GroupStyle>
             </DataGrid.GroupStyle>
         </DataGrid>

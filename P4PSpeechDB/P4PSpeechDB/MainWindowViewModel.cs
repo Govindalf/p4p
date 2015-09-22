@@ -14,10 +14,12 @@ namespace P4PSpeechDB
     {
         ObservableCollection<ProjectViewModel> projects = new ObservableCollection<ProjectViewModel>();
         ObservableCollection<SpeakerViewModel> speakers = new ObservableCollection<SpeakerViewModel>();
+        ObservableCollection<AnalysisViewModel> analyses = new ObservableCollection<AnalysisViewModel>();
         DataGridLoader dgl = new DataGridLoader();
 
 
         private ProjectViewModel selectedProject;
+        private SpeakerViewModel selectedSpeaker;
 
         public MainWindowViewModel()
         {
@@ -48,6 +50,23 @@ namespace P4PSpeechDB
             }
         }
 
+        public ObservableCollection<AnalysisViewModel> Analysis
+        {
+            get
+            {
+                return analyses;
+            }
+            set
+            {
+                analyses = value;
+            }
+        }
+
+        #region Datagrid operations
+
+
+        public ICommand ProjectSelected { get { return new RelayCommand(ProjectSelectedExecute); } }
+
         public ProjectViewModel SelectedProject
         {
             get { return selectedProject; }
@@ -63,11 +82,30 @@ namespace P4PSpeechDB
             speakers = dgl.getSpeakers(SelectedProject.PID);
 
             RaisePropertyChanged("Speakers");
-            System.Diagnostics.Debug.WriteLine(speakers.Count);
         }
 
 
-        public ICommand ProjectSelected { get { return new RelayCommand(ProjectSelectedExecute); } }
+        public ICommand SpeakerSelected { get { return new RelayCommand(SpeakerSelectedExecute); } }
+
+        public SpeakerViewModel SelectedSpeaker
+        {
+            get { return selectedSpeaker; }
+            set { selectedSpeaker = value; RaisePropertyChanged("SelectedSpeaker"); }
+        }
+
+        void SpeakerSelectedExecute()
+        {
+
+            if (!(SelectedSpeaker is SpeakerViewModel))
+                return;
+
+            analyses = dgl.getAnalysis(SelectedSpeaker.Name);
+
+            RaisePropertyChanged("Analysis");
+        }
+        #endregion
+
+
         //public ICommand ProjectSelected { get { return new RelayCommand<object>((s) => ProjectSelectedExecute(s)); } }
     }
 }

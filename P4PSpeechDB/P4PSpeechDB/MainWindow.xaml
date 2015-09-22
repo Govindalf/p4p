@@ -55,9 +55,15 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" Margin="251,228,0,0" x:Name="dataGridFiles"  
     		HorizontalAlignment="Left" Width="300" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                  ItemsSource="{Binding Speakers}">
+                  ItemsSource="{Binding Speakers}" SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
 
-
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseLeftButtonUp">
+                    <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
+                    <Command:EventToCommand Command="{Binding SpeakerSelected}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
                 <DataGridTextColumn Binding="{Binding FileType}" Header="FileType" Width="*" IsReadOnly="True" />
@@ -171,7 +177,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" 
                   Margin="560,228,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="300" 
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                  HeadersVisibility="Column" CanUserAddRows="False">
+                  HeadersVisibility="Column" CanUserAddRows="False" ItemsSource="{Binding Analysis}">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding AID}" Header="Analysis ID" Width="150" IsReadOnly="True" SortDirection="Ascending"/>

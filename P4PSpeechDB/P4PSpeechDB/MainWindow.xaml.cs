@@ -207,7 +207,7 @@ namespace P4PSpeechDB
                 {
                     string projectName = item.PID.ToString();
                     dgl.loadSpeakers(projectName);
-                    rowS = dgl.getCollection("S");
+                    //rowS = dgl.getCollection("S");
 
                     buildDatagridGroups(new ListCollectionView(rowS));
                 }
@@ -243,7 +243,7 @@ namespace P4PSpeechDB
             if (sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as AnalysisRow;
+                var item = dgr.DataContext as Analysis;
 
 
                 if (item != null)
@@ -339,7 +339,7 @@ namespace P4PSpeechDB
                 string filePath = "";
 
                 //Checks for the file type (speaker or analysis) and then puts it in the correct folder location
-                if (row is AnalysisRow)
+                if (row is Analysis)
                 {
                     Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\ANALYSIS");
                     fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);

@@ -15,11 +15,9 @@ namespace P4PSpeechDB
 {
     public class DataGridLoader
     {
-
-
-        private ObservableCollection<Row> rowA = new ObservableCollection<Row>(); //DAtagrid row item
-        private ObservableCollection<SpeakerViewModel> speakers =  new ObservableCollection<SpeakerViewModel>(); //DAtagrid row item
+        private ObservableCollection<SpeakerViewModel> speakers = new ObservableCollection<SpeakerViewModel>(); //DAtagrid row item
         private ObservableCollection<ProjectViewModel> projects = new ObservableCollection<ProjectViewModel>(); //DAtagrid row item
+        private ObservableCollection<AnalysisViewModel> analysis = new ObservableCollection<AnalysisViewModel>(); //DAtagrid row item
 
         public List<string> ignoreTables = new List<string>();
 
@@ -43,7 +41,7 @@ namespace P4PSpeechDB
             {
 
                 case "A":
-                    return this.rowA;
+                    return null;
                 default:
                     throw new Exception("Invalid type value");
             }
@@ -60,7 +58,12 @@ namespace P4PSpeechDB
             return loadSpeakers(PID);
         }
 
+        public ObservableCollection<AnalysisViewModel> getAnalysis(string ID)
+        {
+            return loadAnalysis(ID);
+        }
 
+        #region Loaders
         public ObservableCollection<ProjectViewModel> loadProjects()
         {
 
@@ -84,9 +87,9 @@ namespace P4PSpeechDB
 
         }
 
-        public void loadAnalysis(string fileName)
+        public ObservableCollection<AnalysisViewModel> loadAnalysis(string fileName)
         {
-            rowA.Clear();
+            analysis.Clear();
             using (DBConnection db = new DBConnection())
             {
                 MySqlCommand cmd = new MySqlCommand();
@@ -100,10 +103,10 @@ namespace P4PSpeechDB
                 var table = db.getFromDB(cmd);
                 foreach (DataRow dr in table.Rows)
                 {
-                    rowA.Add(new AnalysisRow { AID = dr["AID"].ToString(), Description = dr["Description"].ToString(), FileType = dr["FileType"].ToString() });
+                    analysis.Add(new AnalysisViewModel { Analysis = new Analysis { AID = dr["AID"].ToString(), Description = dr["Description"].ToString(), FileType = dr["FileType"].ToString() } });
                 }
             }
-
+            return this.analysis;
 
         }
 
@@ -138,7 +141,7 @@ namespace P4PSpeechDB
             return this.speakers;
 
         }
-
+        #endregion
 
 
     }

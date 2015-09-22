@@ -94,8 +94,8 @@ namespace P4PSpeechDB
             ComboBox cmb = sender as ComboBox;
             dgl.loadSpeakers(cmb.SelectedItem.ToString());
 
-            foreach (var elem in dgl.getCollection("S"))
-                ((ObservableCollection<Speaker>)this.rowS).Add((dynamic)elem);
+            //foreach (var elem in dgl.getCollection("S"))
+            //    ((ObservableCollection<Speaker>)this.rowS).Add((dynamic)elem);
 
 
             var rowSAgeList = rowS.Select(s => s.Age).Distinct().ToList();

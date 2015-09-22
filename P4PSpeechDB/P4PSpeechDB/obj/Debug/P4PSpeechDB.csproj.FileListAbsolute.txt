@@ -17,7 +17,6 @@ C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\GalaSoft.Mvvm
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\GalaSoft.MvvmLight.Platform.xml
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\Microsoft.Practices.ServiceLocation.pdb
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\bin\Debug\Microsoft.Practices.ServiceLocation.xml
-C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\P4PSpeechDB.csprojResolveAssemblyReference.cache
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\AnalysisMsgPrompt.baml
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\FolderMsgPrompt.baml
 C:\Users\Govindu\Dropbox\P4P\p4p\P4PSpeechDB\P4PSpeechDB\obj\Debug\GenerateTempPrompt.baml

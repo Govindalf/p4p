@@ -8,7 +8,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         Title="Moa" Height="670" Width="920" Background="White" MaxWidth="920" MaxHeight="670">
 
     <Window.DataContext>
-        <!-- Declaratively create an instance of our Album View Model-->
+        <!-- Declaratively create an instance of our View Model-->
         <local:MainWindowViewModel />
     </Window.DataContext>
     <Window.Resources>
@@ -59,8 +59,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
 
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" Margin="251,228,0,0" x:Name="dataGridFiles"  
-    		HorizontalAlignment="Left" Width="300" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" Margin="231,275,0,0" x:Name="dataGridFiles"  
+    		HorizontalAlignment="Left" Width="344" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
                ItemsSource="{Binding Speakers}" SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
 
@@ -288,8 +288,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
 
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="371" Margin="10,197,0,0" 
-                  Name="dataGridProjects" HorizontalAlignment="Left" Width="226" 
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="536" Margin="0,125,0,0" 
+                  Name="dataGridProjects" HorizontalAlignment="Left" Width="231" 
                   HeadersVisibility="Column" CanUserAddRows="False" IsSynchronizedWithCurrentItem="False"
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
@@ -303,8 +303,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                     <!--<MenuItem x:Name="menuRemoveLocal" Header="Remove local files"  Click="MenuItem_Click" />
                     <MenuItem x:Name="editDesc" Header="Rename description" Click="MenuItem_Click" />
                     <MenuItem x:Name="menuRemoveDB" Header="Remove from database"  Click="MenuItem_Click" />-->
-                    <MenuItem x:Name="menuDownload" Header="Download"  Click="MenuItem_Click" />
-                </ContextMenu>
+            <MenuItem x:Name="menuDownload" Header="Download"  Click="MenuItem_Click" />
+            </ContextMenu>
             </DataGrid.ContextMenu>
 
             <DataGrid.Columns>
@@ -320,13 +320,13 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 </MouseBinding>
             </DataGrid.InputBindings>-->
 
-      
-                <i:Interaction.Triggers>
+
+            <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonUp">
-                        <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
+                    <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
                     <Command:EventToCommand Command="{Binding ProjectSelected}"/>
                 </i:EventTrigger>
-                </i:Interaction.Triggers>
+            </i:Interaction.Triggers>
 
             <!--<i:Interaction.Triggers>
                 <i:EventTrigger EventName="OnFocus">

@@ -918,9 +918,11 @@ namespace P4PSpeechDB
             {
                 dgl.loadSpeakers(a.PID);
                 rowS = dgl.getCollection("S");
-                foreach (var elem in rowS.ToList()){
+                foreach (var elem in rowS.ToList())
+                {
 
-                    ((dynamic)rowS).Add((Speaker)elem);}
+                    ((dynamic)rowS).Add((Speaker)elem);
+                }
 
 
                 foreach (var dataItem in dataList)
@@ -970,49 +972,44 @@ namespace P4PSpeechDB
                                 if (((Speaker)row).SpeakerName.StartsWith(a.Age))
                                 {
 
-                        db.insertIntoDB(comm);
-                    }
-                    //Add to the mapping table(to link with speaker)
-                    List<Row> startsWithAge = rowS.Where(s => ((Speaker)s).Speaker.StartsWith(a.Age)).ToList();
-
-
-                                    comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID2, @AID2)";
-                                    comm.Parameters.Clear();
-                                    comm.Parameters.AddWithValue("@ID2", ((Speaker)row).ID);
-                                    comm.Parameters.AddWithValue("@AID2", dataItem.Item1);
-                                    comm.ExecuteNonQuery();
+                                    db.insertIntoDB(comm);
                                 }
 
 
-                    HashSet<Tuple<String, String>> uniqueAnalysis = new HashSet<Tuple<String, String>>();
-                    HashSet<Tuple<String, String>> uniqueRowName = new HashSet<Tuple<String, String>>();
-                    string previous = "";
-                    foreach (var row in rowS)
-                    {
-                        if (!((Speaker)row).Name.Equals(previous))
-                        {
-                            previous = ((Speaker)row).Name;
-                            uniqueAnalysis.Add(Tuple.Create(((Speaker)row).Name, ((Speaker)row).ID));
-                        }
-                    }
-                    foreach (var uRow in uniqueAnalysis)
-                    {
-                        if ((uRow.Item1.StartsWith(a.Age)))
-                        {
-                            using (DBConnection db = new DBConnection())
-                            {
-
-                                comm.CommandText = "INSERT IGNORE INTO File2Analysis (File_FID, Analysis_AID) VALUES (@FileID, @AID)";
+                                comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID2, @AID2)";
                                 comm.Parameters.Clear();
-                                comm.Parameters.AddWithValue("@FileID", uRow.Item2);
-                                comm.Parameters.AddWithValue("@AID", filename);
-                                db.insertIntoDB(comm);
+                                comm.Parameters.AddWithValue("@ID2", ((Speaker)row).ID);
+                                comm.Parameters.AddWithValue("@AID2", dataItem.Item1);
+                                comm.ExecuteNonQuery();
+                            }
+
+
+                            HashSet<Tuple<String, String>> uniqueAnalysis = new HashSet<Tuple<String, String>>();
+                            HashSet<Tuple<String, String>> uniqueRowName = new HashSet<Tuple<String, String>>();
+                            string previous = "";
+                            foreach (var row in rowS)
+                            {
+                                if (!((Speaker)row).Name.Equals(previous))
+                                {
+                                    previous = ((Speaker)row).Name;
+                                    uniqueAnalysis.Add(Tuple.Create(((Speaker)row).Name, ((Speaker)row).ID));
+                                }
+                            }
+                            foreach (var uRow in uniqueAnalysis)
+                            {
+                                if ((uRow.Item1.StartsWith(a.Age)))
+                                {
+                                    comm.CommandText = "INSERT IGNORE INTO File2Analysis (File_FID, Analysis_AID) VALUES (@FileID, @AID)";
+                                    comm.Parameters.Clear();
+                                    comm.Parameters.AddWithValue("@FileID", uRow.Item2);
+                                    comm.Parameters.AddWithValue("@AID", filename);
+                                    db.insertIntoDB(comm);
+                                }
                             }
                         }
                     }
                 }
             }
-
 
         }
 

@@ -89,13 +89,15 @@
       <DependentUpon>AnalysisMsgPrompt.xaml</DependentUpon>
     </Compile>
     <Compile Include="AnalysisViewModel.cs" />
+    <Compile Include="AudioWindow.xaml.cs">
+      <DependentUpon>AudioWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SpeakerViewModel.cs" />
     <Compile Include="ProjectViewModel.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Progressbar.xaml.cs">
       <DependentUpon>Progressbar.xaml</DependentUpon>
     </Compile>
-
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="AnalysisMsgPrompt.xaml">
@@ -137,7 +139,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Audio.xaml">
+    <Page Include="AudioWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

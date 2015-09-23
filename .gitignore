@@ -7,8 +7,6 @@
 *.userosscache
 *.sln.docstates
 
-obj
-
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -238,3 +236,4 @@ P4PSpeechDB/P4PSpeechDB/obj/Debug/MainWindow.g.cs
 *.Cache
 *.cache
 P4PSpeechDB/P4PSpeechDB/obj/Debug/MainWindow.g.cs
+*.sln

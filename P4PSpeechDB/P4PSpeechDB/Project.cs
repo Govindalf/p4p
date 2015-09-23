@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace P4PSpeechDB
 {
-    class AnalysisRow : Row
+    public class Project
     {
-        public string AID { get; set; }
+        public string PID { get; set; }
+        public string DateCreated { get; set; }
         public string Description { get; set; }
-        public string FileType { get; set; }
+
     }
 }

@@ -77,43 +77,7 @@ namespace P4PSpeechDB
 
         private void ButtonBrowse_Click(object sender, RoutedEventArgs e)
         {
-            // Open file system to select file(s)
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.Multiselect = true;
-
-            // Set filter for file extension and default file extension 
-            //dlg.DefaultExt = ".png";
-            //dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
-
-
-            Nullable<bool> result = dlg.ShowDialog();  // Display OpenFileDialog by calling ShowDialog method 
-            List<string> folderDetails = new List<string>();
-            if (result.HasValue == true && result.Value == true)
-            {
-                folderDetails = getFolderName(); // only prompt for folder once always
-            }
-            byte[] rawData;
-
-            // Add all files selected into the the db. If multiple files added, project destination is the same.
-            foreach (String file in dlg.FileNames)
-            {
-                // Get the selected file name and display in a TextBox 
-                if (result.HasValue == true && result.Value == true)
-                {
-                    rawData = File.ReadAllBytes(file);
-                    // Open document 
-                    string filename = file;
-                    string ext = Path.GetExtension(file);
-
-                    //Stores file in appropriate place in file system
-                    //moveFile(filename, databaseRoot  /* + WHATEVER THE NEW LOCATION IS ASK CATH */);
-
-                    executeInsert(filename, ext, dlg, folderDetails, rawData);
-
-
-                }
-            }
-            dgl.loadProjects();
+            
 
             //dgl.setUpDataGrids();
         }
@@ -909,10 +873,6 @@ namespace P4PSpeechDB
 
                         try
                         {
-                            //Add to analysis table
-                            comm.CommandText = "create table if not exists analysis (AID varchar(150) primary key, File mediumblob, Description varchar(500))";
-                            comm.ExecuteNonQuery();
-
                             comm.CommandText = "INSERT INTO analysis (AID, File, Description) VALUES(@AID, @FileAsBlob, @Desc)";
                             comm.Parameters.AddWithValue("@AID", dataItem.Item1);
                             comm.Parameters.AddWithValue("@FileAsBlob", dataItem.Item2);

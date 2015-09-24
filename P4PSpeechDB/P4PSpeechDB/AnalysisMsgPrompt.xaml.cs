@@ -23,31 +23,24 @@ namespace P4PSpeechDB
     /// </summary>
     public partial class AnalysisMsgPrompt : Window
     {
-
-        private ObservableCollection<Speaker> rowS = new ObservableCollection<Speaker>();
-
-        private ObservableCollection<Project> rowP = new ObservableCollection<Project>();
         private DataGridLoader dgl;
 
 
-        public AnalysisMsgPrompt(DataGridLoader dgl, ObservableCollection<Row> rowP)
+        public AnalysisMsgPrompt(DataGridLoader dgl,  ObservableCollection<ProjectViewModel> vm)
         {
             InitializeComponent();
             this.dgl = dgl;
 
-            foreach (var elem in rowP)
-                ((ObservableCollection<Project>)this.rowP).Add((dynamic)elem);
-
-            fillCombos();
+            fillCombos(vm);
             this.Loaded += new RoutedEventHandler(PromptDialog_Loaded);
 
 
         }
 
         // fill in the values of each project name in the combobox
-        private void fillCombos()
+        private void fillCombos(ObservableCollection<ProjectViewModel>  vm)
         {
-            var rowPIDList = rowP.Select(p => p.PID).ToList();
+            var rowPIDList = vm.Select(p => p.PID).ToList();
             cbChooseProject.ItemsSource = rowPIDList;
 
         }
@@ -90,15 +83,14 @@ namespace P4PSpeechDB
         {
             
             cbChooseSpeaker.IsEnabled = true;
-            rowS.Clear();
             ComboBox cmb = sender as ComboBox;
-            dgl.loadSpeakers(cmb.SelectedItem.ToString());
+            
 
             //foreach (var elem in dgl.getCollection("S"))
             //    ((ObservableCollection<Speaker>)this.rowS).Add((dynamic)elem);
 
 
-            var rowSAgeList = rowS.Select(s => s.Age).Distinct().ToList();
+            var rowSAgeList = dgl.getSpeakers(cmb.SelectedItem.ToString()).Select(s => s.Age).Distinct().ToList();
             cbChooseSpeaker.ItemsSource = rowSAgeList;
             btnAdd.IsEnabled = true;
         }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,18 +19,71 @@ namespace P4PSpeechDB
         ObservableCollection<SpeakerViewModel> speakers = new ObservableCollection<SpeakerViewModel>();
         ObservableCollection<AnalysisViewModel> analyses = new ObservableCollection<AnalysisViewModel>();
         DataGridLoader dgl = new DataGridLoader();
+        private CollectionView speakersView;
 
-
+        private MoaCore moa;
         private ProjectViewModel selectedProject;
         private SpeakerViewModel selectedSpeaker;
 
+        private ICommand _groupColumn;
+  
+
         public MainWindowViewModel()
         {
+            moa = new MoaCore(this, dgl);
             projects = dgl.getProjects();
 
+            speakersView = (ListCollectionView)CollectionViewSource.GetDefaultView(this.Speakers);
+            //cv.GroupDescriptions.Add(new PropertyGroupDescription("Speakers.Name"));
+            //.ItemsSource = cv;
+            //ICollectionView speak = CollectionViewSource.GetDefaultView(speakers);
+            //speak.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
+        }
 
-            ICollectionView speak = CollectionViewSource.GetDefaultView(speakers);
-            speak.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
+        public CollectionView SpeakersView
+        {
+            get
+            {
+                return speakersView;
+            }
+            set
+            {
+                speakersView = value;
+                RaisePropertyChanged("SpeakersView");
+            }
+        }
+
+        //#region INotifyPropertyChanged
+
+        //public event PropertyChangedEventHandler PropertyChanged;
+
+        //protected virtual void OnPropertyChanged(string propertyName)
+        //{
+        //    if (PropertyChanged != null)
+        //    {
+        //        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        //    }
+        //}
+
+        //#endregion INotifyPropertyChanged
+
+        public ICommand GroupColumn
+        {
+            get
+            {
+                if (_groupColumn == null)
+                    _groupColumn = new RelayCommand<object>(
+                        (param) =>
+                        {
+
+                            string header = param as string;
+                            //System.Console.WriteLine(SpeakersView.CurrentItem);
+                            SpeakersView.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
+                            //SpeakersView.SortDescriptions.Add(new SortDescription("TargetProperty.Name", ListSortDirection.Ascending));
+                        });
+
+                return _groupColumn;
+            }
         }
 
         public ObservableCollection<ProjectViewModel> Projects
@@ -53,6 +107,7 @@ namespace P4PSpeechDB
             set
             {
                 speakers = value;
+
             }
         }
 
@@ -87,7 +142,11 @@ namespace P4PSpeechDB
 
             speakers = dgl.getSpeakers(SelectedProject.PID);
 
-            RaisePropertyChanged("Speakers");
+            RaisePropertyChanged("SpeakersView");
+            //System.Console.WriteLine(this.Speakers[0].SpeakerName);
+            speakersView = (ListCollectionView)CollectionViewSource.GetDefaultView(this.Speakers);
+            SpeakersView.GroupDescriptions.Add(new PropertyGroupDescription("SpeakerName"));
+            
         }
 
 
@@ -111,7 +170,22 @@ namespace P4PSpeechDB
         }
         #endregion
 
+        #region Database operations
+        public ICommand AddFiles { get { return new RelayCommand(AddFilesExecute); } }
 
+        void AddFilesExecute()
+        {
+            moa.AddFiles();
+        }
+
+        public ICommand AddAnalysis { get { return new RelayCommand(AddAnalysisExecute); } }
+
+        void AddAnalysisExecute()
+        {
+            moa.AddAnalysis();
+        }
+
+        #endregion
         //public ICommand ProjectSelected { get { return new RelayCommand<object>((s) => ProjectSelectedExecute(s)); } }
     }
 }

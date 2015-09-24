@@ -7,7 +7,6 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         Title="EMU 2.0" Height="670" Width="900" Background="Gainsboro">
 
     <Window.DataContext>
-        <!-- Declaratively create an instance of our Album View Model-->
         <local:MainWindowViewModel />
     </Window.DataContext>
     <Window.Resources>
@@ -41,11 +40,11 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 </Setter.Value>
             </Setter>
         </Style>
-        <CollectionViewSource x:Key="speak" Source="{Binding Path=Speakers}">
+        <!--<CollectionViewSource x:Key="speak" Source="{Binding Path=Speakers}">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="Name" />
             </CollectionViewSource.GroupDescriptions>
-        </CollectionViewSource>
+        </CollectionViewSource>-->
     </Window.Resources>
 
     <Grid Height="680" Width="900" Margin="0,-20,-4.8,-17.2" VerticalAlignment="Top" >
@@ -60,7 +59,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" Margin="251,228,0,0" x:Name="dataGridFiles"  
     		HorizontalAlignment="Left" Width="300" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-               ItemsSource="{Binding Speakers}" SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
+               ItemsSource="{Binding Path=SpeakersView}" SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
 
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonUp">
@@ -81,8 +80,17 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 </Style>-->
 
             <!--</DataGrid.RowStyle>-->
-
             <DataGrid.GroupStyle>
+                <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
+                    <GroupStyle.Panel>
+                        <ItemsPanelTemplate>
+                            <DataGridRowsPresenter/>
+                        </ItemsPanelTemplate>
+                    </GroupStyle.Panel>
+                </GroupStyle>
+            </DataGrid.GroupStyle>
+
+            <!--<DataGrid.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
@@ -90,7 +98,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                         </DataTemplate>
                     </GroupStyle.HeaderTemplate>
                 </GroupStyle>
-            </DataGrid.GroupStyle>
+            </DataGrid.GroupStyle>-->
+
         </DataGrid>
 
         <TextBox x:Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="251,161,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300" FontStyle="Italic" Foreground="LightGray" KeyDown="TextBox_KeyDown" Background="WhiteSmoke">
@@ -135,7 +144,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
             </Button>
         </StackPanel>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="90" Margin="269,34,40,0" VerticalAlignment="Top" Width="591" Background="LightSteelBlue">
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Click="ButtonBrowse_Click" Margin="10,10,0,0">
+            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70"  Command="{Binding AddFiles}" Margin="10,10,0,0">
                 <StackPanel>
                     <Image Source="pack://application:,,,/Icons/document_add.png"  Height="30"/>
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add File(s)"/>
@@ -165,7 +174,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="WebMaus"/>
                 </StackPanel>
             </Button>
-            <Button BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top"  Click="Button_Click" Height="70" Width="80" Margin="10,10,0,0">
+            <Button BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top"  Command="{Binding AddAnalysis}" Height="70" Width="80" Margin="10,10,0,0">
                 <StackPanel>
                     <Image Source="pack://application:,,,/Icons/add_analysis.png"  Height="30"/>
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Analysis"/>
@@ -188,6 +197,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 <DataGridTextColumn Binding="{Binding AID}" Header="Analysis ID" Width="150" IsReadOnly="True" SortDirection="Ascending"/>
                 <DataGridTextColumn Binding="{Binding Description}" Header="Description" Width="*" IsReadOnly="True" />
             </DataGrid.Columns>
+            
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <EventSetter Event="Control.MouseDoubleClick" Handler="analysisDataGrid_MouseDoubleClick"/>
@@ -197,7 +207,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
 
 
 
-            <DataGrid.GroupStyle>
+            <!--<DataGrid.GroupStyle>
                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                     <GroupStyle.Panel>
                         <ItemsPanelTemplate>
@@ -205,7 +215,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                         </ItemsPanelTemplate>
                     </GroupStyle.Panel>
                 </GroupStyle>
-            </DataGrid.GroupStyle>
+            </DataGrid.GroupStyle>-->
         </DataGrid>
 
 

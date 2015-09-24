@@ -36,6 +36,7 @@ namespace P4PSpeechDB
 
             Nullable<bool> result = dlg.ShowDialog();  // Display OpenFileDialog by calling ShowDialog method 
             List<string> folderDetails = new List<string>();
+            string desc = "";
             if (result.HasValue == true && result.Value == true)
             {
                 folderDetails = getFolderName(); // only prompt for folder once always
@@ -59,6 +60,18 @@ namespace P4PSpeechDB
 
                 }
             }
+            if (folderDetails.Count == 2)
+            {
+                desc = folderDetails.Last();
+            }
+            else
+            {
+                desc = "No description given";
+            }
+            //Update views
+            mainWindowVM.Projects.Add(new ProjectViewModel { Project = new Project { PID = folderDetails.First(), DateCreated = DateTime.Now.ToString(), Description = desc } });
+
+
         }
 
         /* Adds analysis file to the database, and links it correctly to a speaker Age group. */
@@ -74,6 +87,7 @@ namespace P4PSpeechDB
             List<Tuple<string, byte[]>> dataList = new List<Tuple<string, byte[]>>();
             string ext = "";
             string filename = "";
+            string desc = "";
 
             // Add all files selected into the the db. If multiple files added, project destination is the same.
             foreach (String file in dlg.FileNames)
@@ -109,7 +123,6 @@ namespace P4PSpeechDB
 
                         comm.CommandText = "INSERT INTO Analysis (AID, Description, FileData, FileType) VALUES(@AID, @Desc, @FileAsBlob, @FileType)";
                         comm.Parameters.AddWithValue("@AID", filename);
-                        string desc;
                         if (a.Desc.Equals(""))
                         {
                             desc = "No description";
@@ -124,9 +137,6 @@ namespace P4PSpeechDB
                         comm.Parameters.AddWithValue("@FileType", "." + ext);
 
                         db.insertIntoDB(comm);
-
-                        //Update views
-                        mainWindowVM.Analysis.Add(new AnalysisViewModel { Analysis = new Analysis { AID = filename, Description = desc, FileType = "." + ext } });
 
                     }
 
@@ -159,6 +169,8 @@ namespace P4PSpeechDB
                         }
                     }
                 }
+                //Update views
+                mainWindowVM.Analysis.Add(new AnalysisViewModel { Analysis = new Analysis { AID = filename, Description = desc, FileType = "." + ext } });
             }
         }
 
@@ -174,7 +186,6 @@ namespace P4PSpeechDB
         private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, List<string> folderDetails, byte[] rawData)
         {
             string speaker = Path.GetFileNameWithoutExtension(dlg.SafeFileName);
-            System.Console.WriteLine(speaker);
             if (!(speaker.Length < 4))
             {
                 speaker = speaker.Substring(0, 4);
@@ -221,9 +232,6 @@ namespace P4PSpeechDB
 
                     }
                     db.insertIntoDB(comm);
-
-                    //Update views
-                    mainWindowVM.Projects.Add(new ProjectViewModel { Project = new Project { PID = folderDetails.First(), DateCreated = DateTime.Now.ToString(), Description = desc } });
 
                 }
 

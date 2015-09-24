@@ -306,7 +306,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                             <Setter Property="Foreground" Value="#565051" />
                         </Trigger>
                     </Style.Triggers>
-                    <EventSetter Event="UIElement.GotFocus" Handler="dataGridProjects_GotCellFocus"/>
+                    <!--<EventSetter Event="UIElement.GotFocus" Handler="dataGridProjects_GotCellFocus"/>-->
                 </Style>
             </DataGrid.RowStyle>
 
@@ -326,7 +326,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
 
         </DataGrid>
 
-        <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="378,239,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="speakerCombo_SelectionChanged" SelectedValuePath="Content">
+        <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="378,239,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Path=SortSpeakers}"
+           SelectedItem="{Binding Path=SortValue, Mode=TwoWay}">
             <ComboBoxItem Name="Speaker">Speaker</ComboBoxItem>
             <ComboBoxItem Name="FileType">File Type</ComboBoxItem>
             <ComboBoxItem Name="Age">Age</ComboBoxItem>

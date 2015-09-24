@@ -700,6 +700,16 @@ namespace P4PSpeechDB
             ComboBoxItem typeItem = (ComboBoxItem)cmb.SelectedItem;
 
             groupValue = typeItem.Name.ToString();
+            //Open the project folder in explorer
+            switch (groupValue)
+            {
+                case "Speaker":
+                    break;
+                case "FileType":
+                    break;
+                case "Age":
+                    break;
+            }
             //buildDatagridGroups(new ListCollectionView(rowS));
         }
 

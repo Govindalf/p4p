@@ -47,6 +47,10 @@ namespace P4PSpeechDB
         public Boolean IsExpanded { get; set; }
         private string groupValue = "Speaker"; //Default grouping on this value
 
+
+        MoaCore moa;
+        MainWindowViewModel vm;
+
         public MainWindow()
         {
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnApplicationExit);
@@ -64,6 +68,9 @@ namespace P4PSpeechDB
             //buildDatagridGroups(new ListCollectionView(rowS));
 
             //dataGridProjects.ItemsSource = projects;
+
+            vm = (MainWindowViewModel)this.DataContext;
+            
 
         }
 
@@ -151,8 +158,8 @@ namespace P4PSpeechDB
             }
 
 
-            dataGridFiles.ItemsSource = collection;
-            dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
+            dataGridSpeakers.ItemsSource = collection;
+            dataGridSpeakers.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
         }
 
 
@@ -698,7 +705,7 @@ namespace P4PSpeechDB
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Project pr = dataGridProjects.SelectedValue as Project;
+            ProjectViewModel pr = dataGridProjects.SelectedValue as ProjectViewModel;
             MenuItem mi = sender as MenuItem;
 
 
@@ -713,117 +720,14 @@ namespace P4PSpeechDB
                     Process.Start("explorer.exe", parentDir + @"\testOutput\" + pr.PID);
                     break;
 
-                case "menuRemoveLocal":
-                    break;
-
-                case "menuRemoveDB":
-                    break;
-
                 case "menuDownload":
-                    downloadProject(parentDir + @"\testOutput\", pr.PID);
+                    vm.downloadProject(this, parentDir + @"\testOutput\", pr.PID);
                     break;
             }
         }
 
 
-        /* Downloads a selected project on a background thread. */
-        private void backgroundWorker_DoWork(
-            object sender,
-            DoWorkEventArgs e)
-        {
-            string[] parameters = e.Argument as string[];
-            string PID = parameters[1];
-            string path = parameters[0];
-
-            this.Dispatcher.Invoke((Action)(() =>
-            {
-                prog.Show();
-            }));
-
-
-            byte[] rawData;
-            FileStream fs;
-            string filePath = "";
-
-            /* Get file data for every file in project and save it in the correct folder structure. */
-            using (DBConnection db = new DBConnection())
-            {
-                var cmd = new MySqlCommand();
-                cmd.CommandText = "SELECT f.Name, f.Speaker, f.FileType, fd.FileData FROM FileData fd INNER JOIN File f ON f.FID = fd.FID WHERE f.PID = @PID";
-                cmd.Parameters.AddWithValue("@PID", PID);
-
-                var table = db.getFromDB(cmd);
-                foreach (DataRow dr in table.Rows)
-                {
-
-                    rawData = (byte[])dr["FileData"];
-
-                    Directory.CreateDirectory(path + PID + @"\" + dr["Speaker"].ToString());
-                    fs = new FileStream(path + PID + @"\" + dr["Speaker"].ToString() + @"\" + dr["Name"].ToString() + dr["FileType"].ToString(), FileMode.OpenOrCreate, FileAccess.Write);
-
-                    filePath = fs.Name;
-
-                    //Fixed access denied error
-                    File.SetAttributes(filePath, FileAttributes.Normal);
-
-                    // Writes a block of bytes to this stream using data from
-                    // a byte array.
-                    fs.Write(rawData, 0, rawData.Length);
-
-                    // close file stream
-                    fs.Close();
-                }
-
-            }
-        }
-
-
-        /* Called when the background thread completes. */
-        private void backgroundWorker_RunWorkerCompleted(
-            object sender,
-            RunWorkerCompletedEventArgs e)
-        {
-            prog.Close();
-        }
-
-        /* Downloads projects on a different thread to UI thread, so user can do other tasks while downloading. */
-        private void downloadProject(string path, string PID)
-        {
-
-            BackgroundWorker backgroundWorker;
-
-            // Instantiate BackgroundWorker and attach handlers to its 
-            // DowWork and RunWorkerCompleted events.
-            backgroundWorker = new System.ComponentModel.BackgroundWorker();
-            backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(backgroundWorker_DoWork);
-            backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
-
-            string[] parameters = new string[] { path, PID };
-
-            prog = new ProgressBar();
-            // Start the download operation in the background. 
-            backgroundWorker.RunWorkerAsync(parameters);
-
-            // Once you have started the background thread you  
-            // can exit the handler and the application will  
-            // wait until the RunWorkerCompleted event is raised. 
-
-            // Or if you want to do something else in the main thread, 
-            // such as update a progress bar, you can do so in a loop  
-            // while checking IsBusy to see if the background task is 
-            // still running. 
-
-            while (backgroundWorker.IsBusy)
-            {
-
-                // Keep UI messages moving, so the form remains  
-                // responsive during the asynchronous operation.
-
-                Application.Current.Dispatcher.Invoke(DispatcherPriority.Background,
-                                                      new Action(delegate { }));
-            }
-        }
-
+        
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

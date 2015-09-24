@@ -89,6 +89,9 @@
       <DependentUpon>AnalysisMsgPrompt.xaml</DependentUpon>
     </Compile>
     <Compile Include="AnalysisViewModel.cs" />
+    <Compile Include="AudioWindow.xaml.cs">
+      <DependentUpon>AudioWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MoaCore.cs" />
     <Compile Include="SpeakerViewModel.cs" />
     <Compile Include="ProjectViewModel.cs" />
@@ -99,6 +102,10 @@
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="AnalysisMsgPrompt.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="AudioWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -193,6 +200,11 @@
       <Project>{9efe6cbd-df21-436e-9f81-e258bab0b653}</Project>
       <Name>MicroMvvm</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\pause.png" />
+    <Resource Include="Icons\play.png" />
+    <Resource Include="Icons\stop.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

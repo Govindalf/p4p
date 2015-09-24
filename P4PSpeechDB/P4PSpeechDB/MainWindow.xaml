@@ -10,6 +10,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         <local:MainWindowViewModel />
     </Window.DataContext>
     <Window.Resources>
+
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
 
             <Setter Property="Template">
@@ -55,9 +57,11 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         <MediaElement x:Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="433,307,0,0" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual"
               UnloadedBehavior="Stop" />
 
-        <DataGrid AutoGenerateColumns ="False" BorderBrush="Silver" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" Margin="246,275,0,0" x:Name="dataGridFiles"  
+
+        <DataGrid AutoGenerateColumns ="False" BorderBrush="Silver" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" Margin="246,275,0,0" x:Name="dataGridSpeakers"  
     		HorizontalAlignment="Left" Width="329" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
+
                ItemsSource="{Binding Path=SpeakersView}" SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
 
             <DataGrid.Columns>
@@ -84,8 +88,11 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                     </GroupStyle.Panel>
                 </GroupStyle>
             </DataGrid.GroupStyle>
-            
+
             <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding DoubleClickSpeaker}"/>
+                </i:EventTrigger>
                 <i:EventTrigger EventName="MouseLeftButtonUp">
                     <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
                     <Command:EventToCommand Command="{Binding SpeakerSelected}"/>
@@ -204,13 +211,15 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" 
                   Margin="575,275,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="344" 
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                  HeadersVisibility="Column" CanUserAddRows="False" BorderBrush="Silver" ItemsSource="{Binding Analysis}">
+
+                  HeadersVisibility="Column" CanUserAddRows="False" BorderBrush="Silver" ItemsSource="{Binding Analysis}" SelectedValue="{Binding SelectedAnalysis, Mode=TwoWay}">
+
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding AID}" Header="Analysis ID" Width="150" IsReadOnly="True" SortDirection="Ascending"/>
                 <DataGridTextColumn Binding="{Binding Description}" Header="Description" Width="*" IsReadOnly="True" />
             </DataGrid.Columns>
-            
+
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <Style.Triggers>
@@ -228,7 +237,11 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
 
             </DataGrid.RowStyle>
 
-
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding DoubleClickAnalysis}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
 
             <!--<DataGrid.GroupStyle>
                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
@@ -256,12 +269,10 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 </Style>-->
             </DataGrid.Resources>
             
+            
             <DataGrid.ContextMenu>
                 <ContextMenu >
                     <MenuItem x:Name="menuShow" Header="Show in explorer" Click="MenuItem_Click" />
-                    <MenuItem x:Name="menuRemoveLocal" Header="Remove local files"  Click="MenuItem_Click" />
-
-                    <MenuItem x:Name="menuRemoveDB" Header="Remove from database"  Click="MenuItem_Click" />
                     <MenuItem x:Name="menuDownload" Header="Download"  Click="MenuItem_Click" />
                 </ContextMenu>
             </DataGrid.ContextMenu>
@@ -299,9 +310,10 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 </Style>
             </DataGrid.RowStyle>
 
+
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonUp">
-                        <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
+                    <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
                     <Command:EventToCommand Command="{Binding ProjectSelected}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
@@ -323,8 +335,9 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         </ComboBox>
         <TextBlock HorizontalAlignment="Left" Margin="324,239,0,0" Foreground="#565051" TextWrapping="Wrap" Text="Group By" VerticalAlignment="Top"/>
 
-        <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Foreground="#565051" Margin="260,311,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"/>
-        <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Foreground="#565051" Margin="586,314,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236"/>
+        <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="269,259,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"  Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridSpeakers}" />
+        <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="578,259,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236" Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridAnalysis}"/>
+
 
         <StackPanel HorizontalAlignment="Left" Height="93" Margin="251,125,0,0" VerticalAlignment="Top" Width="659">
             <GroupBox Header="Description" VerticalAlignment="Top" FontSize="14" Height="93" BorderBrush="White" HorizontalAlignment="Left" Width="653" Foreground="#565051">

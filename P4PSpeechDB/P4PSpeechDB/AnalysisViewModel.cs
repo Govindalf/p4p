@@ -45,6 +45,19 @@ namespace P4PSpeechDB
             }
         }
 
+        public string FileData
+        {
+            get { return Analysis.FileData; }
+            set
+            {
+                if (Analysis.FileData != value)
+                {
+                    Analysis.FileData = value;
+                    RaisePropertyChanged("FileData");
+                }
+            }
+        }
+
         public string FileType
         {
             get { return Analysis.FileType; }

@@ -28,7 +28,6 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                                     <CheckBox MaxHeight="15" MaxWidth="15"/>
                                     <!--IsChecked="{Binding IsHeaderSelected}"-->
                                     <TextBlock Text="{Binding Name}" />
-                                    <!--<TextBlock Text="{Binding Path =ItemCount}" />-->
                                 </StackPanel>
                             </Expander.Header>
 

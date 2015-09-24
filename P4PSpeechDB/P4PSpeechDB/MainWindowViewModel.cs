@@ -53,20 +53,6 @@ namespace P4PSpeechDB
             }
         }
 
-        //#region INotifyPropertyChanged
-
-        //public event PropertyChangedEventHandler PropertyChanged;
-
-        //protected virtual void OnPropertyChanged(string propertyName)
-        //{
-        //    if (PropertyChanged != null)
-        //    {
-        //        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        //    }
-        //}
-
-        //#endregion INotifyPropertyChanged
-
         public ICommand GroupColumn
         {
             get
@@ -77,7 +63,6 @@ namespace P4PSpeechDB
                         {
 
                             string header = param as string;
-                            //System.Console.WriteLine(SpeakersView.CurrentItem);
                             SpeakersView.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
                             //SpeakersView.SortDescriptions.Add(new SortDescription("TargetProperty.Name", ListSortDirection.Ascending));
                         });
@@ -131,7 +116,10 @@ namespace P4PSpeechDB
         public ProjectViewModel SelectedProject
         {
             get { return selectedProject; }
-            set { selectedProject = value; RaisePropertyChanged("SelectedProject"); }
+            set
+            {
+                selectedProject = value; RaisePropertyChanged("SpeakersView");
+            }
         }
 
         void ProjectSelectedExecute()
@@ -143,10 +131,12 @@ namespace P4PSpeechDB
             speakers = dgl.getSpeakers(SelectedProject.PID);
 
             RaisePropertyChanged("SpeakersView");
-            //System.Console.WriteLine(this.Speakers[0].SpeakerName);
+            System.Console.WriteLine("Project Selected");
             speakersView = (ListCollectionView)CollectionViewSource.GetDefaultView(this.Speakers);
-            SpeakersView.GroupDescriptions.Add(new PropertyGroupDescription("SpeakerName"));
-            
+            // do this only once or reset the collectionView.
+            speakersView.GroupDescriptions.Add(new PropertyGroupDescription("SpeakerName"));
+            speakersView.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
+
         }
 
 

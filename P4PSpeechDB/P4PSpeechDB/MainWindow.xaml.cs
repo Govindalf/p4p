@@ -33,12 +33,7 @@ namespace P4PSpeechDB
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ObservableCollection<ProjectViewModel> projects; //DAtagrid row item
-        DataGridLoader dgl;
-        ProgressBar prog = null;
-
         public Boolean IsExpanded { get; set; }
-        MoaCore moa;
         MainWindowViewModel vm;
 
         public MainWindow()
@@ -52,7 +47,7 @@ namespace P4PSpeechDB
 
         }
 
-
+        /*When a combo box item is selected (for grouping datagrid).*/
         private void speakerCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox cmb = sender as ComboBox;
@@ -65,6 +60,7 @@ namespace P4PSpeechDB
             }
         }
 
+        /*Context menu when right clicking the projects grid item.*/
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             ProjectViewModel pr = dataGridProjects.SelectedValue as ProjectViewModel;

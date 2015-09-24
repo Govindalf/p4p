@@ -32,6 +32,7 @@ namespace P4PSpeechDB
         private AnalysisViewModel selectedAnalysis;
 
         private ICommand _groupColumn;
+        private bool isExpanded;
         ProgressBar prog = null;
 
         public MainWindowViewModel()
@@ -57,6 +58,12 @@ namespace P4PSpeechDB
                 speakersView = value;
                 RaisePropertyChanged("SpeakersView");
             }
+        }
+
+        public bool IsExpanded
+        {
+            get { return isExpanded; }
+            set { isExpanded = value; RaisePropertyChanged("IsExpanded"); }
         }
 
         public ICommand GroupColumn
@@ -119,7 +126,7 @@ namespace P4PSpeechDB
         #region Datagrid operations
 
         /*Runs when project selected in the projects datagrid.*/
-        public ICommand ProjectSelected { get { System.Console.WriteLine("4"); return new RelayCommand(ProjectSelectedExecute); } }
+        public ICommand ProjectSelected { get { return new RelayCommand(ProjectSelectedExecute); } }
         void ProjectSelectedExecute()
         {
 
@@ -142,7 +149,7 @@ namespace P4PSpeechDB
         /*The currently selected project object. */
         public ProjectViewModel SelectedProject
         {
-            get { System.Console.WriteLine("3"); return selectedProject; }
+            get { return selectedProject; }
             set
             {
                 selectedProject = value;
@@ -215,6 +222,15 @@ namespace P4PSpeechDB
 
         }
 
+        /*Sets up custom datagrid grouping when combo option selected. */
+        public void setGroupMode(string groupValue)
+        {
+            SpeakersView.GroupDescriptions.Clear();
+            SpeakersView.GroupDescriptions.Add(new PropertyGroupDescription(groupValue));
+
+            if (!groupValue.Equals("FileType"))
+                SpeakersView.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
+        }
 
         #endregion
 
@@ -286,7 +302,7 @@ namespace P4PSpeechDB
 
             return (Regex.IsMatch(obj.Name, searchText, RegexOptions.IgnoreCase));
 
-            
+
         }
         #endregion
 

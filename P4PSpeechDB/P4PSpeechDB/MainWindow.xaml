@@ -161,7 +161,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="   GFW Extraction"/>
                 </StackPanel>
             </Button>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Margin="10,10,0,0" Click="ButtonTemplate_Click">
+            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Margin="10,10,0,0" Command="{Binding GenerateTemplate}">
                 <StackPanel>
                     <Image Source="pack://application:,,,/Icons/templates.png"  Height="30"/>
                     <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Generate Template"/>

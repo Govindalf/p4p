@@ -40,6 +40,7 @@ namespace P4PSpeechDB
             //speak.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
         }
 
+        #region Members
         public CollectionView SpeakersView
         {
             get
@@ -109,6 +110,8 @@ namespace P4PSpeechDB
             }
         }
 
+        #endregion
+
         #region Datagrid operations
 
 
@@ -164,6 +167,7 @@ namespace P4PSpeechDB
         #endregion
 
         #region Database operations
+        /*On button click, add speech file. */
         public ICommand AddFiles { get { return new RelayCommand(AddFilesExecute); } }
 
         void AddFilesExecute()
@@ -171,11 +175,24 @@ namespace P4PSpeechDB
             moa.AddFiles();
         }
 
+        /*On button click, add analysis file. */
         public ICommand AddAnalysis { get { return new RelayCommand(AddAnalysisExecute); } }
 
         void AddAnalysisExecute()
         {
             moa.AddAnalysis();
+        }
+
+        #endregion
+
+        #region Other operations
+
+        /*On button click, create template file. */
+        public ICommand GenerateTemplate { get { return new RelayCommand(GenerateTemplateExecute); } }
+
+        void GenerateTemplateExecute()
+        {
+            moa.GenerateTemplate();
         }
 
         #endregion

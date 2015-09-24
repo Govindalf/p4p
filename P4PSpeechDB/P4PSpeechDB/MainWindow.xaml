@@ -269,12 +269,10 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 </Style>-->
             </DataGrid.Resources>
             
+            
             <DataGrid.ContextMenu>
                 <ContextMenu >
                     <MenuItem x:Name="menuShow" Header="Show in explorer" Click="MenuItem_Click" />
-                    <MenuItem x:Name="menuRemoveLocal" Header="Remove local files"  Click="MenuItem_Click" />
-
-                    <MenuItem x:Name="menuRemoveDB" Header="Remove from database"  Click="MenuItem_Click" />
                     <MenuItem x:Name="menuDownload" Header="Download"  Click="MenuItem_Click" />
                 </ContextMenu>
             </DataGrid.ContextMenu>

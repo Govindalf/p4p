@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace P4PSpeechDB
 {
@@ -29,7 +30,7 @@ namespace P4PSpeechDB
         private AnalysisViewModel selectedAnalysis;
 
         private ICommand _groupColumn;
-
+        ProgressBar prog = null;
 
         public MainWindowViewModel()
         {
@@ -177,7 +178,7 @@ namespace P4PSpeechDB
 
             try
             {
-                moa.openOrPlayFile(SelectedSpeaker);
+                moa.OpenOrPlayFile(SelectedSpeaker);
             }
             catch
             {
@@ -203,7 +204,7 @@ namespace P4PSpeechDB
 
             try
             {
-                moa.openOrPlayFile(SelectedAnalysis);
+                moa.OpenOrPlayFile(SelectedAnalysis);
             }
             catch
             {
@@ -243,6 +244,74 @@ namespace P4PSpeechDB
         }
 
         #endregion
+
+
+        /* Downloads a selected project on a background thread. */
+        private void backgroundWorker_DoWork(
+            object sender,
+            DoWorkEventArgs e)
+        {
+            object[] parameters = e.Argument as object[];
+            string PID = parameters[2] as string;
+            string path = parameters[1] as string;
+            MainWindow view = parameters[0] as MainWindow;
+
+            view.Dispatcher.Invoke((Action)(() =>
+            {
+                prog.Show();
+            }));
+
+            moa.DownloadProject(parameters);
+
+           
+        }
+
+
+        /* Called when the background thread completes. */
+        private void backgroundWorker_RunWorkerCompleted(
+            object sender,
+            RunWorkerCompletedEventArgs e)
+        {
+            prog.Close();
+        }
+
+        /* Downloads projects on a different thread to UI thread, so user can do other tasks while downloading. */
+        public void downloadProject(MainWindow view, string path, string PID)
+        {
+
+            BackgroundWorker backgroundWorker;
+
+            // Instantiate BackgroundWorker and attach handlers to its 
+            // DowWork and RunWorkerCompleted events.
+            backgroundWorker = new System.ComponentModel.BackgroundWorker();
+            backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(backgroundWorker_DoWork);
+            backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
+
+            object[] parameters = new object[] { view, path, PID };
+
+            prog = new ProgressBar();
+            // Start the download operation in the background. 
+            backgroundWorker.RunWorkerAsync(parameters);
+
+            // Once you have started the background thread you  
+            // can exit the handler and the application will  
+            // wait until the RunWorkerCompleted event is raised. 
+
+            // Or if you want to do something else in the main thread, 
+            // such as update a progress bar, you can do so in a loop  
+            // while checking IsBusy to see if the background task is 
+            // still running. 
+
+            while (backgroundWorker.IsBusy)
+            {
+
+                // Keep UI messages moving, so the form remains  
+                // responsive during the asynchronous operation.
+
+                Application.Current.Dispatcher.Invoke(DispatcherPriority.Background,
+                                                      new Action(delegate { }));
+            }
+        }
         //public ICommand ProjectSelected { get { return new RelayCommand<object>((s) => ProjectSelectedExecute(s)); } }
     }
 }

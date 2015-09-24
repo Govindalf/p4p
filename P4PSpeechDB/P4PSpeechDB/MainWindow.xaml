@@ -4,7 +4,7 @@
 xmlns:Command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
 xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:P4PSpeechDB"
-        Title="EMU 2.0" Height="670" Width="900" Background="Gainsboro">
+        Title="Moa" Height="670" Width="920" Background="White" MaxWidth="920" MaxHeight="670">
 
     <Window.DataContext>
         <local:MainWindowViewModel />
@@ -24,6 +24,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                                 <StackPanel Orientation="Horizontal">
                                     <StackPanel.Resources>
                                         <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Foreground" Value="#565051" />
                                             <Setter Property="Margin" Value="5,0,0,0"/>
                                         </Style>
                                     </StackPanel.Resources>
@@ -57,9 +58,10 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
               UnloadedBehavior="Stop" />
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" Margin="251,228,0,0" x:Name="dataGridSpeakers"  
-    		HorizontalAlignment="Left" Width="300" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-            ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
+        <DataGrid AutoGenerateColumns ="False" BorderBrush="Silver" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" Margin="246,275,0,0" x:Name="dataGridSpeakers"  
+    		HorizontalAlignment="Left" Width="329" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
+
                ItemsSource="{Binding Path=SpeakersView}" SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
 
             <DataGrid.Columns>
@@ -67,13 +69,16 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 <DataGridTextColumn Binding="{Binding FileType}" Header="FileType" Width="*" IsReadOnly="True" />
             </DataGrid.Columns>
 
-            <!--<DataGrid.RowStyle>
+            <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
-                    <EventSetter Event="Control.MouseDoubleClick" Handler="resultDataGrid_MouseDoubleClick"/>
-                    <EventSetter Event="UIElement.GotFocus" Handler="dataGridFiles_GotCellFocus"/>
-                </Style>-->
+                    <Setter Property="Foreground" Value="#565051" />
 
-            <!--</DataGrid.RowStyle>-->
+                    <!--<EventSetter Event="Control.MouseDoubleClick" Handler="resultDataGrid_MouseDoubleClick"/>
+                    <EventSetter Event="UIElement.GotFocus" Handler="dataGridFiles_GotCellFocus"/>-->
+                </Style>
+
+            </DataGrid.RowStyle>
+            
             <DataGrid.GroupStyle>
                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
                     <GroupStyle.Panel>
@@ -106,8 +111,9 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
 
         </DataGrid>
 
-        <TextBox x:Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="251,161,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="300" FontStyle="Italic" Foreground="LightGray" KeyDown="TextBox_KeyDown" Background="WhiteSmoke">
-
+        <TextBox x:Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="641,239,0,0" TextWrapping="Wrap" 
+                 VerticalAlignment="Top" Width="244" FontStyle="Italic" Foreground="LightGray" KeyDown="TextBox_KeyDown" Background="WhiteSmoke">
+            
             <TextBox.Style>
                 <Style xmlns:sys="clr-namespace:System;assembly=mscorlib" TargetType="{x:Type TextBox}">
                     <Style.Resources>
@@ -125,77 +131,89 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                             <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter Property="Background" Value="White" />
+                            <Setter Property="Background" Value="Black" />
                         </Trigger>
                     </Style.Triggers>
                 </Style>
             </TextBox.Style>
         </TextBox>
         <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="655,332,-85,0" VerticalAlignment="Top" Width="330" Click="loadAllButton_Click"/>
-        <StackPanel Orientation ="Horizontal" HorizontalAlignment="Left" Height="90" Margin="10,34,0,0" VerticalAlignment="Top" Width="226" Background="AliceBlue">
+        <Grid HorizontalAlignment="Left" Height="91" Margin="0,29,0,0" VerticalAlignment="Top" Width="920">
+            <Border BorderThickness="1" BorderBrush="WhiteSmoke">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="89" VerticalAlignment="Top" Width="920" Background="WhiteSmoke" Margin="-1.8,0.2,-0.2,-1.8">
+                    <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="#6890E7" VerticalAlignment="Top" Width="90" Height="70" Click="ButtonConfig_Click" BorderBrush="#6890E7">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/settings2.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Path Settings" Foreground="White"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="Gray" VerticalAlignment="Top" Width="90" Height="70" BorderBrush="Gray" Click="ButtonAddFolder_Click">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/folder_add_blue.png"  Height="30"/>
+                            <TextBlock Foreground="White" FontSize="12" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Folder(s)"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="#3CA295" Background="#3CA295" Width="90" Height="70" 
+                            Command="{Binding AddFiles}" Click="ButtonBrowse_Click" Margin="10,10,0,0">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/document_add.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" Foreground="White" TextWrapping="Wrap" Margin="0, 5" Text="Add File(s)"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="#FF8040" Background="#FF8040" Width="90" Height="70" Click="ButtonDelete_Click" Margin="10,10,0,0">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/document_delete.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" Foreground="White" TextWrapping="Wrap" Margin="0, 5" Text="Delete File(s)"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="#6890E7" Background="#6890E7" Width="90" Height="70" Margin="10,10,0,0">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/wform.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" Foreground="White" TextWrapping="Wrap" Margin="0, 5" Text="   GFW Extraction"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" BorderBrush="Gray" Background="Gray" Width="90" Height="70" Margin="10,10,0,0" 
+                            Command="{Binding GenerateTemplate}">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/templates.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Generate Template"/>
+                        </StackPanel>
+                    </Button>
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" BorderBrush="#3CA295" Background="#3CA295" Height="70" Width="90" Margin="10,10,0,0" Click="ButtonWebMaus_Click">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/label.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="WebMaus"/>
+                        </StackPanel>
+                    </Button>
+                    <Button BorderBrush="#FF8040" Background="#FF8040" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top"  
+                            Command="{Binding AddAnalysis}" Height="70" Width="90" Margin="10,10,0,0">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/add_analysis.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Analysis"/>
+                        </StackPanel>
+                    </Button>
+                    <!--<Button BorderBrush="#6890E7" Background="#6890E7" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top"  Click="Button_Click_1" Height="70" Width="90" Margin="10,10,0,0">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Icons/close.png"  Height="30"/>
+                            <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Stop Audio"/>
+                        </StackPanel>
+                    </Button>-->
 
-            <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="Transparent" VerticalAlignment="Top" Width="80" Height="70" Command="{Binding Config}" BorderBrush="Transparent">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/settings2.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Settings"/>
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="Transparent" VerticalAlignment="Top" Width="80" Height="70" BorderBrush="Transparent">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/folder_add_blue.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Folder(s)"/>
-                </StackPanel>
-            </Button>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="90" Margin="269,34,40,0" VerticalAlignment="Top" Width="591" Background="LightSteelBlue">
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70"  Command="{Binding AddFiles}" Margin="10,10,0,0">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/document_add.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add File(s)"/>
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Click="ButtonDelete_Click" Margin="10,10,0,0">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/document_delete.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Delete File(s)"/>
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Margin="10,10,0,0">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/wform.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="   GFW Extraction"/>
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Width="80" Height="70" Margin="10,10,0,0" Command="{Binding GenerateTemplate}">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/templates.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Generate Template"/>
-                </StackPanel>
-            </Button>
-            <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/label.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="WebMaus"/>
-                </StackPanel>
-            </Button>
-            <Button BorderBrush="Transparent" Background="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top"  Command="{Binding AddAnalysis}" Height="70" Width="80" Margin="10,10,0,0">
-                <StackPanel>
-                    <Image Source="pack://application:,,,/Icons/add_analysis.png"  Height="30"/>
-                    <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Analysis"/>
-                </StackPanel>
-            </Button>
+                    <!--<Button Visibility="Hidden" Content="Stop Audio" HorizontalAlignment="Center" VerticalAlignment="Top"  BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="Button_Click_1"/>-->
 
+                </StackPanel>
+            </Border>
+        </Grid>
 
-            <Button Visibility="Hidden" Content="Stop Audio" HorizontalAlignment="Center" VerticalAlignment="Top"  BorderBrush="Transparent" Background="Transparent" Height="70" Width="80" Margin="10,10,0,0" Click="Button_Click_1"/>
-
-        </StackPanel>
-        <ComboBox HorizontalAlignment="Left" Margin="739,192,0,0" VerticalAlignment="Top" Width="120"/>
+        <!--<ComboBox HorizontalAlignment="Left" Margin="739,192,0,0" VerticalAlignment="Top" Width="120"/>-->
         <TextBlock HorizontalAlignment="Left" Margin="696,192,0,0" TextWrapping="Wrap" Text="Sort By" VerticalAlignment="Top"/>
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" 
-                  Margin="560,228,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="300" 
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" 
+                  Margin="575,275,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="344" 
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                  HeadersVisibility="Column" CanUserAddRows="False" ItemsSource="{Binding Analysis}" SelectedValue="{Binding SelectedAnalysis, Mode=TwoWay}">
+
+                  HeadersVisibility="Column" CanUserAddRows="False" BorderBrush="Silver" ItemsSource="{Binding Analysis}" SelectedValue="{Binding SelectedAnalysis, Mode=TwoWay}">
+
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding AID}" Header="Analysis ID" Width="150" IsReadOnly="True" SortDirection="Ascending"/>
@@ -204,6 +222,16 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
 
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
+                    <Style.Triggers>
+                        <Trigger Property="AlternationIndex" Value="0">
+                            <Setter Property="Foreground" Value="#565051" />
+                            <Setter Property="Background" Value="White" />
+                        </Trigger>
+                        <Trigger Property="AlternationIndex" Value="1">
+                            <Setter Property="Foreground" Value="#565051" />
+                            <Setter Property="Background" Value="WhiteSmoke" />
+                        </Trigger>
+                    </Style.Triggers>
                     <EventSetter Event="Control.MouseDoubleClick" Handler="analysisDataGrid_MouseDoubleClick"/>
                 </Style>
 
@@ -227,15 +255,20 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         </DataGrid>
 
 
-
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="371" Margin="10,197,0,0" 
-                  Name="dataGridProjects" HorizontalAlignment="Left" Width="226" 
+        <DataGrid AutoGenerateColumns ="False" GridLinesVisibility="None" Margin="0,119,0,19" 
+                  x:Name="dataGridProjects" HorizontalAlignment="Left" Width="246" 
                   HeadersVisibility="Column" CanUserAddRows="False" IsSynchronizedWithCurrentItem="False"
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" BorderBrush="Silver" AlternationCount="2"
                   ItemsSource="{Binding Projects}" SelectedValue="{Binding SelectedProject, Mode=TwoWay}" >
-            <!---->
-
+            
+            <DataGrid.Resources>
+                <!--<Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background" Value="#BF4C5B"/>
+                    <Setter Property="Foreground" Value="WhiteSmoke"/>
+                </Style>-->
+            </DataGrid.Resources>
+            
             <DataGrid.ContextMenu>
                 <ContextMenu >
                     <MenuItem x:Name="menuShow" Header="Show in explorer" Click="MenuItem_Click" />
@@ -259,6 +292,26 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 </MouseBinding>
             </DataGrid.InputBindings>-->
 
+            <DataGrid.RowStyle>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Style.Triggers>
+                        <Trigger Property="AlternationIndex" Value="0">
+                            <Setter Property="Background" Value="White" />
+                            <Setter Property="Height" Value="30" />
+                            <Setter Property="FontSize" Value="14" />
+                            <Setter Property="Foreground" Value="#565051" />
+                        </Trigger>
+                        <Trigger Property="AlternationIndex" Value="1">
+                            <Setter Property="Background" Value="WhiteSmoke" />
+                            <Setter Property="Height" Value="30" />
+                            <Setter Property="FontSize" Value="14" />
+                            <Setter Property="Foreground" Value="#565051" />
+                        </Trigger>
+                    </Style.Triggers>
+                    <EventSetter Event="UIElement.GotFocus" Handler="dataGridProjects_GotCellFocus"/>
+                </Style>
+            </DataGrid.RowStyle>
+
 
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonUp">
@@ -266,12 +319,6 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                     <Command:EventToCommand Command="{Binding ProjectSelected}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-
-            <!--<i:Interaction.Triggers>
-                <i:EventTrigger EventName="OnFocus">
-                    <Command:EventToCommand Command="{Binding Path=DataContext.ProjectSelected, ElementName=dataGridProjects}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>-->
 
             <!--<DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
@@ -281,17 +328,24 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
 
         </DataGrid>
 
-        <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="431,192,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="speakerCombo_SelectionChanged" SelectedValuePath="Content">
+        <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="378,239,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="speakerCombo_SelectionChanged" SelectedValuePath="Content">
             <ComboBoxItem Name="Speaker">Speaker</ComboBoxItem>
-            <ComboBoxItem Name="tableName">File Type</ComboBoxItem>
+            <ComboBoxItem Name="FileType">File Type</ComboBoxItem>
             <ComboBoxItem Name="Age">Age</ComboBoxItem>
 
         </ComboBox>
-        <TextBlock HorizontalAlignment="Left" Margin="377,192,0,0" TextWrapping="Wrap" Text="Group By" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="324,239,0,0" Foreground="#565051" TextWrapping="Wrap" Text="Group By" VerticalAlignment="Top"/>
 
         <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="269,259,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"  Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridSpeakers}" />
         <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="578,259,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236" Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridAnalysis}"/>
 
+
+        <StackPanel HorizontalAlignment="Left" Height="93" Margin="251,125,0,0" VerticalAlignment="Top" Width="659">
+            <GroupBox Header="Description" VerticalAlignment="Top" FontSize="14" Height="93" BorderBrush="White" HorizontalAlignment="Left" Width="653" Foreground="#565051">
+                <TextBlock x:Name="descTextBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="52" Width="623" Background="WhiteSmoke"/>
+            </GroupBox>
+        </StackPanel>
+        <TextBlock HorizontalAlignment="Left" Margin="586,239,0,0" Foreground="#565051" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" RenderTransformOrigin="0.51,-1.5"/>
 
     </Grid>
 

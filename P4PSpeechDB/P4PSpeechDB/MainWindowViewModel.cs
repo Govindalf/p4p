@@ -35,7 +35,6 @@ namespace P4PSpeechDB
         {
             moa = new MoaCore(this, dgl);
             projects = dgl.getProjects();
-            System.Console.WriteLine("1");
             speakersView = (ListCollectionView)CollectionViewSource.GetDefaultView(this.Speakers);
             //cv.GroupDescriptions.Add(new PropertyGroupDescription("Speakers.Name"));
             //.ItemsSource = cv;
@@ -79,7 +78,6 @@ namespace P4PSpeechDB
         {
             get
             {
-                System.Console.WriteLine("2");
                 return projects;
             }
             set
@@ -152,7 +150,7 @@ namespace P4PSpeechDB
         /*The currently selected datagrid speaker item. */
         public SpeakerViewModel SelectedSpeaker
         {
-            get { System.Console.WriteLine("s1"); return selectedSpeaker; }
+            get { return selectedSpeaker; }
             set { selectedSpeaker = value; RaisePropertyChanged("SelectedSpeaker"); }
         }
 

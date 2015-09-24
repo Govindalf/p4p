@@ -930,6 +930,16 @@ namespace P4PSpeechDB
             testDBRoot = dialog.SelectedPath;
         }
 
+        private void ButtonAddFolder_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ButtonWebMaus_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
     }
 }
 

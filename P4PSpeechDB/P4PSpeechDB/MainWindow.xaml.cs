@@ -41,7 +41,7 @@ namespace P4PSpeechDB
         MySqlConnection myConn = null;
         private ObservableCollection<Row> rowS; //DAtagrid row item
         private ObservableCollection<Row> rowA; //DAtagrid row item
-        private ObservableCollection<Row> rowP; //DAtagrid row item
+        private ObservableCollection<ProjectViewModel> projects; //DAtagrid row item
         DataGridLoader dgl;
         ProgressBar prog = null;
 
@@ -55,23 +55,18 @@ namespace P4PSpeechDB
 
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnApplicationExit);
 
-            this.DataContext = this;
+            //IsExpanded = false;
+            //this.DataContext = this;
 
             //Loads all datagrid with relevant data
-            dgl = new DataGridLoader();
-            dgl.setUpDataGrids();
-            rowS = dgl.getCollection("S");
-            rowP = dgl.getCollection("P");
 
             InitializeComponent();
             WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-            this.speakerCombo.Text = groupValue;
+            //this.speakerCombo.Text = groupValue;
 
-            //randomlyMatchAnalysis();
+            //buildDatagridGroups(new ListCollectionView(rowS));
 
-            buildDatagridGroups(new ListCollectionView(rowS));
-
-            dataGridProjects.ItemsSource = rowP;
+            //dataGridProjects.ItemsSource = projects;
 
         }
 
@@ -225,13 +220,15 @@ namespace P4PSpeechDB
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as ProjectRow;
+                var item = dgr.DataContext as Project;
 
                 if (item != null)
                 {
-                    projectSelectedName = item.PID.ToString();
-                    dgl.loadSpeakers(projectSelectedName);
-                    rowS = dgl.getCollection("S");
+
+                    string projectName = item.PID.ToString();
+                    dgl.loadSpeakers(projectName);
+                    //rowS = dgl.getCollection("S");
+
 
                     buildDatagridGroups(new ListCollectionView(rowS));
                 }
@@ -266,7 +263,7 @@ namespace P4PSpeechDB
             if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as SpeakerRow;
+                var item = dgr.DataContext as Speaker;
 
 
                 if (item != null)
@@ -286,7 +283,7 @@ namespace P4PSpeechDB
             if (sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as AnalysisRow;
+                var item = dgr.DataContext as Analysis;
 
 
                 if (item != null)
@@ -334,7 +331,7 @@ namespace P4PSpeechDB
             if (sender != null)
             {
                 DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as SpeakerRow;
+                var item = dgr.DataContext as Speaker;
 
                 if (item != null)
                 {
@@ -344,10 +341,11 @@ namespace P4PSpeechDB
 
 
                     //Check if file exists locally, if not open from db
-                    if (File.Exists(testDBRoot + "\\" + projectName + "\\" + item.Speaker + "\\" + fileName + "." + fileType))
+
+                    if (File.Exists("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.SpeakerName + "\\" + fileName + "." + fileType))
                     {
-                        openOrPlayLocalFile(testDBRoot + "\\" + projectName + "\\" + item.Speaker + "\\" + fileName + "." + fileType);
-                    }
+                        openOrPlayLocalFile("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.SpeakerName + "\\" + fileName + "." + fileType);
+    }
                     else
                     {
 
@@ -372,7 +370,7 @@ namespace P4PSpeechDB
         }
 
         /*Downlaods and opens the file selected, or plays it if its a .wav(audio) */
-        private void openOrPlayFile(MySqlCommand cmd, string fileName, string fileType, string projectName, Row row)
+        private void openOrPlayFile(MySqlCommand cmd, string fileName, string fileType, string projectName, Object row)
         {
             using (DBConnection db = new DBConnection())
             {
@@ -382,16 +380,17 @@ namespace P4PSpeechDB
                 string filePath = "";
 
                 //Checks for the file type (speaker or analysis) and then puts it in the correct folder location
-                if (row is AnalysisRow)
+                if (row is Analysis)
                 {
                     Directory.CreateDirectory(testDBRoot + "\\ANALYSIS");
                     fs = new FileStream(testDBRoot + "\\ANALYSIS\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
                 }
                 else
                 {
-                    Directory.CreateDirectory(testDBRoot + @"\" + projectName + "\\" + ((SpeakerRow)row).Speaker);
-                    fs = new FileStream(testDBRoot + @"\" + projectName + "\\" + ((SpeakerRow)row).Speaker + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
-                }
+
+                    Directory.CreateDirectory(@"..\..\..\..\testOutput\" + projectName + "\\" + ((Speaker)row).SpeakerName);
+                    fs = new FileStream(@"..\..\..\..\testOutput\" + projectName + "\\" + ((Speaker)row).SpeakerName + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
+ }
 
                 var table = db.getFromDB(cmd);
                 foreach (DataRow dr in table.Rows)
@@ -603,7 +602,7 @@ namespace P4PSpeechDB
         //Regex filter
         private void searchFilter(object sender, FilterEventArgs e)
         {
-            var obj = e.Item as SpeakerRow;
+            var obj = e.Item as Speaker;
             if (obj != null)
             {
                 if (Regex.IsMatch(obj.Name, searchBox.Text, RegexOptions.IgnoreCase))
@@ -624,7 +623,7 @@ namespace P4PSpeechDB
             //Delete each selected file and its related records
             foreach (var item in listOfItems)
             {
-                var speakerID = (item as SpeakerRow).ID;
+                var speakerID = (item as Speaker).ID;
 
                 using (DBConnection db = new DBConnection())
                 {
@@ -647,7 +646,7 @@ namespace P4PSpeechDB
             }
 
             //Reload grid (DOES SAVE EXPANSION STATE)
-            dgl.loadSpeakers((listOfItems[1] as SpeakerRow).PID);
+            dgl.loadSpeakers((listOfItems[1] as Speaker).PID);
             dataGridFiles.ItemsSource = new ListCollectionView(dgl.getCollection("S"));
             buildDatagridGroups(new ListCollectionView(dgl.getCollection("S")));
 
@@ -758,7 +757,7 @@ namespace P4PSpeechDB
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ProjectRow pr = dataGridProjects.SelectedValue as ProjectRow;
+            Project pr = dataGridProjects.SelectedValue as Project;
             MenuItem mi = sender as MenuItem;
 
 
@@ -911,7 +910,7 @@ namespace P4PSpeechDB
                 }
             }
 
-            AnalysisMsgPrompt a = new AnalysisMsgPrompt(dgl, rowP);
+            AnalysisMsgPrompt a = new AnalysisMsgPrompt(new DataGridLoader(), null);
 
 
 
@@ -921,8 +920,10 @@ namespace P4PSpeechDB
                 rowS = dgl.getCollection("S");
                 foreach (var elem in rowS.ToList())
                 {
-                    ((dynamic)rowS).Add((SpeakerRow)elem);
+
+                    ((dynamic)rowS).Add((Speaker)elem);
                 }
+
 
                 foreach (var dataItem in dataList)
                 {
@@ -941,46 +942,74 @@ namespace P4PSpeechDB
                         else
                         {
 
-                            comm.Parameters.AddWithValue("@Desc", a.Desc);
-                        }
-                        comm.Parameters.AddWithValue("@FileAsBlob", dataItem.Item2);
-                        comm.Parameters.AddWithValue("@FileType", "." + ext);
+                            //Add to analysis table
+                            comm.CommandText = "create table if not exists analysis (AID varchar(150) primary key, File mediumblob, Description varchar(500))";
+                            comm.ExecuteNonQuery();
 
-                        db.insertIntoDB(comm);
-                    }
-                    //Add to the mapping table(to link with speaker)
-                    List<Row> startsWithAge = rowS.Where(s => ((SpeakerRow)s).Speaker.StartsWith(a.Age)).ToList();
-
-
-                    HashSet<Tuple<String, String>> uniqueAnalysis = new HashSet<Tuple<String, String>>();
-                    HashSet<Tuple<String, String>> uniqueRowName = new HashSet<Tuple<String, String>>();
-                    string previous = "";
-                    foreach (var row in rowS)
-                    {
-                        if (!((SpeakerRow)row).Name.Equals(previous))
-                        {
-                            previous = ((SpeakerRow)row).Name;
-                            uniqueAnalysis.Add(Tuple.Create(((SpeakerRow)row).Name, ((SpeakerRow)row).ID));
-                        }
-                    }
-                    foreach (var uRow in uniqueAnalysis)
-                    {
-                        if ((uRow.Item1.StartsWith(a.Age)))
-                        {
-                            using (DBConnection db = new DBConnection())
+                            comm.CommandText = "INSERT INTO analysis (AID, File, Description) VALUES(@AID, @FileAsBlob, @Desc)";
+                            comm.Parameters.AddWithValue("@AID", dataItem.Item1);
+                            comm.Parameters.AddWithValue("@FileAsBlob", dataItem.Item2);
+                            if (a.Desc.Equals(""))
+                            {
+                                comm.Parameters.AddWithValue("@Desc", "No description");
+                            }
+                            else
                             {
 
-                                comm.CommandText = "INSERT IGNORE INTO File2Analysis (File_FID, Analysis_AID) VALUES (@FileID, @AID)";
+                                comm.Parameters.AddWithValue("@Desc", a.Desc);
+                            }
+                            comm.ExecuteNonQuery();
+
+                            //Add to the mapping table(to link with speaker)
+                            List<Row> startsWithAge = rowS.Where(s => ((Speaker)s).SpeakerName.StartsWith(a.Age)).ToList();
+
+                            MessageBox.Show(a.Age);
+                            foreach (var row in rowS)
+                            {
+
+                                //comm.CommandText = "create table if not exists files2analysis (AID varchar(150) primary key, ID varchar(150) primary key)";
+                                //comm.ExecuteNonQuery();
+                                if (((Speaker)row).SpeakerName.StartsWith(a.Age))
+                                {
+
+                                    db.insertIntoDB(comm);
+                                }
+
+
+                                comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID2, @AID2)";
                                 comm.Parameters.Clear();
-                                comm.Parameters.AddWithValue("@FileID", uRow.Item2);
-                                comm.Parameters.AddWithValue("@AID", filename);
-                                db.insertIntoDB(comm);
+                                comm.Parameters.AddWithValue("@ID2", ((Speaker)row).ID);
+                                comm.Parameters.AddWithValue("@AID2", dataItem.Item1);
+                                comm.ExecuteNonQuery();
+                            }
+
+
+                            HashSet<Tuple<String, String>> uniqueAnalysis = new HashSet<Tuple<String, String>>();
+                            HashSet<Tuple<String, String>> uniqueRowName = new HashSet<Tuple<String, String>>();
+                            string previous = "";
+                            foreach (var row in rowS)
+                            {
+                                if (!((Speaker)row).Name.Equals(previous))
+                                {
+                                    previous = ((Speaker)row).Name;
+                                    uniqueAnalysis.Add(Tuple.Create(((Speaker)row).Name, ((Speaker)row).ID));
+                                }
+                            }
+                            foreach (var uRow in uniqueAnalysis)
+                            {
+                                if ((uRow.Item1.StartsWith(a.Age)))
+                                {
+                                    comm.CommandText = "INSERT IGNORE INTO File2Analysis (File_FID, Analysis_AID) VALUES (@FileID, @AID)";
+                                    comm.Parameters.Clear();
+                                    comm.Parameters.AddWithValue("@FileID", uRow.Item2);
+                                    comm.Parameters.AddWithValue("@AID", filename);
+                                    db.insertIntoDB(comm);
+                                }
                             }
                         }
                     }
                 }
             }
-
 
         }
 

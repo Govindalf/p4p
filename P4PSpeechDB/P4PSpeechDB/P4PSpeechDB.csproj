@@ -35,6 +35,22 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GalaSoft.MvvmLight, Version=5.2.0.37222, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.2.0.0\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.2.0.37222, Culture=neutral, PublicKeyToken=669f0b5e8f868abf, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.2.0.0\lib\net45\GalaSoft.MvvmLight.Extras.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.2.0.37226, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.2.0.0\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MySql.Data, Version=6.9.6.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\MySQL\Connector.NET 6.9\Assemblies\v4.5\MySql.Data.dll</HintPath>
@@ -47,6 +63,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.2.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -64,15 +84,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Analysis.cs" />
     <Compile Include="AnalysisMsgPrompt.xaml.cs">
       <DependentUpon>AnalysisMsgPrompt.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AnalysisViewModel.cs" />
+    <Compile Include="AudioWindow.xaml.cs">
+      <DependentUpon>AudioWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SpeakerViewModel.cs" />
+    <Compile Include="ProjectViewModel.cs" />
+    <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Progressbar.xaml.cs">
       <DependentUpon>Progressbar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Audio.xaml.cs">
-      <DependentUpon>Audio.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="AnalysisMsgPrompt.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -94,11 +121,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataGridLoader.cs" />
-    <Compile Include="AnalysisRow.cs" />
-    <Compile Include="ProjectRow.cs" />
+    <Compile Include="Project.cs" />
     <Compile Include="DBConnection.cs" />
     <Compile Include="Row.cs" />
-    <Compile Include="SpeakerRow.cs" />
+    <Compile Include="Speaker.cs" />
     <Compile Include="FolderMsgPrompt.xaml.cs">
       <DependentUpon>FolderMsgPrompt.xaml</DependentUpon>
     </Compile>
@@ -113,7 +139,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Audio.xaml">
+    <Page Include="AudioWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -136,6 +162,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -174,6 +201,10 @@
     <Resource Include="Icons\pause.png" />
     <Resource Include="Icons\play.png" />
     <Resource Include="Icons\stop.png" />
+    <ProjectReference Include="..\..\MicroMvvm\MicroMvvm.csproj">
+      <Project>{9efe6cbd-df21-436e-9f81-e258bab0b653}</Project>
+      <Name>MicroMvvm</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

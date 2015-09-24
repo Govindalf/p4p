@@ -15,13 +15,10 @@ namespace P4PSpeechDB
 {
     public class DataGridLoader
     {
-        private DBConnection conn;
-        ICollectionView collectionP; //projects
-        ICollectionView collectionS; //speakers
-        ICollectionView collectionA; //analysis
-        private ObservableCollection<Row> rowA = new ObservableCollection<Row>(); //DAtagrid row item
-        private ObservableCollection<Row> rowS; //DAtagrid row item
-        private ObservableCollection<Row> rowP = new ObservableCollection<Row>(); //DAtagrid row item
+
+        private ObservableCollection<SpeakerViewModel> speakers = new ObservableCollection<SpeakerViewModel>(); //DAtagrid row item
+        private ObservableCollection<ProjectViewModel> projects = new ObservableCollection<ProjectViewModel>(); //DAtagrid row item
+        private ObservableCollection<AnalysisViewModel> analysis = new ObservableCollection<AnalysisViewModel>(); //DAtagrid row item
 
         public List<string> ignoreTables = new List<string>();
 
@@ -44,23 +41,36 @@ namespace P4PSpeechDB
         {
             switch (type)
             {
-                case "P":
-                    return this.rowP;
-                case "S":
-                    return this.rowS;
+
                 case "A":
-                    return this.rowA;
+                    return null;
                 default:
                     throw new Exception("Invalid type value");
             }
 
         }
 
-        public void loadProjects()
+        public ObservableCollection<ProjectViewModel> getProjects()
+        {
+            return loadProjects();
+        }
+
+        public ObservableCollection<SpeakerViewModel> getSpeakers(string PID)
+        {
+            return loadSpeakers(PID);
+        }
+
+        public ObservableCollection<AnalysisViewModel> getAnalysis(string ID)
+        {
+            return loadAnalysis(ID);
+        }
+
+        #region Loaders
+        public ObservableCollection<ProjectViewModel> loadProjects()
         {
 
 
-            rowP.Clear();
+            projects.Clear();
             using (DBConnection db = new DBConnection())
             {
                 MySqlCommand query = new MySqlCommand("SELECT PID, DateCreated, Description FROM Project");
@@ -70,15 +80,18 @@ namespace P4PSpeechDB
                 {
 
                     string[] dateOnly = dr["dateCreated"].ToString().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
-                    rowP.Add(new ProjectRow { PID = dr["PID"].ToString(), DateCreated = dateOnly[0], Description = dr["Description"].ToString() });
+                    projects.Add(new ProjectViewModel { Project = new Project { PID = dr["PID"].ToString(), DateCreated = dateOnly[0], Description = dr["Description"].ToString() } });
                 }
             }
-            collectionP = new ListCollectionView(rowP);
+
+            return this.projects;
+
+
         }
 
-        public void loadAnalysis(string fileName)
+        public ObservableCollection<AnalysisViewModel> loadAnalysis(string fileName)
         {
-            rowA.Clear();
+            analysis.Clear();
             using (DBConnection db = new DBConnection())
             {
                 MySqlCommand cmd = new MySqlCommand();
@@ -92,25 +105,21 @@ namespace P4PSpeechDB
                 var table = db.getFromDB(cmd);
                 foreach (DataRow dr in table.Rows)
                 {
-                    rowA.Add(new AnalysisRow { AID = dr["AID"].ToString(), Description = dr["Description"].ToString(), FileType = dr["FileType"].ToString() });
+                    analysis.Add(new AnalysisViewModel { Analysis = new Analysis { AID = dr["AID"].ToString(), Description = dr["Description"].ToString(), FileType = dr["FileType"].ToString() } });
                 }
             }
-
-            collectionA = new ListCollectionView(rowA);
-
-
+            return this.analysis;
 
         }
 
-        public void loadSpeakers(string PID)
+        public ObservableCollection<SpeakerViewModel> loadSpeakers(string PID)
         {
-            
-            rowS = new ObservableCollection<Row>();
+
             //if (PID == null)
             //{
             //    PID = "DefaultProject";
             //}
-            
+            speakers.Clear();
             using (DBConnection db = new DBConnection())
             {
                 MySqlCommand cmd = new MySqlCommand();
@@ -125,19 +134,16 @@ namespace P4PSpeechDB
                 foreach (DataRow dr in table.Rows)
                 {
                     var speaker = dr["Speaker"].ToString();
-                    rowS.Add(new SpeakerRow { ID = dr["FID"].ToString(), Name = dr["Name"].ToString(), PID = dr["PID"].ToString(), Speaker = speaker, FileType = dr["FileType"].ToString(), Age = speaker[0].ToString() });
+                    speakers.Add(new SpeakerViewModel { Speaker = new Speaker { ID = dr["FID"].ToString(), Name = dr["Name"].ToString(), PID = dr["PID"].ToString(), SpeakerName = speaker, FileType = dr["FileType"].ToString(), Age = speaker[0].ToString() } });
 
                 }
 
             }
 
-
-
-            //Pass in the collection made of the datagrid rows
-            collectionS = new ListCollectionView(rowS);
+            return this.speakers;
 
         }
-
+        #endregion
 
 
     }

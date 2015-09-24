@@ -26,12 +26,12 @@ namespace P4PSpeechDB.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string userSettings {
+        public string Path {
             get {
-                return ((string)(this["userSettings"]));
+                return ((string)(this["Path"]));
             }
             set {
-                this["userSettings"] = value;
+                this["Path"] = value;
             }
         }
     }

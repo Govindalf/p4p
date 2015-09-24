@@ -2,7 +2,7 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="P4PSpeechDB.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="userSettings" Type="System.String" Scope="User">
+    <Setting Name="Path" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

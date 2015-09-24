@@ -12,9 +12,23 @@ using System.Text;
 using System.Windows;
 using System.Threading.Tasks;
 
+/** Authors: Govindu Samarasinghe, Rodel Rojos
+ *  Date: 2015
+ * 
+ *  Project: The Big Data Speech Processing Platform
+ *  Project proposed by the ECE department of The University of Auckland
+ */
+
 
 namespace P4PSpeechDB
 {
+    /// <summary>
+    /// Essentially the class that handles most/all of the backend functionality (i.e. Database activities).
+    /// 
+    /// This class will be utilized to gather instances from the MySQL database; add instances  to the databaase; remove 
+    /// instances from the database (i.e. manipulate the database). Furthermore this class performs and initiates some of the core
+    /// features of this application such as the multithreaded download and generating template file.
+    /// </summary>
     class MoaCore
     {
 

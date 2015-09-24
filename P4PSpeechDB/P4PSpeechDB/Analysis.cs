@@ -4,9 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/** Authors: Govindu Samarasinghe, Rodel Rojos
+ *  Date: 2015
+ * 
+ *  Project: The Big Data Speech Processing Platform
+ *  Project proposed by the ECE department of The University of Auckland
+ */
+
 namespace P4PSpeechDB
 {
-    public class Analysis : Row
+
+    /* Model class representing a Analysis file. */
+    public class Analysis
     {
         public string AID { get; set; }
         public string Description { get; set; }

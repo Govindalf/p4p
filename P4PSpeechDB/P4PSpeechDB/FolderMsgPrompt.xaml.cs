@@ -14,7 +14,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
 
-
+/** Authors: Govindu Samarasinghe, Rodel Rojos
+ *  Date: 2015
+ * 
+ *  Project: The Big Data Speech Processing Platform
+ *  Project proposed by the ECE department of The University of Auckland
+ */
 namespace P4PSpeechDB
 {
     /// <summary>

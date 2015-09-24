@@ -132,7 +132,6 @@
     <Compile Include="DataGridLoader.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="DBConnection.cs" />
-    <Compile Include="Row.cs" />
     <Compile Include="Speaker.cs" />
     <Compile Include="FolderMsgPrompt.xaml.cs">
       <DependentUpon>FolderMsgPrompt.xaml</DependentUpon>

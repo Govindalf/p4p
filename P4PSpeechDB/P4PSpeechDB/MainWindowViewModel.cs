@@ -16,8 +16,25 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 
+/** Authors: Govindu Samarasinghe, Rodel Rojos
+ *  Date: 2015
+ * 
+ *  Project: The Big Data Speech Processing Platform
+ *  Project proposed by the ECE department of The University of Auckland
+ */
+
 namespace P4PSpeechDB
 {
+    /// <summary>
+    /// Responsible for linking the View (MainWindow.xaml) to the data models through data binding.
+    /// More flexibility and separation of concerns than the MVC approach. Does not acknowledge anything from the UI side
+    /// and only knows about the Model component (Speaker, Projecct etc.). Therefore changing MainWindow UI won't affect
+    /// any of the logic inside of this class and enhances the collaborative and designing abilities of developers.
+    /// 
+    /// Utilizes event handlers (ICommand) to notice UI property changes and acts accordingly. Most of the functions of the
+    /// button interaction can be found in this class such as Add files/analysis, generate template etc. Partitioned into regions.
+    /// 
+    /// </summary>
     public class MainWindowViewModel : ObservableObject
     {
         ObservableCollection<ProjectViewModel> projects = new ObservableCollection<ProjectViewModel>();
@@ -379,6 +396,7 @@ namespace P4PSpeechDB
             RunWorkerCompletedEventArgs e)
         {
             prog.Close();
+            dgl.loadProjects();
         }
 
         /* Downloads projects on a different thread to UI thread, so user can do other tasks while downloading. */
@@ -458,7 +476,7 @@ namespace P4PSpeechDB
 
             prog = new ProgressBar();
             // Start the download operation in the background. 
-            backgroundWorker.RunWorkerAsync();
+            backgroundWorker.RunWorkerAsync(parameters);
 
             // Once you have started the background thread you  
             // can exit the handler and the application will  

@@ -14,10 +14,27 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
 
+/** Authors: Govindu Samarasinghe, Rodel Rojos
+ *  Date: 2015
+ * 
+ *  Project: The Big Data Speech Processing Platform
+ *  Project proposed by the ECE department of The University of Auckland
+ */
+
 namespace P4PSpeechDB
 {
     /// <summary>
     /// Interaction logic for GenerateTempPrompt.xaml
+    /// 
+    /// Responsible for the functionality of the generate template dialog window. This class enables users to create an
+    /// Emu template file and choose the different options available in the path, track and primary extension levels.
+    /// The generated template file will be stored in the default directory path specified in the users setting file 
+    /// (More information in MoaCore.cs) unless changed by the user through the path settings button. 
+    /// 
+    /// Future work:
+    /// - Inserting the template file into the database as a file and attaching it to its corresponding project.
+    /// - Implementing the rest of the Emu template file features. Can be achieved with search indexing within files.
+    /// - More user input options.
     /// </summary>
     public partial class GenerateTempPrompt : Window
     {
@@ -128,7 +145,8 @@ namespace P4PSpeechDB
                 conn.closeConn();
             }
         }
-
+        
+        /** Called by the Moa Core after user presses the generate template button */
         public static List<List<string>> Prompt(string question, string title, string defaultValue = "", InputType inputType = InputType.Text)
         {
             returnList = new List<List<string>>();
@@ -242,6 +260,7 @@ namespace P4PSpeechDB
             return null;
         }
 
+        /** Opens the database connection and attempts to add new track options to the Track table.*/
         private void insertToTable(string trackID) 
         {
             List<string> distinctList = new List<string>();
@@ -295,6 +314,7 @@ namespace P4PSpeechDB
             Close();
         }
 
+        /** Create a new combobox/text input dynamically and place it in the appropriate location*/
         private void CreateWPFComboBox(string trackId, int moveDown)
         {
             ComboBox cbox = new ComboBox();
@@ -338,7 +358,6 @@ namespace P4PSpeechDB
 
         }
         // Add more input boxes to add track options
-
         private void ButtonForformant_Click(object sender, RoutedEventArgs e)
         {
 

@@ -11,6 +11,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
+/** Authors: Govindu Samarasinghe, Rodel Rojos
+ *  Date: 2015
+ * 
+ *  Project: The Big Data Speech Processing Platform
+ *  Project proposed by the ECE department of The University of Auckland
+ */
+
 namespace P4PSpeechDB
 {
     public class DataGridLoader
@@ -35,19 +42,7 @@ namespace P4PSpeechDB
             loadSpeakers(null);
         }
 
-        public ObservableCollection<Row> getCollection(string type)
-        {
-            switch (type)
-            {
-
-                case "A":
-                    return null;
-                default:
-                    throw new Exception("Invalid type value");
-            }
-
-        }
-
+        
         public ObservableCollection<ProjectViewModel> getProjects()
         {
             return loadProjects();

@@ -27,6 +27,13 @@ namespace P4PSpeechDB
             this.mainWindowVM = mainWindowVM;
         }
 
+        /*Updates the root folder to download projects to and for template file creation. */
+        public string RootFolder
+        {
+            get { return rootFolder; }
+            set { this.rootFolder = value;}
+        }
+
         /*Adds a speech file to the File table on the db. */
         public void AddFiles()
         {
@@ -504,6 +511,7 @@ namespace P4PSpeechDB
 
             }
         }
+
 
 
     }

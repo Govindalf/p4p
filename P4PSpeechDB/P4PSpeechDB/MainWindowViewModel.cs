@@ -236,12 +236,24 @@ namespace P4PSpeechDB
         #region Other operations
 
         /*On button click, create template file. */
-        public ICommand GenerateTemplate { get { return new RelayCommand(GenerateTemplateExecute); } }
+        public ICommand PathSettings { get { return new RelayCommand(PathSettingsExecute); } }
+
+        void PathSettingsExecute()
+        {
+            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+            moa.RootFolder = dialog.SelectedPath;
+        
+        }
+
+                public ICommand GenerateTemplate { get { return new RelayCommand(GenerateTemplateExecute); } }
 
         void GenerateTemplateExecute()
         {
             moa.GenerateTemplate();
         }
+
+
 
         #endregion
 

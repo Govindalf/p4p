@@ -146,7 +146,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                             <TextBlock Foreground="White" FontSize="12" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Folder(s)"/>
                         </StackPanel>
                     </Button>
-                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="#3CA295" Background="#3CA295" Width="90" Height="70" Click="ButtonBrowse_Click" Margin="10,10,0,0">
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="#3CA295" Background="#3CA295" Width="90" Height="70" 
+                            Command="{Binding AddFiles}" Click="ButtonBrowse_Click" Margin="10,10,0,0">
                         <StackPanel>
                             <Image Source="pack://application:,,,/Icons/document_add.png"  Height="30"/>
                             <TextBlock HorizontalAlignment="Center" Foreground="White" TextWrapping="Wrap" Margin="0, 5" Text="Add File(s)"/>
@@ -164,7 +165,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                             <TextBlock HorizontalAlignment="Center" Foreground="White" TextWrapping="Wrap" Margin="0, 5" Text="   GFW Extraction"/>
                         </StackPanel>
                     </Button>
-                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" BorderBrush="Gray" Background="Gray" Width="90" Height="70" Margin="10,10,0,0" Click="ButtonTemplate_Click">
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" BorderBrush="Gray" Background="Gray" Width="90" Height="70" Margin="10,10,0,0" 
+                            Command="{Binding GenerateTemplate}">
                         <StackPanel>
                             <Image Source="pack://application:,,,/Icons/templates.png"  Height="30"/>
                             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Generate Template"/>
@@ -176,7 +178,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="WebMaus"/>
                         </StackPanel>
                     </Button>
-                    <Button BorderBrush="#FF8040" Background="#FF8040" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top"  Click="Button_Click" Height="70" Width="90" Margin="10,10,0,0">
+                    <Button BorderBrush="#FF8040" Background="#FF8040" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top"  
+                            Command="{Binding AddAnalysis}" Height="70" Width="90" Margin="10,10,0,0">
                         <StackPanel>
                             <Image Source="pack://application:,,,/Icons/add_analysis.png"  Height="30"/>
                             <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0, 5" Text="Add Analysis"/>

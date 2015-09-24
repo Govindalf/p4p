@@ -1,7 +1,10 @@
-﻿using MySql.Data.MySqlClient;
+﻿using MicroMvvm;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -300,5 +303,147 @@ namespace P4PSpeechDB
                 Console.WriteLine(ex.ToString());
             }
         }
+
+        public void openOrPlayFile(ObservableObject obj)
+        {
+            if (obj is SpeakerViewModel)
+            {
+                openOrPlaySpeechFile(obj as SpeakerViewModel);
+            }
+            else if (obj is AnalysisViewModel)
+            {
+                openOrPlayAnalysisFile(obj as AnalysisViewModel);
+            }
+        }
+
+        /*Downlaods and opens the speech file selected, or plays it if its a .wav(audio) */
+        private void openOrPlaySpeechFile(SpeakerViewModel speaker)
+        {
+            var cmd = new MySqlCommand();
+            cmd.CommandText = @"SELECT f.FileData FROM FileData f INNER JOIN File fi ON fi.FID = f.FID WHERE fi.Name= '" + speaker.Name + "' AND fi.FileType = @Type AND fi.PID = @PID";
+            //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
+            cmd.Parameters.AddWithValue("@Type", speaker.FileType);
+            cmd.Parameters.AddWithValue("@PID", speaker.PID);
+
+            using (DBConnection db = new DBConnection())
+            {
+
+                byte[] rawData;
+                FileStream fs;
+                string filePath = "";
+
+
+                Directory.CreateDirectory(rootFolder + @"\" + speaker.PID + "\\" + speaker.SpeakerName);
+                fs = new FileStream(rootFolder + @"\" + speaker.PID + "\\" + speaker.SpeakerName + "\\" + speaker.Name + speaker.FileType, FileMode.OpenOrCreate, FileAccess.Write);
+
+
+                var table = db.getFromDB(cmd);
+                foreach (DataRow dr in table.Rows)
+                {
+
+                    rawData = (byte[])dr["FileData"]; // convert successfully to byte[]
+
+
+                    filePath = fs.Name;
+
+                    //Fixed access denied error
+                    File.SetAttributes(filePath, FileAttributes.Normal);
+
+                    // Writes a block of bytes to this stream using data from
+                    // a byte array.
+                    fs.Write(rawData, 0, rawData.Length);
+
+                    // close file stream
+                    fs.Close();
+
+                }
+
+
+                // Filter audio, images etc. to open appropriate program
+                if (speaker.FileType.Equals(".wav") || speaker.FileType.Equals(".WAV"))
+                {
+                    var audio = new AudioWindow(filePath);
+                    audio.Show();
+
+                }
+                else
+                {
+
+                    try
+                    {
+                        //Process.Start("notepad++.exe", filePath);
+                        Process.Start(filePath);
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+        }
+
+        /*Downlaods and opens the analysis file selected*/
+        private void openOrPlayAnalysisFile(AnalysisViewModel analysis)
+        {
+
+
+            var cmd = new MySqlCommand();
+            cmd.CommandText = "SELECT FileData FROM Analysis where AID = @fileName";
+            cmd.Parameters.AddWithValue("@fileName", analysis.AID);
+
+
+            using (DBConnection db = new DBConnection())
+            {
+
+                byte[] rawData;
+                FileStream fs;
+                string filePath = "";
+
+
+                Directory.CreateDirectory(rootFolder + "\\ANALYSIS");
+                fs = new FileStream(rootFolder + "\\ANALYSIS\\" + analysis.AID + analysis.FileType, FileMode.OpenOrCreate, FileAccess.Write);
+
+
+
+                var table = db.getFromDB(cmd);
+                foreach (DataRow dr in table.Rows)
+                {
+
+                    rawData = (byte[])dr["FileData"]; // convert successfully to byte[]
+
+
+                    filePath = fs.Name;
+
+                    //Fixed access denied error
+                    File.SetAttributes(filePath, FileAttributes.Normal);
+
+                    // Writes a block of bytes to this stream using data from
+                    // a byte array.
+                    fs.Write(rawData, 0, rawData.Length);
+
+                    // close file stream
+                    fs.Close();
+
+                }
+
+
+                // Filter audio, images etc. to open appropriate program
+                if (analysis.FileType.Equals(".wav") || analysis.FileType.Equals(".WAV"))
+                {
+                    var audio = new AudioWindow(filePath);
+                    audio.Show();
+
+                }
+                else
+                {
+
+
+                    //Process.Start("notepad++.exe", filePath);
+                    Process.Start(filePath);
+
+                }
+            }
+        }
+
     }
 }

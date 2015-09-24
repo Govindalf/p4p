@@ -1,4 +1,5 @@
 ﻿using MicroMvvm;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -24,9 +26,10 @@ namespace P4PSpeechDB
         private MoaCore moa;
         private ProjectViewModel selectedProject;
         private SpeakerViewModel selectedSpeaker;
+        private AnalysisViewModel selectedAnalysis;
 
         private ICommand _groupColumn;
-  
+
 
         public MainWindowViewModel()
         {
@@ -114,18 +117,8 @@ namespace P4PSpeechDB
 
         #region Datagrid operations
 
-
+        /*Runs when project selected in the projects datagrid.*/
         public ICommand ProjectSelected { get { System.Console.WriteLine("4"); return new RelayCommand(ProjectSelectedExecute); } }
-
-        public ProjectViewModel SelectedProject
-        {
-            get { System.Console.WriteLine("3"); return selectedProject; }
-            set
-            {
-                selectedProject = value;
-            }
-        }
-
         void ProjectSelectedExecute()
         {
 
@@ -135,7 +128,7 @@ namespace P4PSpeechDB
             speakers = dgl.getSpeakers(SelectedProject.PID);
             RaisePropertyChanged("SpeakersView");
             speakersView = (ListCollectionView)CollectionViewSource.GetDefaultView(speakers);
-            
+
             // Do this only once
             if (speakersView.GroupDescriptions.Count() == 0)
             {
@@ -145,15 +138,26 @@ namespace P4PSpeechDB
 
         }
 
+        /*The currently selected project object. */
+        public ProjectViewModel SelectedProject
+        {
+            get { System.Console.WriteLine("3"); return selectedProject; }
+            set
+            {
+                selectedProject = value;
+            }
+        }
 
-        public ICommand SpeakerSelected { get { return new RelayCommand(SpeakerSelectedExecute); } }
 
+        /*The currently selected datagrid speaker item. */
         public SpeakerViewModel SelectedSpeaker
         {
             get { System.Console.WriteLine("s1"); return selectedSpeaker; }
             set { selectedSpeaker = value; RaisePropertyChanged("SelectedSpeaker"); }
         }
 
+
+        public ICommand SpeakerSelected { get { return new RelayCommand(SpeakerSelectedExecute); } }
         void SpeakerSelectedExecute()
         {
 
@@ -164,12 +168,58 @@ namespace P4PSpeechDB
 
             RaisePropertyChanged("Analysis");
         }
+
+        /*Run this on double clicking speaker datagrid object*/
+        public ICommand DoubleClickSpeaker { get { return new RelayCommand(DoubleClickSpeakerExecute); } }
+        void DoubleClickSpeakerExecute()
+        {
+
+            if (!(SelectedSpeaker is SpeakerViewModel))
+                return;
+
+            try
+            {
+                moa.openOrPlayFile(SelectedSpeaker);
+            }
+            catch
+            {
+                MessageBox.Show("Access denied, please run application with administrator privileges.");
+            }
+
+        }
+
+        /*The currently selected datagrid analysis item. */
+        public AnalysisViewModel SelectedAnalysis
+        {
+            get { return selectedAnalysis; }
+            set { selectedAnalysis = value; RaisePropertyChanged("SelectedAnalysis"); }
+        }
+
+        /*Run this on double clicking analysis datagrid object*/
+        public ICommand DoubleClickAnalysis { get { return new RelayCommand(DoubleClickAnalysisExecute); } }
+        void DoubleClickAnalysisExecute()
+        {
+
+            if (!(SelectedAnalysis is AnalysisViewModel))
+                return;
+
+            try
+            {
+                moa.openOrPlayFile(SelectedAnalysis);
+            }
+            catch
+            {
+                MessageBox.Show("Access denied, please run application with administrator privileges.");
+            }
+
+        }
+
+
         #endregion
 
         #region Database operations
         /*On button click, add speech file. */
         public ICommand AddFiles { get { return new RelayCommand(AddFilesExecute); } }
-
         void AddFilesExecute()
         {
             moa.AddFiles();
@@ -177,7 +227,6 @@ namespace P4PSpeechDB
 
         /*On button click, add analysis file. */
         public ICommand AddAnalysis { get { return new RelayCommand(AddAnalysisExecute); } }
-
         void AddAnalysisExecute()
         {
             moa.AddAnalysis();

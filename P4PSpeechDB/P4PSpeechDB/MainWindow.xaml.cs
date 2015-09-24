@@ -151,8 +151,8 @@ namespace P4PSpeechDB
             }
 
 
-            dataGridFiles.ItemsSource = collection;
-            dataGridFiles.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
+            dataGridSpeakers.ItemsSource = collection;
+            dataGridSpeakers.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
         }
 
 

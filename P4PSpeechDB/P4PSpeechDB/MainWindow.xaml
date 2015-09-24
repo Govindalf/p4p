@@ -10,6 +10,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         <local:MainWindowViewModel />
     </Window.DataContext>
     <Window.Resources>
+
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
 
             <Setter Property="Template">
@@ -55,7 +57,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
               UnloadedBehavior="Stop" />
 
 
-        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" Margin="251,228,0,0" x:Name="dataGridFiles"  
+        <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" Margin="251,228,0,0" x:Name="dataGridSpeakers"  
     		HorizontalAlignment="Left" Width="300" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
                ItemsSource="{Binding Path=SpeakersView}" SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
@@ -81,8 +83,11 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                     </GroupStyle.Panel>
                 </GroupStyle>
             </DataGrid.GroupStyle>
-            
+
             <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding DoubleClickSpeaker}"/>
+                </i:EventTrigger>
                 <i:EventTrigger EventName="MouseLeftButtonUp">
                     <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
                     <Command:EventToCommand Command="{Binding SpeakerSelected}"/>
@@ -190,13 +195,13 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         <DataGrid AutoGenerateColumns ="False" VerticalAlignment="Top" GridLinesVisibility="None" Height="340" 
                   Margin="560,228,0,0" x:Name="dataGridAnalysis" HorizontalAlignment="Left" Width="300" 
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                  HeadersVisibility="Column" CanUserAddRows="False" ItemsSource="{Binding Analysis}">
+                  HeadersVisibility="Column" CanUserAddRows="False" ItemsSource="{Binding Analysis}" SelectedValue="{Binding SelectedAnalysis, Mode=TwoWay}">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding AID}" Header="Analysis ID" Width="150" IsReadOnly="True" SortDirection="Ascending"/>
                 <DataGridTextColumn Binding="{Binding Description}" Header="Description" Width="*" IsReadOnly="True" />
             </DataGrid.Columns>
-            
+
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <EventSetter Event="Control.MouseDoubleClick" Handler="analysisDataGrid_MouseDoubleClick"/>
@@ -204,7 +209,11 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
 
             </DataGrid.RowStyle>
 
-
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding DoubleClickAnalysis}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
 
             <!--<DataGrid.GroupStyle>
                 <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
@@ -250,10 +259,10 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 </MouseBinding>
             </DataGrid.InputBindings>-->
 
-      
+
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonUp">
-                        <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
+                    <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
                     <Command:EventToCommand Command="{Binding ProjectSelected}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
@@ -280,8 +289,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         </ComboBox>
         <TextBlock HorizontalAlignment="Left" Margin="377,192,0,0" TextWrapping="Wrap" Text="Group By" VerticalAlignment="Top"/>
 
-        <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="269,259,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"/>
-        <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="578,259,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236"/>
+        <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="269,259,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"  Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridSpeakers}" />
+        <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="578,259,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236" Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridAnalysis}"/>
 
 
     </Grid>

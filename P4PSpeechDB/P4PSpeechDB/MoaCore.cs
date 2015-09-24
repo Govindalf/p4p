@@ -1,6 +1,7 @@
 ﻿using MicroMvvm;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -27,6 +28,18 @@ namespace P4PSpeechDB
             this.mainWindowVM = mainWindowVM;
         }
 
+        /*Updates the root folder to download projects to and for template file creation. */
+        public string RootFolder
+        {
+            get { return rootFolder; }
+            set
+            {
+                this.rootFolder = value;
+                P4PSpeechDB.Properties.Settings.Default.Path = value;
+                P4PSpeechDB.Properties.Settings.Default.Save();
+            }
+        }
+
         /*Adds a speech file to the File table on the db. */
         public void AddFiles()
         {
@@ -39,7 +52,7 @@ namespace P4PSpeechDB
             string desc = "";
             if (result.HasValue == true && result.Value == true)
             {
-                folderDetails = getFolderName(); // only prompt for folder once always
+                folderDetails = GetFolderName(); // only prompt for folder once always
             }
             byte[] rawData;
 
@@ -174,8 +187,109 @@ namespace P4PSpeechDB
             }
         }
 
+        /*Adds multiple projects and files into database when selected all at once. */
+        public void AddFolders(List<string> projectDetails, string selectedPath)
+        {
+
+            using (DBConnection db = new DBConnection())
+            {
+                //testDBRoot = "C:\\Users\\Rodel\\Documents\\p4p\\P4Ptestfiles";
+                DirectoryInfo dirN = null;
+                DirectoryInfo[] dirs = new DirectoryInfo(selectedPath).GetDirectories();
+                string projDescription = "None";
+
+                // If there are no directories inside the chosen path.
+                if (dirs == null || dirs.Length == 0)
+                {
+                    dirN = new DirectoryInfo(selectedPath);
+                }
+
+                if (projectDetails != null && dirN == null)
+                {
+                    if (projectDetails.Count > 1)
+                    {
+                        projDescription = projectDetails.Last();
+                    }
+                    foreach (DirectoryInfo dir in dirs)
+                    {
+                        addIndividualFile(dir, projectDetails, projDescription, db);
+                    }
+                }
+                else if (dirN != null)
+                {
+                    if (projectDetails.Count > 1)
+                    {
+                        projDescription = projectDetails.Last();
+                    }
+                    addIndividualFile(dirN, projectDetails, projDescription, db);
+                }
+
+            }
+        }
+
+        /*Deletes the selected file(s) from the database. */
+        public void DeleteFiles(IList selectedValues)
+        {
+            //Delete each selected file and its related records
+            foreach (var item in selectedValues)
+            {
+                //Deletes speakers if item's a SpeakerViewModel
+                if (item is SpeakerViewModel)
+                {
+                    var speakerID = (item as SpeakerViewModel).ID;
+
+                    using (DBConnection db = new DBConnection())
+                    {
+                        MySqlCommand comm = new MySqlCommand();
+                        comm.CommandText = "DELETE FROM FileData WHERE FID=@speakerID";
+                        comm.Parameters.AddWithValue("@speakerID", speakerID);
+                        db.insertIntoDB(comm);
+
+                        comm = new MySqlCommand();
+                        comm.CommandText = "DELETE FROM File WHERE FID=@speakerID";
+                        comm.Parameters.AddWithValue("@speakerID", speakerID);
+                        db.insertIntoDB(comm);
+
+                        comm = new MySqlCommand();
+                        comm.CommandText = "DELETE FROM File2Analysis WHERE File_FID=@speakerID";
+                        comm.Parameters.AddWithValue("@speakerID", speakerID);
+                        db.insertIntoDB(comm);
+
+                    }
+                }
+                //Deletes analysis if item's a AnalysisViewModel
+                else if (item is AnalysisViewModel)
+                {
+                    var AID = (item as AnalysisViewModel).AID;
+
+                    using (DBConnection db = new DBConnection())
+                    {
+                        MySqlCommand comm = new MySqlCommand();
+                        comm.CommandText = "DELETE FROM Analysis WHERE AID=@analysisAID";
+                        comm.Parameters.AddWithValue("@analysisAID", AID);
+                        db.insertIntoDB(comm);
+
+                        comm = new MySqlCommand();
+                        comm.CommandText = "DELETE FROM File2Analysis WHERE Analysis_AID=@analysisAID";
+                        comm.Parameters.AddWithValue("@analysisAID", AID);
+                        db.insertIntoDB(comm);
+
+                    }
+                }
+
+
+
+            }
+
+            //Updates view
+            if (selectedValues != null)
+            {
+                dgl.getSpeakers((selectedValues[0] as SpeakerViewModel).PID);
+            }
+        }
+
         /*Returns a folder options prompt. */
-        private List<string> getFolderName()
+        public List<string> GetFolderName()
         {
             return FolderMsgPrompt.Prompt("Create new folder", "Folder options", inputType: FolderMsgPrompt.InputType.Text);
 
@@ -240,6 +354,49 @@ namespace P4PSpeechDB
 
         }
 
+        /*Similar to executeInsert, but is used to add multiuple files when adding projects in bulk. */
+        private void addIndividualFile(DirectoryInfo dir, List<String> projectDetails, string projDescription, DBConnection db)
+        {
+            byte[] rawData;
+
+            FileInfo[] files = new DirectoryInfo(dir.FullName).GetFiles("*.*", SearchOption.AllDirectories);
+
+            //Add each to projects table
+            var cmd = new MySqlCommand();
+            cmd.CommandText = "INSERT IGNORE INTO Project (PID, DateCreated, Description) VALUES (@PID, @date, @desc)"; //ignore = Dont insert dups
+
+            cmd.Parameters.AddWithValue("@PID", projectDetails.First());
+            cmd.Parameters.AddWithValue("@date", DateTime.Today);
+            cmd.Parameters.AddWithValue("@desc", projDescription);
+            db.insertIntoDB(cmd);
+
+            //Add each file in each project
+            foreach (FileInfo file in files)
+            {
+
+                string fileName = Path.GetFileNameWithoutExtension(file.FullName);
+
+                string ext = Path.GetExtension(file.Name).Replace(".", "");
+                rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
+                string speaker = fileName.Substring(0, 4);
+
+                //Add file metadata to the File table
+                cmd = new MySqlCommand();
+                cmd.CommandText = "INSERT INTO File (PID, Name, FileType, Speaker) VALUES (@PID, @Name, @FileType, @Speaker)";
+                cmd.Parameters.AddWithValue("@PID", projectDetails.First());
+                cmd.Parameters.AddWithValue("@Name", fileName);
+                cmd.Parameters.AddWithValue("@FileType", file.Extension);
+                cmd.Parameters.AddWithValue("@Speaker", speaker);
+                db.insertIntoDB(cmd);
+
+                //Add file data to FileData table
+                cmd = new MySqlCommand();
+                cmd.CommandText = "INSERT INTO FileData (FID, FileData) VALUES (LAST_INSERT_ID(), @data)";
+                cmd.Parameters.AddWithValue("@data", rawData);
+                db.insertIntoDB(cmd);
+
+            }
+        }
 
         /* Generates a template file for a project. */
         public void GenerateTemplate()
@@ -474,8 +631,7 @@ namespace P4PSpeechDB
         /*Downloads the project with PID as specified in parameters[2] to the folder at path parameters[1]. */
         public void DownloadProject(object[] parameters)
         {
-            string PID = parameters[2] as string;
-            string path = parameters[1] as string;
+            string PID = parameters[1] as string;
 
             byte[] rawData;
             FileStream fs;
@@ -494,8 +650,8 @@ namespace P4PSpeechDB
 
                     rawData = (byte[])dr["FileData"];
 
-                    Directory.CreateDirectory(path + PID + @"\" + dr["Speaker"].ToString());
-                    fs = new FileStream(path + PID + @"\" + dr["Speaker"].ToString() + @"\" + dr["Name"].ToString() + dr["FileType"].ToString(), FileMode.OpenOrCreate, FileAccess.Write);
+                    Directory.CreateDirectory(RootFolder + @"\" + PID + @"\" + dr["Speaker"].ToString());
+                    fs = new FileStream(RootFolder + @"\" + PID + @"\" + dr["Speaker"].ToString() + @"\" + dr["Name"].ToString() + dr["FileType"].ToString(), FileMode.OpenOrCreate, FileAccess.Write);
 
                     filePath = fs.Name;
 
@@ -512,6 +668,7 @@ namespace P4PSpeechDB
 
             }
         }
+
 
 
     }

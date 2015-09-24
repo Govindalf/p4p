@@ -33,692 +33,42 @@ namespace P4PSpeechDB
     /// </summary>
     public partial class MainWindow : Window
     {
-        //private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
-        private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
-        private DBConnection conn;
-        MySqlConnection myConn = null;
-        private List<String> tableNames = new List<String>();
-        private ObservableCollection<Row> rowS; //DAtagrid row item
-        private ObservableCollection<Row> rowA; //DAtagrid row item
         private ObservableCollection<ProjectViewModel> projects; //DAtagrid row item
         DataGridLoader dgl;
         ProgressBar prog = null;
 
         public Boolean IsExpanded { get; set; }
-        private string groupValue = "Speaker"; //Default grouping on this value
-
-
         MoaCore moa;
         MainWindowViewModel vm;
 
         public MainWindow()
         {
-            AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnApplicationExit);
-            //IsExpanded = false;
-            //this.DataContext = this;
-
-            //Loads all datagrid with relevant data
-
 
             InitializeComponent();
             WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-            //this.speakerCombo.Text = groupValue;
 
-
-            //buildDatagridGroups(new ListCollectionView(rowS));
-
-            //dataGridProjects.ItemsSource = projects;
 
             vm = (MainWindowViewModel)this.DataContext;
-            
 
         }
 
-
-        private void moveFile(string path, string path2)
-        {
-
-            // Move the file.
-            File.Copy(path, path2, false); //false = dont overwrite
-        }
-
-        private void ButtonBrowse_Click(object sender, RoutedEventArgs e)
-        {
-            
-
-            //dgl.setUpDataGrids();
-        }
-
-        private List<string> getFolderName()
-        {
-            return FolderMsgPrompt.Prompt("Create new folder", "Folder options", inputType: FolderMsgPrompt.InputType.Text);
-
-        }
-
-        private void executeInsert(String filename, String ext, Microsoft.Win32.OpenFileDialog dlg, List<string> folderDetails, byte[] rawData)
-        {
-            var path = Path.GetExtension(filename);
-            filename = Path.GetFileName(filename);
-            string speaker = Path.GetFileNameWithoutExtension(dlg.SafeFileName).Substring(0, 4);
-
-            using (DBConnection db = new DBConnection())
-            {
-
-
-
-                MySqlCommand comm = new MySqlCommand();
-                comm.CommandText = "INSERT INTO File (PID, Name, FileType, Speaker) VALUES(@PID, @Name, @Type, @Speaker)";
-                comm.Parameters.AddWithValue("@Name", filename);
-                comm.Parameters.AddWithValue("@Type", path);
-                comm.Parameters.AddWithValue("@Speaker", speaker);
-                comm.Parameters.AddWithValue("@PID", folderDetails.First());
-                db.insertIntoDB(comm);
-
-                comm = new MySqlCommand();
-
-                comm.CommandText = "INSERT INTO FileData (FID, FileData) VALUES (LAST_INSERT_ID(), @FileData)";
-                comm.Parameters.AddWithValue("@FileData", rawData);
-                db.insertIntoDB(comm);
-
-                if (folderDetails != null)
-                {
-
-                    comm = new MySqlCommand();
-                    comm.CommandText = "INSERT IGNORE INTO Project (PID, DateCreated, Description) VALUES(@PID, @dateCreated, @description)";
-                    comm.Parameters.AddWithValue("@PID", folderDetails.First());
-                    comm.Parameters.AddWithValue("@dateCreated", DateTime.Now.ToString());
-                    if (folderDetails.Count == 2)
-                    {
-                        comm.Parameters.AddWithValue("@description", folderDetails.Last());
-                    }
-                    else
-                    {
-                        comm.Parameters.AddWithValue("@description", "No description given");
-
-                    }
-                    db.insertIntoDB(comm);
-                }
-
-            }
-
-
-        }
-
-        //Sets up the grouping for the datagrid
-        private void buildDatagridGroups(ICollectionView collection)
-        {
-            PropertyGroupDescription propertyDes = new PropertyGroupDescription("ProjectName");
-            collection.GroupDescriptions.Add(new PropertyGroupDescription(groupValue));
-
-
-            if (groupValue.Equals("Age"))
-            {
-
-                collection.GroupDescriptions.Add(new PropertyGroupDescription("Speaker"));
-            }
-
-
-            dataGridSpeakers.ItemsSource = collection;
-            dataGridSpeakers.Items.SortDescriptions.Add(new SortDescription("ID", ListSortDirection.Ascending));
-        }
-
-
-        /*When a row in the projects grid is selected, load the relevent speech data into the
-         * speech datagrid, and do so efficiently.*/
-        private void dataGridProjects_GotCellFocus(object sender, RoutedEventArgs e)
-        {
-            this.emptyGrid.Visibility = System.Windows.Visibility.Hidden;
-
-            if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
-            {
-                DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as Project;
-
-                if (item != null)
-                {
-                    string projectName = item.PID.ToString();
-                    dgl.loadSpeakers(projectName);
-                    //rowS = dgl.getCollection("S");
-
-                    buildDatagridGroups(new ListCollectionView(rowS));
-                }
-
-            }
-        }
-
-        //When a row in the analysis grid is selected
-        private void dataGridFiles_GotCellFocus(object sender, RoutedEventArgs e)
-        {
-            this.emptyGrid2.Visibility = System.Windows.Visibility.Hidden;
-
-            if (e.OriginalSource.GetType() == typeof(DataGridCell) && sender != null)
-            {
-                DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as Speaker;
-
-
-                if (item != null)
-                {
-                    string ID = item.Name;
-                    dgl.loadAnalysis(ID);
-                    rowA = dgl.getCollection("A");
-                    dataGridAnalysis.ItemsSource = new ListCollectionView(rowA);
-                    //buildDatagridGroups(new ListCollectionView(rowA));
-                }
-            }
-        }
-
-        /*When analysis datagrid item clicked, opens the selected item. */
-        private void analysisDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (sender != null)
-            {
-                DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as Analysis;
-
-
-                if (item != null)
-                {
-                    string fileType;
-                    if (item.FileType == null)
-                    {
-                        fileType = "txt"; //default in case of shenanigans
-                    }
-                    else
-                    {
-                        fileType = item.FileType.ToString();
-                    }
-                    string fileName = item.AID.ToString();
-
-
-
-                    //Check if file exists locally, if not open from db
-                    if (File.Exists("..\\..\\..\\..\\testOutput\\ANALYSIS\\" + fileName + "." + fileType))
-                    {
-                        openOrPlayLocalFile("..\\..\\..\\..\\testOutput\\ANALYSIS\\" + fileName + "." + fileType);
-                    }
-                    else
-                    {
-                        using (DBConnection db = new DBConnection())
-                        {
-
-                            var cmd = new MySqlCommand();
-                            cmd.CommandText = "SELECT FileData FROM Analysis where AID = @fileName";
-                            cmd.Parameters.AddWithValue("@fileName", fileName);
-
-                            //call the download and save method
-                            openOrPlayFile(cmd, fileName, fileType, "ANALYSIS", item);
-
-
-                        }
-                    }
-                }
-            }
-        }
-
-        /*When speech file datagrid item clicked, opens the file. */
-        private void resultDataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (sender != null)
-            {
-                DataGridRow dgr = sender as DataGridRow;
-                var item = dgr.DataContext as Speaker;
-
-                if (item != null)
-                {
-                    string fileType = item.FileType.ToString();
-                    string fileName = item.Name.ToString();
-                    string projectName = item.PID.ToString();
-
-
-                    //Check if file exists locally, if not open from db
-                    if (File.Exists("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.SpeakerName + "\\" + fileName + "." + fileType))
-                    {
-                        openOrPlayLocalFile("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + item.SpeakerName + "\\" + fileName + "." + fileType);
-                    }
-                    else
-                    {
-
-                        var cmd = new MySqlCommand();
-                        cmd.CommandText = @"SELECT f.FileData FROM FileData f INNER JOIN File fi ON fi.FID = f.FID WHERE fi.Name= '" + fileName + "' AND fi.FileType = @Type";
-                        //cmd.Parameters.AddWithValue("@tName", tableName); //THIS DONT WORK. WHY? WHO KNOWS
-                        cmd.Parameters.AddWithValue("@Type", fileType);
-
-                        openOrPlayFile(cmd, fileName, fileType, projectName, item);
-
-                    }
-
-                }
-
-            }
-        }
-
-        private void openOrPlayLocalFile(string filePath)
-        {
-
-            Process.Start(filePath);
-        }
-
-        /*Downlaods and opens the file selected, or plays it if its a .wav(audio) */
-        private void openOrPlayFile(MySqlCommand cmd, string fileName, string fileType, string projectName, Object row)
-        {
-            using (DBConnection db = new DBConnection())
-            {
-
-                byte[] rawData;
-                FileStream fs;
-                string filePath = "";
-
-                //Checks for the file type (speaker or analysis) and then puts it in the correct folder location
-                if (row is Analysis)
-                {
-                    Directory.CreateDirectory("..\\..\\..\\..\\testOutput\\ANALYSIS");
-                    fs = new FileStream("..\\..\\..\\..\\testOutput\\" + projectName + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
-                }
-                else
-                {
-                    Directory.CreateDirectory(@"..\..\..\..\testOutput\" + projectName + "\\" + ((Speaker)row).SpeakerName);
-                    fs = new FileStream(@"..\..\..\..\testOutput\" + projectName + "\\" + ((Speaker)row).SpeakerName + "\\" + fileName + fileType, FileMode.OpenOrCreate, FileAccess.Write);
-                }
-
-                var table = db.getFromDB(cmd);
-                foreach (DataRow dr in table.Rows)
-                {
-
-                    rawData = (byte[])dr["FileData"]; // convert successfully to byte[]
-
-
-                    filePath = fs.Name;
-
-                    //Fixed access denied error
-                    File.SetAttributes(filePath, FileAttributes.Normal);
-
-                    // Writes a block of bytes to this stream using data from
-                    // a byte array.
-                    fs.Write(rawData, 0, rawData.Length);
-
-                    // close file stream
-                    fs.Close();
-
-                }
-
-
-                // Filter audio, images etc. to open appropriate program
-                if (fileType.Equals("wav") || fileType.Equals("WAV"))
-                {
-                    mediaElement.Source = new Uri(filePath, UriKind.RelativeOrAbsolute);
-                    mediaElement.LoadedBehavior = MediaState.Manual;
-                    //mediaElement.UnloadedBehavior = MediaState.Stop;
-                    mediaElement.Play();
-                }
-                else
-                {
-                    //Process.Start("notepad++.exe", path);
-                    try
-                    {
-                        Process.Start(filePath);
-                    }
-                    catch
-                    {
-                        MessageBox.Show("Access denied, please run application with administrator privileges.");
-                    }
-                }
-            }
-        }
-
-
-        //Testing, randomly macthes analysis to files
-        private void randomlyMatchAnalysis()
-        {
-
-            using (DBConnection db = new DBConnection())
-            {
-                var cmd = new MySqlCommand();
-                cmd.CommandText = @"SELECT FID FROM File";
-
-                var tableF = db.getFromDB(cmd);
-                cmd = new MySqlCommand();
-
-                cmd.CommandText = @"SELECT AID FROM Analysis";
-                var tableA = db.getFromDB(cmd);
-
-                MessageBox.Show(tableA.Rows.Count.ToString());
-                foreach (DataRow dr in tableF.Rows)
-                {
-                    foreach (DataRow drA in tableA.Rows)
-                    {
-
-                        Random random = new Random();
-                        int randomNumber = random.Next(0, 10);
-                        System.Diagnostics.Debug.WriteLine(randomNumber);
-                        if (randomNumber < 2)
-                        {
-                            cmd = new MySqlCommand();
-                            cmd.CommandText = "INSERT IGNORE INTO File2Analysis (File_FID, Analysis_AID) VALUES (@FID2, @AID)";
-                            cmd.Parameters.AddWithValue("@FID2", dr["FID"].ToString());
-                            cmd.Parameters.AddWithValue("@AID", drA["AID"].ToString());
-                            db.insertIntoDB(cmd);
-
-                        }
-                    }
-                }
-
-            }
-
-            MessageBox.Show("DONE");
-
-        }
-
-
-
-
-        //Loads all the data in the target folder into the db
-        private void loadAllButton_Click(object sender, RoutedEventArgs e)
-        {
-            using (DBConnection db = new DBConnection())
-            {
-                DirectoryInfo[] dirs = new DirectoryInfo(testDBRoot).GetDirectories();
-                byte[] rawData;
-                //Adds all files selected into folders to the db
-
-
-                foreach (DirectoryInfo dir in dirs)
-                {
-
-
-                    FileInfo[] files = new DirectoryInfo(dir.FullName).GetFiles("*.*", SearchOption.AllDirectories);
-
-                    //If analysis table exists, add them separately
-                    if (dir.Name.Equals("ANALYSIS"))
-                    {
-
-                        foreach (FileInfo file in files)
-                        {
-                            string fileName = Path.GetFileNameWithoutExtension(file.FullName);
-                            rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
-
-                            var cmd = new MySqlCommand();
-                            cmd.CommandText = "INSERT INTO Analysis (AID, FileData, Description, FileType) VALUES (@AID, @fileAsBlob, @desc, @type)";
-                            cmd.Parameters.AddWithValue("@AID", fileName);
-                            cmd.Parameters.AddWithValue("@fileAsBlob", rawData);
-                            cmd.Parameters.AddWithValue("@desc", "No description");
-                            cmd.Parameters.AddWithValue("@type", file.Extension);
-                            db.insertIntoDB(cmd);
-
-                        }
-
-                    }
-                    else
-                    {
-
-
-                        //Create projects table
-                        var cmd = new MySqlCommand();
-                        cmd.CommandText = "INSERT IGNORE INTO Project (PID, DateCreated, Description) VALUES (@PID, @date, @desc)"; //ignore = Dont insert dups
-
-                        cmd.Parameters.AddWithValue("@PID", dir);
-                        cmd.Parameters.AddWithValue("@date", DateTime.Today);
-                        cmd.Parameters.AddWithValue("@desc", "None");
-                        db.insertIntoDB(cmd);
-
-                        foreach (FileInfo file in files)
-                        {
-
-                            string fileName = Path.GetFileNameWithoutExtension(file.FullName);
-
-                            string ext = Path.GetExtension(file.Name).Replace(".", "");
-                            rawData = File.ReadAllBytes(@file.FullName); //The raw file data as  a byte array
-                            string speaker = fileName.Substring(0, 4);
-
-                            //Add file paths to the above table
-                            cmd = new MySqlCommand();
-                            cmd.CommandText = "INSERT INTO File (Name, Speaker, PID, FileType) VALUES (@Name, @speaker, @projectName, @type)";
-                            cmd.Parameters.AddWithValue("@Name", fileName);
-                            cmd.Parameters.AddWithValue("@speaker", speaker);
-                            cmd.Parameters.AddWithValue("@projectName", dir);
-                            cmd.Parameters.AddWithValue("@type", file.Extension);
-                            db.insertIntoDB(cmd);
-
-                            //Add file data
-                            cmd = new MySqlCommand();
-                            cmd.CommandText = "INSERT INTO FileData (FID, FileData) VALUES (LAST_INSERT_ID(), @data)";
-                            cmd.Parameters.AddWithValue("@data", rawData);
-                            db.insertIntoDB(cmd);
-
-                        }
-                    }
-                }
-
-            }
-            MessageBox.Show("ALL DONE");
-        }
-
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            mediaElement.Stop();
-        }
-
-        private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
-        {
-            mediaElement.Close();
-        }
-
-        //On exit, removes the temp dir
-        private void OnApplicationExit(object sender, EventArgs e)
-        {
-            //DeleteDirectory(@"..\\..\\..\\..\\testOutput", true);
-        }
-
-        //Method to delete the temp dir
-        public static void DeleteDirectory(string path)
-        {
-            DeleteDirectory(path, false);
-        }
-
-        public static void DeleteDirectory(string path, bool recursive)
-        {
-
-            // Get all files of the folder
-            var files = Directory.GetFiles(path);
-            foreach (var f in files)
-            {
-                // Get the attributes of the file
-                var attr = File.GetAttributes(f);
-
-                // Is this file marked as 'read-only'?
-                if ((attr & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
-                {
-                    // Yes... Remove the 'read-only' attribute, then
-                    File.SetAttributes(f, attr ^ FileAttributes.ReadOnly);
-                }
-
-                // Delete the file
-                File.Delete(f);
-            }
-
-            // When we get here, all the files of the folder were
-            // already deleted, so we just delete the empty folder
-            Directory.Delete(path);
-        }
-
-
-        //Search the datagrid and filter
-        private void TextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                try
-                {
-
-                    // Collection which will take your ObservableCollection (the datagrid row item)
-                    var itemSourceList = new CollectionViewSource() { Source = this.rowS };
-
-                    //now we add our Filter
-                    itemSourceList.Filter += new FilterEventHandler(searchFilter);
-
-                    // ICollectionView the View/UI part 
-                    ICollectionView itemlist = itemSourceList.View;
-                    buildDatagridGroups(itemlist);
-                    //dataGridFiles.ItemsSource = itemlist;
-
-                }
-                catch (Exception exc)
-                {
-                    MessageBox.Show(exc.Message);
-                }
-            }
-
-        }
-
-        //Regex filter
-        private void searchFilter(object sender, FilterEventArgs e)
-        {
-            var obj = e.Item as Speaker;
-            if (obj != null)
-            {
-                if (System.Text.RegularExpressions.Regex.IsMatch(obj.Name, searchBox.Text))
-                    e.Accepted = true;
-                else
-                    e.Accepted = false;
-            }
-        }
-
-        private void ButtonDelete_Click(object sender, RoutedEventArgs e)
-        {
-            //var listOfItems = dataGridFiles.SelectedItems;
-            //var grid = dataGridFiles;
-            //var copyGrid = dataGridFiles;
-            //for(int i = 0; i <= copyGrid.SelectedItems.Count; i++)
-            //{
-            //    string tableName = (grid.SelectedItems[i] as SpeakerRow).tableName;
-            //    string idName = (grid.SelectedItems[i] as SpeakerRow).ID;
-            //    //System.Console.WriteLine(tableName);
-            //    //System.Console.WriteLine(idName);
-            //    //System.Console.WriteLine(i);
-
-            //    //SpeakerRow dgRow = (from r in rowS where (r.ID == idName && r.tableName == tableName) select r).SingleOrDefault();
-
-            //    copyGrid.Items.Remove(grid.SelectedItems[i] as Row);
-            //    if (conn.openConn() == true)
-            //    {
-            //        try
-            //        {
-            //            //Create tables if they dont already exist
-            //            MySqlCommand comm = conn.getCommand();
-            //            comm.CommandText = "DELETE FROM " + tableName + " WHERE ID=@idName";
-            //            comm.Parameters.AddWithValue("@idName", idName);
-            //            comm.ExecuteNonQuery();
-            //        }
-            //        catch (MySqlException ex)
-            //        {
-            //            MessageBox.Show(ex.ToString());
-            //        }
-            //        conn.closeConn();
-            //    }
-            //}
-
-
-            //ListCollectionView collection = new ListCollectionView(rowS);
-            //buildDatagridGroups(collection);
-
-        }
-
-        private void ButtonTemplate_Click(object sender, RoutedEventArgs e)
-        {
-            List<List<string>> listResults = GenerateTempPrompt.Prompt("Enter template name", "Generate template file", inputType: GenerateTempPrompt.InputType.Text);
-            string pathName = @"C:\Users\Rodel\Documents\p4p\TemplateStr\";
-            string ext = "tpl";
-            if (listResults == null)
-            {
-                return;
-            }
-
-            pathName += listResults.First().First() + "." + ext;
-            try
-            {
-
-                // Create a new file 
-                using (FileStream fs = File.Create(pathName))
-                {
-                    //Add some text to file
-                    Byte[] heading = new UTF8Encoding(true).GetBytes("! this file was generated by Cirilla \n \n");
-                    fs.Write(heading, 0, heading.Length);
-
-                    int count = 0;
-                    //The second list must be sfb tracks and sf0 third.
-                    foreach (List<string> lStr in listResults)
-                    {
-                        string trackClassName = "";
-                        // skip first result list which contain tpl name and project path
-                        if (count == 0)
-                        {
-                            count += 1;
-                            string pathFiles = testDBRoot + "\\" + lStr[1] + "\\*";
-                            byte[] pathFString = new UTF8Encoding(true).GetBytes("path lab " + pathFiles +
-                                "\n" + "path trg " + pathFiles + "\n" + "path hlb " + pathFiles + "\n" + "path wav " + pathFiles + "\n" + "path sfb " + pathFiles + "\n \n");
-                            fs.Write(pathFString, 0, pathFString.Length);
-
-                            byte[] sampleWavString = new UTF8Encoding(true).GetBytes("track samples wav\n");
-                            fs.Write(sampleWavString, 0, sampleWavString.Length);
-                            continue;
-                        }
-                        if (lStr.LastOrDefault().Equals("sf0Id"))
-                        {
-                            trackClassName = "sf0";
-                        }
-                        else if (lStr.LastOrDefault().Equals("sfbId"))
-                        {
-                            trackClassName = "sfb";
-                        }
-                        foreach (string str in lStr)
-                        {
-                            if (str.Equals(lStr.Last()))
-                            {
-                                continue;
-                            }
-                            // make sure to fix hardcoded sfb
-                            byte[] trackString = new UTF8Encoding(true).GetBytes("track " + str + " " + trackClassName + "\n");
-                            fs.Write(trackString, 0, trackString.Length);
-                        }
-                    }
-
-                    byte[] primaryExt = new UTF8Encoding(true).GetBytes("\nset PrimaryExtension wav \n");
-                    fs.Write(primaryExt, 0, primaryExt.Length);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-        }
 
         private void speakerCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ComboBox cmb = sender as ComboBox;
             ComboBoxItem typeItem = (ComboBoxItem)cmb.SelectedItem;
 
-            groupValue = typeItem.Name.ToString();
-            //Open the project folder in explorer
-            switch (groupValue)
+            if (typeItem != null)
             {
-                case "Speaker":
-                    break;
-                case "FileType":
-                    break;
-                case "Age":
-                    break;
+                var groupValue = typeItem.Name.ToString();
+                vm.setGroupMode(groupValue);
             }
-            //buildDatagridGroups(new ListCollectionView(rowS));
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             ProjectViewModel pr = dataGridProjects.SelectedValue as ProjectViewModel;
             MenuItem mi = sender as MenuItem;
-
-
 
             string folder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             string parentDir = Directory.GetParent(folder).Parent.Parent.Parent.FullName;
@@ -731,119 +81,55 @@ namespace P4PSpeechDB
                     break;
 
                 case "menuDownload":
-                    vm.downloadProject(this, parentDir + @"\testOutput\", pr.PID);
+                    vm.downloadProject(this, pr.PID);
                     break;
             }
         }
 
-
-        
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        /*Search the datagrid and filter using a regex.*/
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            // Open file system to select file(s)
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.Multiselect = true;
-
-
-            Nullable<bool> result = dlg.ShowDialog();  // Display OpenFileDialog by calling ShowDialog method 
-            byte[] rawData;
-            List<Tuple<string, byte[]>> dataList = new List<Tuple<string, byte[]>>();
-
-            // Add all files selected into the the db. If multiple files added, project destination is the same.
-            foreach (String file in dlg.FileNames)
+            try
             {
-                // Get the selected file name and display in a TextBox 
-                if (result.HasValue == true && result.Value == true)
-                {
-                    rawData = File.ReadAllBytes(file);
-                    dataList.Add(Tuple.Create(file, rawData));
-                }
+                vm.SearchGrid(searchBox.Text);
             }
-
-            AnalysisMsgPrompt a = new AnalysisMsgPrompt(new DataGridLoader(), null);
-
-
-
-            if (a.ShowDialog() == true)
+            catch (Exception exc)
             {
-                dgl.loadSpeakers(a.PID);
-                rowS = dgl.getCollection("S");
-                foreach (var elem in rowS.ToList())
-                    ((dynamic)rowS).Add((Speaker)elem);
-
-
-                using ((myConn = new DBConnection().getConn()))
-                using (MySqlCommand comm = myConn.CreateCommand())
-                {
-                    myConn.Open();
-
-                    foreach (var dataItem in dataList)
-                    {
-
-
-                        try
-                        {
-                            comm.CommandText = "INSERT INTO analysis (AID, File, Description) VALUES(@AID, @FileAsBlob, @Desc)";
-                            comm.Parameters.AddWithValue("@AID", dataItem.Item1);
-                            comm.Parameters.AddWithValue("@FileAsBlob", dataItem.Item2);
-                            if (a.Desc.Equals(""))
-                            {
-                                comm.Parameters.AddWithValue("@Desc", "No description");
-                            }
-                            else
-                            {
-
-                                comm.Parameters.AddWithValue("@Desc", a.Desc);
-                            }
-                            comm.ExecuteNonQuery();
-
-                            //Add to the mapping table(to link with speaker)
-                            List<Row> startsWithAge = rowS.Where(s => ((Speaker)s).SpeakerName.StartsWith(a.Age)).ToList();
-
-                            MessageBox.Show(a.Age);
-                            foreach (var row in rowS)
-                            {
-
-                                //comm.CommandText = "create table if not exists files2analysis (AID varchar(150) primary key, ID varchar(150) primary key)";
-                                //comm.ExecuteNonQuery();
-                                if (((Speaker)row).SpeakerName.StartsWith(a.Age))
-                                {
-
-
-                                    comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID2, @AID2)";
-                                    comm.Parameters.Clear();
-                                    comm.Parameters.AddWithValue("@ID2", ((Speaker)row).ID);
-                                    comm.Parameters.AddWithValue("@AID2", dataItem.Item1);
-                                    comm.ExecuteNonQuery();
-                                }
-
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            //conn.handleException(e);
-                        }
-                    }
-
-                }
+                MessageBox.Show(exc.Message);
             }
-
-
         }
 
 
+        /*Deletes the selected files. */
+        private void ButtonDelete_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Are you sure?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.No)
+            {
+                return;
+            }
 
-        private void ButtonConfig_Click(object sender, RoutedEventArgs e)
+            vm.DeleteFiles(dataGridSpeakers.SelectedItems, dataGridAnalysis.SelectedItems);
+
+
+            ////Reload grid (DOES SAVE EXPANSION STATE)
+            //dgl.loadSpeakers((listOfItems[1] as SpeakerRow).PID);
+            //dataGridFiles.ItemsSource = new ListCollectionView(dgl.getCollection("S"));
+            //buildDatagridGroups(new ListCollectionView(dgl.getCollection("S")));
+
+        }
+
+        /*Adds multiple folders to the database. */
+        private void ButtonAddFolder_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
             System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-            testDBRoot = dialog.SelectedPath;
-        }
 
-        private void ButtonAddFolder_Click(object sender, RoutedEventArgs e)
-        {
-
+            if (!result.ToString().Equals("Cancel"))
+            {
+                /*Passes in a dispatcher object, needed for the multithreaded uploads, and the path selected to upload to. */
+                vm.uploadProject(this.Dispatcher, dialog.SelectedPath);
+            }
         }
 
         private void ButtonWebMaus_Click(object sender, RoutedEventArgs e)

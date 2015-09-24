@@ -332,13 +332,13 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         </ComboBox>
         <TextBlock HorizontalAlignment="Left" Margin="324,239,0,0" Foreground="#565051" TextWrapping="Wrap" Text="Group By" VerticalAlignment="Top"/>
 
-        <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="262,311,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"  Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridSpeakers}" RenderTransformOrigin="0.492,4" />
-        <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="586,311,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236" Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridAnalysis}"/>
+        <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="262,311,0,0" TextWrapping="Wrap" Text="Select a project to view files, if available." VerticalAlignment="Top" Width="236"  Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridSpeakers}" RenderTransformOrigin="0.492,4" />
+        <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="586,311,0,0" TextWrapping="Wrap" Text="Select a file to view analysis, if available." VerticalAlignment="Top" Width="236" Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridAnalysis}"/>
 
 
         <StackPanel HorizontalAlignment="Left" Height="93" Margin="251,125,0,0" VerticalAlignment="Top" Width="659">
             <GroupBox Header="Description" VerticalAlignment="Top" FontSize="14" Height="93" BorderBrush="White" HorizontalAlignment="Left" Width="653" Foreground="#565051">
-                <TextBlock x:Name="descTextBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="52" Width="623" Background="WhiteSmoke"/>
+                <TextBlock x:Name="descTextBlock" Text="{Binding ProjectDescription}" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="52" Width="623" Background="WhiteSmoke"/>
             </GroupBox>
         </StackPanel>
         <TextBlock HorizontalAlignment="Left" Margin="586,239,0,0" Foreground="#565051" TextWrapping="Wrap" Text="Search" VerticalAlignment="Top" RenderTransformOrigin="0.51,-1.5"/>

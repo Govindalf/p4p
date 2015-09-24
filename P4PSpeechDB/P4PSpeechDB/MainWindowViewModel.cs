@@ -77,7 +77,6 @@ namespace P4PSpeechDB
 
                             string header = param as string;
                             SpeakersView.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
-                            //SpeakersView.SortDescriptions.Add(new SortDescription("TargetProperty.Name", ListSortDirection.Ascending));
                         });
 
                 return _groupColumn;
@@ -121,6 +120,11 @@ namespace P4PSpeechDB
             }
         }
 
+        public string ProjectDescription
+        {
+            get { if (SelectedProject != null) { return SelectedProject.Description; } else { return "Please select a project."; } }
+        }
+
         #endregion
 
         #region Datagrid operations
@@ -137,6 +141,7 @@ namespace P4PSpeechDB
 
             speakers = dgl.getSpeakers(SelectedProject.PID);
             RaisePropertyChanged("SpeakersView");
+            RaisePropertyChanged("ProjectDescription");
             speakersView = (ListCollectionView)CollectionViewSource.GetDefaultView(speakers);
 
             // Do this only once

@@ -86,6 +86,7 @@ namespace P4PSpeechDB
                 // the project drop down box
                 if (conn.openConn() == true)
                 {
+                    //Get all the projects from db
                     myReader = cmdProject.ExecuteReader();
                     while (myReader.Read())
                     {
@@ -95,6 +96,7 @@ namespace P4PSpeechDB
                     }
                     myReader.Close();
 
+                    //Get all the track options for sf0 from db
                     myReader = cmdSf0.ExecuteReader();
                     while (myReader.Read())
                     {
@@ -105,6 +107,7 @@ namespace P4PSpeechDB
                     }
                     myReader.Close();
 
+                    //Get all the track options for sfb from db
                     myReader = cmdSfb.ExecuteReader();
                     while (myReader.Read())
                     {
@@ -334,6 +337,7 @@ namespace P4PSpeechDB
             }
 
         }
+        // Add more input boxes to add track options
 
         private void ButtonForformant_Click(object sender, RoutedEventArgs e)
         {
@@ -345,6 +349,7 @@ namespace P4PSpeechDB
 
         }
 
+        // Add more input boxes to add track options
         private void ButtonForPitch_Click(object sender, RoutedEventArgs e)
         {
 
@@ -355,6 +360,7 @@ namespace P4PSpeechDB
             moveDownPitch += 32;
         }
 
+        // Add more input boxes to add track options
         private void ButtonForOther_Click(object sender, RoutedEventArgs e)
         {
             btOther.Margin = new Thickness(0, moveDownOther, 5.2, 5);

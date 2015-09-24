@@ -134,6 +134,7 @@ namespace P4PSpeechDB
 
         private void ButtonWebMaus_Click(object sender, RoutedEventArgs e)
         {
+            System.Diagnostics.Process.Start("https://clarin.phonetik.uni-muenchen.de/BASWebServices/#/services/WebMAUSGeneral");
 
         }
 

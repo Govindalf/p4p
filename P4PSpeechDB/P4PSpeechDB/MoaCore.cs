@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using System.Threading.Tasks;
 
 
@@ -53,36 +54,48 @@ namespace P4PSpeechDB
             if (result.HasValue == true && result.Value == true)
             {
                 folderDetails = GetFolderName(); // only prompt for folder once always
-            }
-            byte[] rawData;
+                byte[] rawData;
 
-            // Add all files selected into the the db. If multiple files added, project destination is the same.
-            foreach (String file in dlg.FileNames)
-            {
-                // Get the selected file name and display in a TextBox 
-                if (result.HasValue == true && result.Value == true)
+                // Add all files selected into the the db. If multiple files added, project destination is the same.
+                foreach (String file in dlg.FileNames)
                 {
-                    rawData = File.ReadAllBytes(file);
-                    // Open document 
-                    string ext = Path.GetExtension(file);
+                    // Get the selected file name and display in a TextBox 
+                    if (result.HasValue == true && result.Value == true)
+                    {
+                        rawData = File.ReadAllBytes(file);
+                        // Open document 
+                        string ext = Path.GetExtension(file);
 
-                    //Stores file in appropriate place in file system
+                        //Stores file in appropriate place in file system
 
-                    executeInsert(Path.GetFileNameWithoutExtension(file), ext, dlg, folderDetails, rawData);
+                        executeInsert(Path.GetFileNameWithoutExtension(file), ext, dlg, folderDetails, rawData);
 
 
+                    }
                 }
+                // if a description was given
+                if (folderDetails.Count == 2)
+                {
+                    desc = folderDetails.Last();
+                }
+                else
+                {
+                    desc = "No description given";
+                }
+                ProjectViewModel PVMtoDelete = null;
+                //Update views
+                foreach (ProjectViewModel p in mainWindowVM.Projects)
+                {
+                    //System.Console.WriteLine(p.PID);
+                    if (p.PID.Equals(folderDetails.First()))
+                    {
+                        PVMtoDelete = p;
+                        return;
+                    }
+                }
+                // if project isn't already in the project data grid, add it
+                mainWindowVM.Projects.Add(new ProjectViewModel { Project = new Project { PID = folderDetails.First(), DateCreated = DateTime.Now.ToString(), Description = desc } });
             }
-            if (folderDetails.Count == 2)
-            {
-                desc = folderDetails.Last();
-            }
-            else
-            {
-                desc = "No description given";
-            }
-            //Update views
-            mainWindowVM.Projects.Add(new ProjectViewModel { Project = new Project { PID = folderDetails.First(), DateCreated = DateTime.Now.ToString(), Description = desc } });
 
 
         }
@@ -482,7 +495,7 @@ namespace P4PSpeechDB
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                MessageBox.Show(ex.ToString());
             }
         }
 

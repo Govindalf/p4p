@@ -1,12 +1,14 @@
 ﻿using MicroMvvm;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -231,11 +233,23 @@ namespace P4PSpeechDB
             moa.AddAnalysis();
         }
 
+        /*On button click, deletes selected files. Takes in both selected items in speaker and analysis grids respectively.*/
+        public void DeleteFiles(IList listOfSGridItems, IList listOfAGridItems)
+        {
+            //Check which datagrid item is actually selected currently, then delete from that.
+            //if(SelectedSpeaker == null)
+            //    moa.DeleteFiles(listOfAGridItems);
+            //else if (SelectedAnalysis == null)
+            moa.DeleteFiles(listOfSGridItems);
+
+        }
+
+
         #endregion
 
         #region Other operations
 
-        /*On button click, create template file. */
+        /*On button click, changes default path where the database is stored on disk. */
         public ICommand PathSettings { get { return new RelayCommand(PathSettingsExecute); } }
 
         void PathSettingsExecute()
@@ -243,20 +257,40 @@ namespace P4PSpeechDB
             System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
             System.Windows.Forms.DialogResult result = dialog.ShowDialog();
             moa.RootFolder = dialog.SelectedPath;
-        
+
         }
 
-                public ICommand GenerateTemplate { get { return new RelayCommand(GenerateTemplateExecute); } }
-
+        /*On button click, creates a template file. */
+        public ICommand GenerateTemplate { get { return new RelayCommand(GenerateTemplateExecute); } }
         void GenerateTemplateExecute()
         {
             moa.GenerateTemplate();
         }
 
+        private string searchText;
+        /*Searching the datagrid */
+        public void SearchGrid(string searchText)
+        {
+            //Eh well
+            this.searchText = searchText;
+
+            SpeakersView.Filter += new Predicate<object>(searchFilter);
+
+        }
 
 
+        /*Regex filter used for search.*/
+        public bool searchFilter(object item)
+        {
+            var obj = item as SpeakerViewModel;
+
+            return (Regex.IsMatch(obj.Name, searchText, RegexOptions.IgnoreCase));
+
+            
+        }
         #endregion
 
+        #region Multithreaded tasks
 
         /* Downloads a selected project on a background thread. */
         private void backgroundWorker_DoWork(
@@ -275,7 +309,6 @@ namespace P4PSpeechDB
 
             moa.DownloadProject(parameters);
 
-           
         }
 
 
@@ -324,6 +357,68 @@ namespace P4PSpeechDB
                                                       new Action(delegate { }));
             }
         }
-        //public ICommand ProjectSelected { get { return new RelayCommand<object>((s) => ProjectSelectedExecute(s)); } }
+
+        /* Uploads a selected project on a background thread. */
+        private void backgroundWorker_DoUploadWork(
+            object sender,
+            DoWorkEventArgs e)
+        {
+            object[] parameters = e.Argument as object[];
+            var dispatcher = parameters[0] as Dispatcher;
+            var selectedPath = parameters[1] as string;
+
+            List<String> projectDetails = null;
+            dispatcher.Invoke((Action)(() =>
+            {
+                projectDetails = moa.GetFolderName();
+                prog.Show();
+            }));
+
+            moa.AddFolders(projectDetails, selectedPath);
+
+
+
+        }
+
+
+        /* Uploads projects on a different thread to UI thread, so user can do other tasks while uploading. */
+        public void uploadProject(Dispatcher dispatcher, string selectedPath)
+        {
+
+            BackgroundWorker backgroundWorker;
+
+            // Instantiate BackgroundWorker and attach handlers to its 
+            // DowWork and RunWorkerCompleted events.
+            backgroundWorker = new System.ComponentModel.BackgroundWorker();
+            backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(backgroundWorker_DoUploadWork);
+            backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
+
+            object[] parameters = new object[] { dispatcher, selectedPath };
+
+            prog = new ProgressBar();
+            // Start the download operation in the background. 
+            backgroundWorker.RunWorkerAsync();
+
+            // Once you have started the background thread you  
+            // can exit the handler and the application will  
+            // wait until the RunWorkerCompleted event is raised. 
+
+            // Or if you want to do something else in the main thread, 
+            // such as update a progress bar, you can do so in a loop  
+            // while checking IsBusy to see if the background task is 
+            // still running. 
+
+            while (backgroundWorker.IsBusy)
+            {
+
+                // Keep UI messages moving, so the form remains  
+                // responsive during the asynchronous operation.
+
+                Application.Current.Dispatcher.Invoke(DispatcherPriority.Background,
+                                                      new Action(delegate { }));
+            }
+        }
+
+        #endregion
     }
 }

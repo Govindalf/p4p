@@ -54,15 +54,11 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <MediaElement x:Name="mediaElement" HorizontalAlignment="Left" Height="80" VerticalAlignment="Top" Width="80" Margin="433,307,0,0" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual"
-              UnloadedBehavior="Stop" />
-
-
         <DataGrid AutoGenerateColumns ="False" BorderBrush="Silver" VerticalAlignment="Top" GridLinesVisibility="None" Height="386" Margin="246,275,0,0" x:Name="dataGridSpeakers"  
     		HorizontalAlignment="Left" Width="329" HeadersVisibility="Column" CanUserAddRows="False" CanUserDeleteRows="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto"
 
-               ItemsSource="{Binding Path=SpeakersView}" SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
+               ItemsSource="{Binding Path=SpeakersView}"  SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
 
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
@@ -113,6 +109,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
 
         <TextBox x:Name="searchBox" HorizontalAlignment="Left" Height="20" Margin="641,239,0,0" TextWrapping="Wrap" 
                  VerticalAlignment="Top" Width="244" FontStyle="Italic" Foreground="LightGray" KeyDown="TextBox_KeyDown" Background="WhiteSmoke">
+
             
             <TextBox.Style>
                 <Style xmlns:sys="clr-namespace:System;assembly=mscorlib" TargetType="{x:Type TextBox}">
@@ -137,8 +134,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <Button Visibility="Hidden" Content="MAGIC ADD ALL BUTTON!!!" HorizontalAlignment="Left" Margin="655,332,-85,0" VerticalAlignment="Top" Width="330" Click="loadAllButton_Click"/>
-        <Grid HorizontalAlignment="Left" Height="91" Margin="0,29,0,0" VerticalAlignment="Top" Width="920">
+       <Grid HorizontalAlignment="Left" Height="91" Margin="0,29,0,0" VerticalAlignment="Top" Width="920">
             <Border BorderThickness="1" BorderBrush="WhiteSmoke">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="89" VerticalAlignment="Top" Width="920" Background="WhiteSmoke" Margin="-1.8,0.2,-0.2,-1.8">
                     <Button HorizontalAlignment="Center" Margin="10,10,0,0" Background="#6890E7" VerticalAlignment="Top" Width="90" Height="70" Command="{Binding PathSettings}" BorderBrush="#6890E7">
@@ -232,7 +228,6 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                             <Setter Property="Background" Value="WhiteSmoke" />
                         </Trigger>
                     </Style.Triggers>
-                    <EventSetter Event="Control.MouseDoubleClick" Handler="analysisDataGrid_MouseDoubleClick"/>
                 </Style>
 
             </DataGrid.RowStyle>
@@ -306,7 +301,6 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                             <Setter Property="Foreground" Value="#565051" />
                         </Trigger>
                     </Style.Triggers>
-                    <EventSetter Event="UIElement.GotFocus" Handler="dataGridProjects_GotCellFocus"/>
                 </Style>
             </DataGrid.RowStyle>
 
@@ -334,8 +328,8 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
         </ComboBox>
         <TextBlock HorizontalAlignment="Left" Margin="324,239,0,0" Foreground="#565051" TextWrapping="Wrap" Text="Group By" VerticalAlignment="Top"/>
 
-        <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="269,259,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"  Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridSpeakers}" />
-        <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="578,259,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236" Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridAnalysis}"/>
+        <TextBlock x:Name="emptyGrid" HorizontalAlignment="Left" Margin="262,311,0,0" TextWrapping="Wrap" Text="Select a project to view files" VerticalAlignment="Top" Width="236"  Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridSpeakers}" RenderTransformOrigin="0.492,4" />
+        <TextBlock x:Name="emptyGrid2" HorizontalAlignment="Left" Margin="586,311,0,0" TextWrapping="Wrap" Text="Select a file to view analysis" VerticalAlignment="Top" Width="236" Visibility="{Binding Items.IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=dataGridAnalysis}"/>
 
 
         <StackPanel HorizontalAlignment="Left" Height="93" Margin="251,125,0,0" VerticalAlignment="Top" Width="659">

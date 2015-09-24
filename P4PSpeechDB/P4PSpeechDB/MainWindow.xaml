@@ -326,8 +326,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
 
         </DataGrid>
 
-        <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="378,239,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Path=SortSpeakers}" 
-                  SelectedItem="{Binding SortValue, Mode=TwoWay}">
+        <ComboBox x:Name="speakerCombo" HorizontalAlignment="Left" Margin="378,239,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="speakerCombo_SelectionChanged" SelectedValuePath="Content">
             <ComboBoxItem Name="Speaker">Speaker</ComboBoxItem>
             <ComboBoxItem Name="FileType">File Type</ComboBoxItem>
             <ComboBoxItem Name="Age">Age</ComboBoxItem>

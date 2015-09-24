@@ -116,23 +116,7 @@ namespace P4PSpeechDB
 
         #region Datagrid operations
 
-<<<<<<< HEAD
-
         public ICommand ProjectSelected { get { return new RelayCommand(ProjectSelectedExecute); } }
-
-        public ProjectViewModel SelectedProject
-        {
-            get { System.Console.WriteLine("3"); return selectedProject; }
-            set
-            {
-                selectedProject = value;
-            }
-        }
-
-=======
-        /*Runs when project selected in the projects datagrid.*/
-        public ICommand ProjectSelected { get { System.Console.WriteLine("4"); return new RelayCommand(ProjectSelectedExecute); } }
->>>>>>> e42c2d767f2f7cbe945e1cc15555e340a2d3f143
         void ProjectSelectedExecute()
         {
 
@@ -259,47 +243,6 @@ namespace P4PSpeechDB
         }
 
         #endregion
-<<<<<<< HEAD
-        #region ComboBox operations
-
-        protected ComboBox m_SortValue;
-        private string str_SortValue;
-
-        /// <summary>
-        ///  
-        /// </summary>
-        //public string SortValue
-        //{
-        //    get { System.Console.WriteLine((string)m_SortValue.SelectedValue); return str_SortValue=(string)m_SortValue.SelectedValue; }
-        //    set
-        //    {
-        //        if (str_SortValue != value)
-        //        {
-        //            str_SortValue = value;
-        //            //RaisePropertyChanged("FirstSelectedValue");
-        //        }
-        //    }
-        //}
-
-        //protected ObservableCollection<string> m_FirstComboValues;
-
-        ///// <summary>
-        /////  
-        ///// </summary>
-        //public ObservableCollection<string> FirstComboValues
-        //{
-        //    get { return m_FirstComboValues; }
-        //    set
-        //    {
-        //        if (m_FirstComboValues != value)
-        //        {
-        //            m_FirstComboValues = value;
-        //            RaisePropertyChanged("FirstComboValues");
-        //        }
-        //    }
-        //}
-        #endregion
-=======
 
 
         /* Downloads a selected project on a background thread. */
@@ -368,7 +311,6 @@ namespace P4PSpeechDB
                                                       new Action(delegate { }));
             }
         }
->>>>>>> e42c2d767f2f7cbe945e1cc15555e340a2d3f143
         //public ICommand ProjectSelected { get { return new RelayCommand<object>((s) => ProjectSelectedExecute(s)); } }
     }
 }

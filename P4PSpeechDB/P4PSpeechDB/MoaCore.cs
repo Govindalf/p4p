@@ -171,16 +171,17 @@ namespace P4PSpeechDB
             var path = Path.GetExtension(filename);
             filename = Path.GetFileName(filename);
             string speaker = Path.GetFileNameWithoutExtension(dlg.SafeFileName);
-            if (speaker.Length < 4)
+            if (!(speaker.Length < 4))
             {
                 speaker = speaker.Substring(0, 4);
             }
 
             using (DBConnection db = new DBConnection())
             {
+                //Update views
+                mainWindowVM.Speakers.Add(new SpeakerViewModel { Speaker = new Speaker { Name = filename, PID = folderDetails.First(), SpeakerName = speaker, FileType = path, Age = speaker[0].ToString() } });
 
-
-
+                //Upload to db
                 MySqlCommand comm = new MySqlCommand();
                 comm.CommandText = "INSERT INTO File (PID, Name, FileType, Speaker) VALUES(@PID, @Name, @Type, @Speaker)";
                 comm.Parameters.AddWithValue("@Name", filename);
@@ -198,20 +199,28 @@ namespace P4PSpeechDB
                 if (folderDetails != null)
                 {
 
+                    //Create a new project in the db to store the file(s)
                     comm = new MySqlCommand();
                     comm.CommandText = "INSERT IGNORE INTO Project (PID, DateCreated, Description) VALUES(@PID, @dateCreated, @description)";
                     comm.Parameters.AddWithValue("@PID", folderDetails.First());
                     comm.Parameters.AddWithValue("@dateCreated", DateTime.Now.ToString());
+                    string desc;
                     if (folderDetails.Count == 2)
                     {
-                        comm.Parameters.AddWithValue("@description", folderDetails.Last());
+                        desc = folderDetails.Last();
+                        comm.Parameters.AddWithValue("@description", desc);
                     }
                     else
                     {
-                        comm.Parameters.AddWithValue("@description", "No description given");
+                        desc = "No description given";
+                        comm.Parameters.AddWithValue("@description", desc);
 
                     }
                     db.insertIntoDB(comm);
+
+                    //Update views
+                    mainWindowVM.Projects.Add(new ProjectViewModel { Project = new Project { PID = folderDetails.First(), DateCreated = DateTime.Now.ToString(), Description = desc} });
+
                 }
 
             }

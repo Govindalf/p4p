@@ -103,16 +103,21 @@ namespace P4PSpeechDB
 
         public DataTable getFromDB(MySqlCommand query)
         {
-            //openConn();
-
             query.Connection = conn;
             var dataSet = new DataSet();
             var mySQLDataAdapter = new MySqlDataAdapter(query);
 
             dataSet = new DataSet();
-            mySQLDataAdapter.Fill(dataSet);
-            return dataSet.Tables[0];
+            try
+            {
+                mySQLDataAdapter.Fill(dataSet);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Connection error." + e.Message);
+            }
 
+            return dataSet.Tables[0];
         }
 
         public Boolean insertIntoDB(MySqlCommand cmd)

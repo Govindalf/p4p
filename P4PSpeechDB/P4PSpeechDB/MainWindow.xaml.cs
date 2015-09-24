@@ -221,6 +221,22 @@ namespace P4PSpeechDB
                 MessageBox.Show(exc.Message);
             }
 
+        }
+
+        private void speakerCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox cmb = sender as ComboBox;
+            ComboBoxItem typeItem = (ComboBoxItem)cmb.SelectedItem;
+
+            groupValue = typeItem.Name.ToString();
+            //buildDatagridGroups(new ListCollectionView(rowS));
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ProjectViewModel pr = dataGridProjects.SelectedValue as ProjectViewModel;
+            MenuItem mi = sender as MenuItem;
+
 
         }
 

@@ -125,6 +125,7 @@ namespace P4PSpeechDB
 
         #region Datagrid operations
 
+
         /*Runs when project selected in the projects datagrid.*/
         public ICommand ProjectSelected { get { return new RelayCommand(ProjectSelectedExecute); } }
         void ProjectSelectedExecute()

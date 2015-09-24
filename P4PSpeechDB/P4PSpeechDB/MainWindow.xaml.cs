@@ -33,21 +33,11 @@ namespace P4PSpeechDB
     /// </summary>
     public partial class MainWindow : Window
     {
-        //private string databaseRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\P4Ptestfiles"; //Where the P4Ptestfiles folder is
-        private string testDBRoot = "C:\\Users\\Govindu\\Dropbox\\P4P\\p4p\\TestDB";
-        private DBConnection conn;
-        MySqlConnection myConn = null;
-        private List<String> tableNames = new List<String>();
-        private ObservableCollection<Row> rowS; //DAtagrid row item
-        private ObservableCollection<Row> rowA; //DAtagrid row item
         private ObservableCollection<ProjectViewModel> projects; //DAtagrid row item
         DataGridLoader dgl;
         ProgressBar prog = null;
 
         public Boolean IsExpanded { get; set; }
-        private string groupValue = "Speaker"; //Default grouping on this value
-
-
         MoaCore moa;
         MainWindowViewModel vm;
 
@@ -69,7 +59,7 @@ namespace P4PSpeechDB
             ComboBoxItem typeItem = (ComboBoxItem)cmb.SelectedItem;
             if (typeItem != null)
             {
-                groupValue = typeItem.Name.ToString();
+                var groupValue = typeItem.Name.ToString();
                 vm.setGroupMode(groupValue);
             }
         }
@@ -78,8 +68,6 @@ namespace P4PSpeechDB
         {
             ProjectViewModel pr = dataGridProjects.SelectedValue as ProjectViewModel;
             MenuItem mi = sender as MenuItem;
-
-
 
             string folder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             string parentDir = Directory.GetParent(folder).Parent.Parent.Parent.FullName;
@@ -92,122 +80,10 @@ namespace P4PSpeechDB
                     break;
 
                 case "menuDownload":
-                    vm.downloadProject(this, parentDir + @"\testOutput\", pr.PID);
+                    vm.downloadProject(this, pr.PID);
                     break;
             }
         }
-
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    // Open file system to select file(s)
-        //    Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-        //    dlg.Multiselect = true;
-
-
-        //    Nullable<bool> result = dlg.ShowDialog();  // Display OpenFileDialog by calling ShowDialog method 
-        //    byte[] rawData;
-        //    List<Tuple<string, byte[]>> dataList = new List<Tuple<string, byte[]>>();
-
-        //    // Add all files selected into the the db. If multiple files added, project destination is the same.
-        //    foreach (String file in dlg.FileNames)
-        //    {
-        //        // Get the selected file name and display in a TextBox 
-        //        if (result.HasValue == true && result.Value == true)
-        //        {
-        //            rawData = File.ReadAllBytes(file);
-        //            dataList.Add(Tuple.Create(file, rawData));
-        //        }
-        //    }
-
-        //    AnalysisMsgPrompt a = new AnalysisMsgPrompt(new DataGridLoader(), null);
-
-
-
-        //    if (a.ShowDialog() == true)
-        //    {
-        //        dgl.loadSpeakers(a.PID);
-        //        rowS = dgl.getCollection("S");
-        //        foreach (var elem in rowS.ToList())
-        //            ((dynamic)rowS).Add((Speaker)elem);
-
-
-        //        using ((myConn = new DBConnection().getConn()))
-        //        using (MySqlCommand comm = myConn.CreateCommand())
-        //        {
-        //            myConn.Open();
-
-        //            foreach (var dataItem in dataList)
-        //            {
-
-
-        //                try
-        //                {
-        //                    comm.CommandText = "INSERT INTO analysis (AID, File, Description) VALUES(@AID, @FileAsBlob, @Desc)";
-        //                    comm.Parameters.AddWithValue("@AID", dataItem.Item1);
-        //                    comm.Parameters.AddWithValue("@FileAsBlob", dataItem.Item2);
-        //                    if (a.Desc.Equals(""))
-        //                    {
-        //                        comm.Parameters.AddWithValue("@Desc", "No description");
-        //                    }
-        //                    else
-        //                    {
-
-        //                        comm.Parameters.AddWithValue("@Desc", a.Desc);
-        //                    }
-        //                    comm.ExecuteNonQuery();
-
-        //                    //Add to the mapping table(to link with speaker)
-        //                    List<Row> startsWithAge = rowS.Where(s => ((Speaker)s).SpeakerName.StartsWith(a.Age)).ToList();
-
-        //                    MessageBox.Show(a.Age);
-        //                    foreach (var row in rowS)
-        //                    {
-
-        //                        //comm.CommandText = "create table if not exists files2analysis (AID varchar(150) primary key, ID varchar(150) primary key)";
-        //                        //comm.ExecuteNonQuery();
-        //                        if (((Speaker)row).SpeakerName.StartsWith(a.Age))
-        //                        {
-
-
-        //                            comm.CommandText = "INSERT IGNORE INTO files2analysis (ID, AID) VALUES (@ID2, @AID2)";
-        //                            comm.Parameters.Clear();
-        //                            comm.Parameters.AddWithValue("@ID2", ((Speaker)row).ID);
-        //                            comm.Parameters.AddWithValue("@AID2", dataItem.Item1);
-        //                            comm.ExecuteNonQuery();
-        //                        }
-
-        //                    }
-        //                }
-        //                catch (Exception)
-        //                {
-        //                    //conn.handleException(e);
-        //                }
-        //            }
-
-        //        }
-        //    }
-
-
-        //}
-
-        private void ButtonConfig_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Forms.FolderBrowserDialog dialog = new System.Windows.Forms.FolderBrowserDialog();
-            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-            testDBRoot = dialog.SelectedPath;
-        }
-
-
-
-
-
-
-
-
-
-
-
-
 
         /*Search the datagrid and filter using a regex.*/
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
@@ -220,24 +96,6 @@ namespace P4PSpeechDB
             {
                 MessageBox.Show(exc.Message);
             }
-
-        }
-
-        private void speakerCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ComboBox cmb = sender as ComboBox;
-            ComboBoxItem typeItem = (ComboBoxItem)cmb.SelectedItem;
-
-            groupValue = typeItem.Name.ToString();
-            //buildDatagridGroups(new ListCollectionView(rowS));
-        }
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            ProjectViewModel pr = dataGridProjects.SelectedValue as ProjectViewModel;
-            MenuItem mi = sender as MenuItem;
-
-
         }
 
 
@@ -259,6 +117,7 @@ namespace P4PSpeechDB
             //buildDatagridGroups(new ListCollectionView(dgl.getCollection("S")));
 
         }
+
         /*Adds multiple folders to the database. */
         private void ButtonAddFolder_Click(object sender, RoutedEventArgs e)
         {

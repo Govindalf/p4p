@@ -32,7 +32,12 @@ namespace P4PSpeechDB
         public string RootFolder
         {
             get { return rootFolder; }
-            set { this.rootFolder = value; }
+            set
+            {
+                this.rootFolder = value;
+                P4PSpeechDB.Properties.Settings.Default.Path = value;
+                P4PSpeechDB.Properties.Settings.Default.Save();
+            }
         }
 
         /*Adds a speech file to the File table on the db. */
@@ -618,8 +623,7 @@ namespace P4PSpeechDB
         /*Downloads the project with PID as specified in parameters[2] to the folder at path parameters[1]. */
         public void DownloadProject(object[] parameters)
         {
-            string PID = parameters[2] as string;
-            string path = parameters[1] as string;
+            string PID = parameters[1] as string;
 
             byte[] rawData;
             FileStream fs;
@@ -638,8 +642,8 @@ namespace P4PSpeechDB
 
                     rawData = (byte[])dr["FileData"];
 
-                    Directory.CreateDirectory(path + PID + @"\" + dr["Speaker"].ToString());
-                    fs = new FileStream(path + PID + @"\" + dr["Speaker"].ToString() + @"\" + dr["Name"].ToString() + dr["FileType"].ToString(), FileMode.OpenOrCreate, FileAccess.Write);
+                    Directory.CreateDirectory(RootFolder + @"\" + PID + @"\" + dr["Speaker"].ToString());
+                    fs = new FileStream(RootFolder + @"\" + PID + @"\" + dr["Speaker"].ToString() + @"\" + dr["Name"].ToString() + dr["FileType"].ToString(), FileMode.OpenOrCreate, FileAccess.Write);
 
                     filePath = fs.Name;
 

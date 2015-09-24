@@ -315,8 +315,7 @@ namespace P4PSpeechDB
             DoWorkEventArgs e)
         {
             object[] parameters = e.Argument as object[];
-            string PID = parameters[2] as string;
-            string path = parameters[1] as string;
+            string PID = parameters[1] as string;
             MainWindow view = parameters[0] as MainWindow;
 
             view.Dispatcher.Invoke((Action)(() =>
@@ -338,7 +337,7 @@ namespace P4PSpeechDB
         }
 
         /* Downloads projects on a different thread to UI thread, so user can do other tasks while downloading. */
-        public void downloadProject(MainWindow view, string path, string PID)
+        public void downloadProject(MainWindow view, string PID)
         {
 
             BackgroundWorker backgroundWorker;
@@ -349,7 +348,7 @@ namespace P4PSpeechDB
             backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(backgroundWorker_DoWork);
             backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
 
-            object[] parameters = new object[] { view, path, PID };
+            object[] parameters = new object[] { view, PID };
 
             prog = new ProgressBar();
             // Start the download operation in the background. 

@@ -170,7 +170,11 @@ namespace P4PSpeechDB
         {
             var path = Path.GetExtension(filename);
             filename = Path.GetFileName(filename);
-            string speaker = Path.GetFileNameWithoutExtension(dlg.SafeFileName).Substring(0, 4);
+            string speaker = Path.GetFileNameWithoutExtension(dlg.SafeFileName);
+            if (speaker.Length < 4)
+            {
+                speaker = speaker.Substring(0, 4);
+            }
 
             using (DBConnection db = new DBConnection())
             {
@@ -304,6 +308,7 @@ namespace P4PSpeechDB
             }
         }
 
+        /*Check the type of obj, and calls the appropriate open file method.*/
         public void openOrPlayFile(ObservableObject obj)
         {
             if (obj is SpeakerViewModel)

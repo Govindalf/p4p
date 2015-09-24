@@ -113,7 +113,7 @@ namespace P4PSpeechDB
         #region Datagrid operations
 
 
-        public ICommand ProjectSelected { get { System.Console.WriteLine("4"); return new RelayCommand(ProjectSelectedExecute); } }
+        public ICommand ProjectSelected { get { return new RelayCommand(ProjectSelectedExecute); } }
 
         public ProjectViewModel SelectedProject
         {
@@ -193,6 +193,45 @@ namespace P4PSpeechDB
             moa.GenerateTemplate();
         }
 
+        #endregion
+        #region ComboBox operations
+
+        protected ComboBox m_SortValue;
+        private string str_SortValue;
+
+        /// <summary>
+        ///  
+        /// </summary>
+        //public string SortValue
+        //{
+        //    get { System.Console.WriteLine((string)m_SortValue.SelectedValue); return str_SortValue=(string)m_SortValue.SelectedValue; }
+        //    set
+        //    {
+        //        if (str_SortValue != value)
+        //        {
+        //            str_SortValue = value;
+        //            //RaisePropertyChanged("FirstSelectedValue");
+        //        }
+        //    }
+        //}
+
+        //protected ObservableCollection<string> m_FirstComboValues;
+
+        ///// <summary>
+        /////  
+        ///// </summary>
+        //public ObservableCollection<string> FirstComboValues
+        //{
+        //    get { return m_FirstComboValues; }
+        //    set
+        //    {
+        //        if (m_FirstComboValues != value)
+        //        {
+        //            m_FirstComboValues = value;
+        //            RaisePropertyChanged("FirstComboValues");
+        //        }
+        //    }
+        //}
         #endregion
         //public ICommand ProjectSelected { get { return new RelayCommand<object>((s) => ProjectSelectedExecute(s)); } }
     }

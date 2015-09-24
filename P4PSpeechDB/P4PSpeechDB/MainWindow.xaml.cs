@@ -692,11 +692,8 @@ namespace P4PSpeechDB
             ComboBox cmb = sender as ComboBox;
             ComboBoxItem typeItem = (ComboBoxItem)cmb.SelectedItem;
 
-
-
             groupValue = typeItem.Name.ToString();
-
-            buildDatagridGroups(new ListCollectionView(rowS));
+            //buildDatagridGroups(new ListCollectionView(rowS));
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)

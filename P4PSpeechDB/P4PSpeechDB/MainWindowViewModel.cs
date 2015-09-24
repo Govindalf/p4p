@@ -32,7 +32,7 @@ namespace P4PSpeechDB
         {
             moa = new MoaCore(this, dgl);
             projects = dgl.getProjects();
-
+            System.Console.WriteLine("1");
             speakersView = (ListCollectionView)CollectionViewSource.GetDefaultView(this.Speakers);
             //cv.GroupDescriptions.Add(new PropertyGroupDescription("Speakers.Name"));
             //.ItemsSource = cv;
@@ -75,6 +75,7 @@ namespace P4PSpeechDB
         {
             get
             {
+                System.Console.WriteLine("2");
                 return projects;
             }
             set
@@ -111,14 +112,14 @@ namespace P4PSpeechDB
         #region Datagrid operations
 
 
-        public ICommand ProjectSelected { get { return new RelayCommand(ProjectSelectedExecute); } }
+        public ICommand ProjectSelected { get { System.Console.WriteLine("4"); return new RelayCommand(ProjectSelectedExecute); } }
 
         public ProjectViewModel SelectedProject
         {
-            get { return selectedProject; }
+            get { System.Console.WriteLine("3"); return selectedProject; }
             set
             {
-                selectedProject = value; RaisePropertyChanged("SpeakersView");
+                selectedProject = value;
             }
         }
 
@@ -129,13 +130,15 @@ namespace P4PSpeechDB
                 return;
 
             speakers = dgl.getSpeakers(SelectedProject.PID);
-
             RaisePropertyChanged("SpeakersView");
-            System.Console.WriteLine("Project Selected");
-            speakersView = (ListCollectionView)CollectionViewSource.GetDefaultView(this.Speakers);
-            // do this only once or reset the collectionView.
-            speakersView.GroupDescriptions.Add(new PropertyGroupDescription("SpeakerName"));
-            speakersView.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
+            speakersView = (ListCollectionView)CollectionViewSource.GetDefaultView(speakers);
+            
+            // Do this only once
+            if (speakersView.GroupDescriptions.Count() == 0)
+            {
+                speakersView.GroupDescriptions.Add(new PropertyGroupDescription("SpeakerName"));
+                speakersView.GroupDescriptions.Add(new PropertyGroupDescription("Name"));
+            }
 
         }
 
@@ -144,7 +147,7 @@ namespace P4PSpeechDB
 
         public SpeakerViewModel SelectedSpeaker
         {
-            get { return selectedSpeaker; }
+            get { System.Console.WriteLine("s1"); return selectedSpeaker; }
             set { selectedSpeaker = value; RaisePropertyChanged("SelectedSpeaker"); }
         }
 

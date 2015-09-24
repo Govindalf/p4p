@@ -89,6 +89,7 @@
       <DependentUpon>AnalysisMsgPrompt.xaml</DependentUpon>
     </Compile>
     <Compile Include="AnalysisViewModel.cs" />
+    <Compile Include="MoaCore.cs" />
     <Compile Include="SpeakerViewModel.cs" />
     <Compile Include="ProjectViewModel.cs" />
     <Compile Include="MainWindowViewModel.cs" />

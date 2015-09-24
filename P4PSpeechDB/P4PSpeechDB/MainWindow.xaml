@@ -60,13 +60,6 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
             ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" 
                ItemsSource="{Binding Path=SpeakersView}" SelectedValue="{Binding SelectedSpeaker, Mode=TwoWay}">
 
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseLeftButtonUp">
-                    <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
-                    <Command:EventToCommand Command="{Binding SpeakerSelected}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Name}" Header="FileID" Width="*" IsReadOnly="True" SortDirection="Ascending"/>
                 <DataGridTextColumn Binding="{Binding FileType}" Header="FileType" Width="*" IsReadOnly="True" />
@@ -88,6 +81,13 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                     </GroupStyle.Panel>
                 </GroupStyle>
             </DataGrid.GroupStyle>
+            
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseLeftButtonUp">
+                    <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
+                    <Command:EventToCommand Command="{Binding SpeakerSelected}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
 
             <!--<DataGrid.GroupStyle>
                 <GroupStyle>
@@ -251,12 +251,12 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
             </DataGrid.InputBindings>-->
 
       
-                <i:Interaction.Triggers>
+            <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonUp">
                         <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
                     <Command:EventToCommand Command="{Binding ProjectSelected}"/>
                 </i:EventTrigger>
-                </i:Interaction.Triggers>
+            </i:Interaction.Triggers>
 
             <!--<i:Interaction.Triggers>
                 <i:EventTrigger EventName="OnFocus">

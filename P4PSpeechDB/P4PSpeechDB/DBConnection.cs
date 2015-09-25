@@ -17,6 +17,8 @@ using System.Windows;
  */
 namespace P4PSpeechDB
 {
+    /* Class that manages the database connections. Connection pool is managed by
+     * compiler, and released automatically when not needed. */
     public class DBConnection : IDisposable
     {
 
@@ -50,12 +52,14 @@ namespace P4PSpeechDB
             }
         }
 
+        /*Creates database using aql script. */
         public void createDB()
         {
             MySqlScript script = new MySqlScript(conn, File.ReadAllText(@"C:\Users\Govindu\Dropbox\P4P\p4p\schema.sql"));
             script.Execute();
         }
 
+        /*Opens MySQL connection. */
         public bool openConn()
         {
             try
@@ -91,6 +95,7 @@ namespace P4PSpeechDB
             closeConn();
         }
 
+        /*Closes MySQL connection. */
         public void closeConn()
         {
             try
@@ -107,6 +112,7 @@ namespace P4PSpeechDB
         }
 
 
+        /*Queries database using query, and gets a DataTable representing results of the query. */
         public DataTable getFromDB(MySqlCommand query)
         {
             query.Connection = conn;
@@ -126,6 +132,7 @@ namespace P4PSpeechDB
             return dataSet.Tables[0];
         }
 
+        /*Executes query in cmd, usually adding or deleting. */
         public Boolean insertIntoDB(MySqlCommand cmd)
         {
             openConn();

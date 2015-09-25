@@ -20,6 +20,7 @@ using System.Windows.Data;
 
 namespace P4PSpeechDB
 {
+    /*Loads data from DB into the ViewModel collections , used to update datagrids. */
     public class DataGridLoader
     {
         private ObservableCollection<SpeakerViewModel> speakers = new ObservableCollection<SpeakerViewModel>(); //DAtagrid row item
@@ -36,13 +37,7 @@ namespace P4PSpeechDB
             ignoreTables.Add("trackOptions");
         }
 
-        public void setUpDataGrids()
-        {
-            loadProjects();
-            loadSpeakers(null);
-        }
-
-        
+        #region GettingCollections
         public ObservableCollection<ProjectViewModel> getProjects()
         {
             return loadProjects();
@@ -57,7 +52,9 @@ namespace P4PSpeechDB
         {
             return loadAnalysis(ID);
         }
-
+        #endregion
+        /*Loads each type of collection from the database into the ViewModel collection, using the
+         * params specified. */
         #region Loaders
         public ObservableCollection<ProjectViewModel> loadProjects()
         {

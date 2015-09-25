@@ -70,6 +70,7 @@ namespace P4PSpeechDB
 
         }
 
+        /*Prompts user to get the selected folder(s). */
         public static List<string> Prompt(string question, string title, string defaultValue = "", InputType inputType = InputType.Text)
         {
             FolderMsgPrompt inst = new FolderMsgPrompt(question, title, defaultValue, inputType);

@@ -36,7 +36,7 @@ using System.Data.SqlClient;
 namespace P4PSpeechDB
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainWindow.xaml, i.e. codebehind
     /// </summary>
     public partial class MainWindow : Window
     {

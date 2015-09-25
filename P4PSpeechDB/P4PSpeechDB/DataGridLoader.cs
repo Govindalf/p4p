@@ -133,6 +133,42 @@ namespace P4PSpeechDB
             return this.speakers;
 
         }
+
+        /*Gets the speakers relating to the selected analysis*/
+        public ObservableCollection<SpeakerViewModel> GetLinkedSpeaker(string AID)
+        {
+
+            //if (PID == null)
+            //{
+            //    PID = "DefaultProject";
+            //}
+            speakers.Clear();
+            using (DBConnection db = new DBConnection())
+            {
+                MySqlCommand cmd = new MySqlCommand();
+
+
+
+                cmd.CommandText = @"SELECT * FROM File f 
+                                                INNER JOIN File2Analysis f2a ON f.FID = f2a.File_FID
+                                                INNER JOIN Analysis a ON a.AID = f2a.Analysis_AID
+                                                WHERE a.AID = @AID";
+                cmd.Parameters.AddWithValue("@AID", AID);
+
+                var table = db.getFromDB(cmd);
+                foreach (DataRow dr in table.Rows)
+                {
+                    var speaker = dr["Speaker"].ToString();
+                    speakers.Add(new SpeakerViewModel { Speaker = new Speaker { ID = dr["FID"].ToString(), Name = dr["Name"].ToString(), PID = dr["PID"].ToString(), SpeakerName = speaker, FileType = dr["FileType"].ToString(), Age = speaker[0].ToString() } });
+
+                }
+
+            }
+
+            return this.speakers;
+
+        }
+
         #endregion
 
 

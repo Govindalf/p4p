@@ -246,6 +246,25 @@ namespace P4PSpeechDB
 
         }
 
+        /*Run this on double clicking analysis datagrid object*/
+        public ICommand AnalysisSelected { get { return new RelayCommand(AnalysisSelectedExecute); } }
+        void AnalysisSelectedExecute()
+        {
+
+            if (!(SelectedAnalysis is AnalysisViewModel))
+                return;
+
+            try
+            {
+                moa.GetRelatedSpeakers(SelectedAnalysis);
+            }
+            catch
+            {
+                MessageBox.Show("Access denied, please run application with administrator privileges.");
+            }
+
+        }
+
         /*Sets up custom datagrid grouping when combo option selected. */
         public void setGroupMode(string groupValue)
         {

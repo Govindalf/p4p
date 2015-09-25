@@ -254,6 +254,13 @@ namespace P4PSpeechDB
             }
         }
 
+        /* Retreives the speakers related to the selected analysis file. */
+        public void GetRelatedSpeakers(AnalysisViewModel analysis)
+        {
+            dgl.GetLinkedSpeaker(analysis.AID);
+            
+        }
+
         /*Deletes the selected file(s) from the database. */
         public void DeleteFiles(IList selectedValues)
         {

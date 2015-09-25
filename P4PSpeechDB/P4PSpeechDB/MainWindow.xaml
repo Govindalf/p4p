@@ -238,6 +238,11 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                 <i:EventTrigger EventName="MouseDoubleClick">
                     <i:InvokeCommandAction Command="{Binding DoubleClickAnalysis}"/>
                 </i:EventTrigger>
+
+                <i:EventTrigger EventName="MouseLeftButtonUp">
+                    <!--<i:InvokeCommandAction Command="{Binding ProjectSelected}" />-->
+                    <Command:EventToCommand Command="{Binding AnalysisSelected}"/>
+                </i:EventTrigger>
             </i:Interaction.Triggers>
 
             <!--<DataGrid.GroupStyle>

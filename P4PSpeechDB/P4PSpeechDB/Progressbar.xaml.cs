@@ -21,7 +21,7 @@ using System.Windows.Shapes;
 namespace P4PSpeechDB
 {
     /// <summary>
-    /// Interaction logic for Window1.xaml
+    /// Interaction logic for Window1.xaml. Progressbar to show user something is happening in the background.
     /// </summary>
     public partial class ProgressBar : Window
     {

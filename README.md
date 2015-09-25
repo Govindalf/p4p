@@ -51,8 +51,17 @@ Then create a project in Visual Studio using this link: https://msdn.microsoft.c
     This version uses an MVC approach and possesses all of the features just mentioned.
     
     * The second version can be accessed by checking out the release-MVVM branch.
-    This version uses the MVVM approach. When extending the application, this branch should
-      ** Current Bugs: have to double click projects initially (doesn't affect the rest of the app)
+    This version uses the more powerful MVVM approach. 
+
+##Moa Operation
+
+After running Moa, the main screen will allow users to perform all required operations.
+
+ - The three datagrids visible in the centre of the screen can be used to navigate around the data, for projects, speech and analysis respectively. When a grid item is clicked, files related to the selected file wil be loaded into the other datagrids.
+ - The centre datagrid data is grouped using the values specified in the group combo box, and is by Speaker by default. The centre grid can be grouped by selecting a value from the combo box.
+ - The search box can be used to search the speech datagrid using a regular expression filter.
+ - The panel of buttons at the top are used to execute various Moa functions and manipulate the data. From left to right:
+    * Path settings = choose a folder, which will then be set as the default location for saving projects to. This must be done on the first use, before using the other fucntions.
     
 
 

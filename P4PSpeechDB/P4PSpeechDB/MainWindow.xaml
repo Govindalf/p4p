@@ -164,7 +164,7 @@ xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Inte
                             <TextBlock HorizontalAlignment="Center" Foreground="White" TextWrapping="Wrap" Margin="0, 5" Text="Delete File(s)"/>
                         </StackPanel>
                     </Button>
-                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="#6890E7" Background="#6890E7" Width="90" Height="70" Margin="10,10,0,0">
+                    <Button HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="#6890E7" Background="#6890E7" Width="90" Height="70" Margin="10,10,0,0" Click="GFW_Click">
                         <StackPanel>
                             <Image Source="pack://application:,,,/Icons/wform.png"  Height="30"/>
                             <TextBlock HorizontalAlignment="Center" Foreground="White" TextWrapping="Wrap" Margin="0, 5" Text="   GFW Extraction"/>

@@ -1,4 +1,5 @@
 # P4P Speech Database - Moa
+Govindu Samarasinghe & Rodel Rojos
 
 This project was proposed by the University of Auckland's ECE department. The aim of this project is to support 
 speech and language researchers at the University of Auckland with the management of their speech data. The main motivation
@@ -62,6 +63,12 @@ After running Moa, the main screen will allow users to perform all required oper
  - The search box can be used to search the speech datagrid using a regular expression filter.
  - The panel of buttons at the top are used to execute various Moa functions and manipulate the data. From left to right:
     * Path settings = choose a folder, which will then be set as the default location for saving projects to. This must be done on the first use, before using the other fucntions.
+    * Add folders = select a folder containing speaker files, or a project folder that contains other speaker folders, then upload it to the database. The storage will be done automatically.
+    * Add files and delete files = self explanatory, adds speech files to the database, or deletes file(s) selected in the speech datagrid.
+    * GFW Extraction = currently unimplemented, future work.
+    * Generate Template = opens window to allow the creation of template file similar to Emu. Parameters can be entered, after which it will be automaticall generated.
+    * WEBMAUS = link to the WEBMAUS website
+    * Add analysis = adds a new analysis file to the database, and links it to a related age group from the speakers. Easily done using popup window.
     
 
 
